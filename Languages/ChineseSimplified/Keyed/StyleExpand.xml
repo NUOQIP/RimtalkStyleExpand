@@ -42,7 +42,7 @@
   <StyleExpand_ConnectionFailedShort>连接失败：未获取到 embedding</StyleExpand_ConnectionFailedShort>
   
   <!-- API Section -->
-  <StyleExpand_ApiConfig>[API 配置]</StyleExpand_ApiConfig>
+  <StyleExpand_ApiConfig>[向量检索模型 API 配置]</StyleExpand_ApiConfig>
   <StyleExpand_ApiUrl>向量 API 地址：</StyleExpand_ApiUrl>
   <StyleExpand_ApiKey>API Key（可选）：</StyleExpand_ApiKey>
   <StyleExpand_ApiModel>Embedding 模型名称：</StyleExpand_ApiModel>
@@ -83,7 +83,7 @@
   <StyleExpand_AutoResumeDesc>启动时自动继续未完成的切分</StyleExpand_AutoResumeDesc>
   
   <!-- LLM API Section -->
-  <StyleExpand_LlmApiConfig>[LLM API 配置]</StyleExpand_LlmApiConfig>
+  <StyleExpand_LlmApiConfig>[文风提示词生成 LLM API 配置]</StyleExpand_LlmApiConfig>
   <StyleExpand_UseRimTalkApi>使用 RimTalk API 配置</StyleExpand_UseRimTalkApi>
   <StyleExpand_UseRimTalkApiDesc>复用 RimTalk 的 LLM API 配置来生成文风描述</StyleExpand_UseRimTalkApiDesc>
   <StyleExpand_LlmApiUrl>LLM API 地址：</StyleExpand_LlmApiUrl>

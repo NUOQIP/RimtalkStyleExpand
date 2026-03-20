@@ -42,7 +42,7 @@
   <StyleExpand_ConnectionFailedShort>Connection failed: no embedding returned</StyleExpand_ConnectionFailedShort>
   
   <!-- API Section -->
-  <StyleExpand_ApiConfig>[API Configuration]</StyleExpand_ApiConfig>
+  <StyleExpand_ApiConfig>[Vector Retrieval Model API Configuration]</StyleExpand_ApiConfig>
   <StyleExpand_ApiUrl>Vector API URL:</StyleExpand_ApiUrl>
   <StyleExpand_ApiKey>API Key (optional):</StyleExpand_ApiKey>
   <StyleExpand_ApiModel>Embedding Model Name:</StyleExpand_ApiModel>
@@ -83,7 +83,7 @@
   <StyleExpand_AutoResumeDesc>Automatically continue unfinished chunking on startup</StyleExpand_AutoResumeDesc>
   
   <!-- LLM API Section -->
-  <StyleExpand_LlmApiConfig>[LLM API Configuration]</StyleExpand_LlmApiConfig>
+  <StyleExpand_LlmApiConfig>[Style Prompt Generation LLM API Configuration]</StyleExpand_LlmApiConfig>
   <StyleExpand_UseRimTalkApi>Use RimTalk API Config</StyleExpand_UseRimTalkApi>
   <StyleExpand_UseRimTalkApiDesc>Reuse RimTalk's LLM API config for generating style descriptions</StyleExpand_UseRimTalkApiDesc>
   <StyleExpand_LlmApiUrl>LLM API URL:</StyleExpand_LlmApiUrl>

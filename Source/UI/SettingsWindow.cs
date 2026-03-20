@@ -33,7 +33,22 @@ namespace RimTalkStyleExpand
             
             try
             {
+                if (settings == null)
+                {
+                    GUI.color = Color.red;
+                    Widgets.Label(inRect, "Settings not initialized!");
+                    GUI.color = Color.white;
+                    return;
+                }
+                
                 DrawSettings(inRect, settings);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"[StyleExpand] Error drawing settings: {ex.Message}\n{ex.StackTrace}");
+                GUI.color = Color.red;
+                Widgets.Label(inRect, $"Error: {ex.Message}");
+                GUI.color = Color.white;
             }
             finally
             {

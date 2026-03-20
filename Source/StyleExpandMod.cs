@@ -90,7 +90,30 @@ namespace RimTalkStyleExpand
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
-            SettingsWindow.DoSettingsContents(inRect, Settings);
+            try
+            {
+                if (Settings == null)
+                {
+                    Settings = GetSettings<StyleExpandSettings>();
+                }
+                
+                if (Settings == null)
+                {
+                    GUI.color = Color.red;
+                    Widgets.Label(inRect, "Failed to load settings!");
+                    GUI.color = Color.white;
+                    return;
+                }
+                
+                SettingsWindow.DoSettingsContents(inRect, Settings);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"[StyleExpand] Error in DoSettingsWindowContents: {ex.Message}\n{ex.StackTrace}");
+                GUI.color = Color.red;
+                Widgets.Label(inRect, $"Error: {ex.Message}");
+                GUI.color = Color.white;
+            }
         }
     }
 }

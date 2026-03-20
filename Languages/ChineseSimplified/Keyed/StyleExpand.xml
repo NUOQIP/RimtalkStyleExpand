@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Mod Name -->
+  <StyleExpand_ModName>RimTalk 文风扩展</StyleExpand_ModName>
+  <StyleExpand_Version>v1.2</StyleExpand_Version>
+  
+  <!-- General -->
+  <StyleExpand_Enable>启用文风扩展</StyleExpand_Enable>
+  <StyleExpand_EnableDesc>启用文风功能</StyleExpand_EnableDesc>
+  <StyleExpand_Help>帮助</StyleExpand_Help>
+  
+  <!-- Status Messages -->
+  <StyleExpand_Processing>[处理中] {0}</StyleExpand_Processing>
+  <StyleExpand_Scanning>正在扫描文风文件...</StyleExpand_Scanning>
+  <StyleExpand_Chunking>正在切分文风 '{0}'...</StyleExpand_Chunking>
+  <StyleExpand_ChunkingProgress>正在切分文风 '{0}'... ({1}/{2} 片段)</StyleExpand_ChunkingProgress>
+  <StyleExpand_ScanComplete>扫描完成！发现 {0} 个文风。</StyleExpand_ScanComplete>
+  <StyleExpand_ChunkComplete>文风 '{0}' 切分成功！（{1} 个片段）</StyleExpand_ChunkComplete>
+  <StyleExpand_CacheCleared>缓存已清除！</StyleExpand_CacheCleared>
+  <StyleExpand_AllCacheCleared>所有缓存已清除！</StyleExpand_AllCacheCleared>
+  <StyleExpand_SettingsReset>所有设置已重置为默认值！</StyleExpand_SettingsReset>
+  <StyleExpand_FolderOpened>已打开文风文件夹</StyleExpand_FolderOpened>
+  <StyleExpand_PromptReset>基础提示词已重置</StyleExpand_PromptReset>
+  <StyleExpand_StylePromptCleared>文风提示词已清除</StyleExpand_StylePromptCleared>
+  <StyleExpand_FileTooLarge>警告：文件 '{0}' 较大（{1} 字符），处理可能需要较长时间。</StyleExpand_FileTooLarge>
+  <StyleExpand_RecommendedSize>推荐范围：中文 5,000-50,000 字 | 英文 3,000-30,000 词</StyleExpand_RecommendedSize>
+  <StyleExpand_PartialProgress>检测到未完成的切分进度：{0}</StyleExpand_PartialProgress>
+  <StyleExpand_ResumeHint>可以点击"继续"按钮从中断处继续</StyleExpand_ResumeHint>
+  <StyleExpand_ChunkingCancelled>文风 '{0}' 切分已取消，进度已保存。</StyleExpand_ChunkingCancelled>
+  
+  <!-- Warnings & Errors -->
+  <StyleExpand_ErrorPrefix>[错误] </StyleExpand_ErrorPrefix>
+  <StyleExpand_NotChunked>文风 '{0}' 尚未切分。请点击"切分文风"按钮处理。</StyleExpand_NotChunked>
+  <StyleExpand_SelectPawn>请先在游戏中选择一个角色</StyleExpand_SelectPawn>
+  <StyleExpand_NoStyles>未发现文风。请将 .txt 文件放入 Styles 文件夹。</StyleExpand_NoStyles>
+  <StyleExpand_NoStyleSelected>未选择文风。请在上方选择文风或将 .txt 文件放入 Styles 文件夹。</StyleExpand_NoStyleSelected>
+  <StyleExpand_FolderNotFound>无法找到 Styles 文件夹！</StyleExpand_FolderNotFound>
+  <StyleExpand_ConnectionFailed>API 连接失败：{0}</StyleExpand_ConnectionFailed>
+  <StyleExpand_ConnectionSuccess>API 连接成功！</StyleExpand_ConnectionSuccess>
+  <StyleExpand_Testing>测试中...</StyleExpand_Testing>
+  <StyleExpand_ConnectionSuccessShort>连接成功！</StyleExpand_ConnectionSuccessShort>
+  <StyleExpand_ConnectionFailedShort>连接失败：未获取到 embedding</StyleExpand_ConnectionFailedShort>
+  
+  <!-- API Section -->
+  <StyleExpand_ApiConfig>[API 配置]</StyleExpand_ApiConfig>
+  <StyleExpand_ApiUrl>向量 API 地址：</StyleExpand_ApiUrl>
+  <StyleExpand_ApiKey>API Key（可选）：</StyleExpand_ApiKey>
+  <StyleExpand_ApiModel>Embedding 模型名称：</StyleExpand_ApiModel>
+  <StyleExpand_TestConnection>测试连接</StyleExpand_TestConnection>
+  
+  <!-- Prompt Section -->
+  <StyleExpand_PromptTemplate>[提示词模板]</StyleExpand_PromptTemplate>
+  <StyleExpand_BasePrompt>基础提示词模板（使用 {style_name} 作为占位符）：</StyleExpand_BasePrompt>
+  <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
+  
+  <!-- Retrieval Section -->
+  <StyleExpand_RetrievalConfig>[检索配置]</StyleExpand_RetrievalConfig>
+  <StyleExpand_QueryTemplate>Query 模板（Scriban 语法）：</StyleExpand_QueryTemplate>
+  <StyleExpand_InsertVariable>插入变量</StyleExpand_InsertVariable>
+  <StyleExpand_PreviewQuery>预览 Query</StyleExpand_PreviewQuery>
+  <StyleExpand_ManualPreview>手动预览</StyleExpand_ManualPreview>
+  <StyleExpand_ClearPreview>清除</StyleExpand_ClearPreview>
+  <StyleExpand_ManualInput>手动输入测试文本：</StyleExpand_ManualInput>
+  <StyleExpand_RetrievedChunks>检索到 {0} 个文风片段：</StyleExpand_RetrievedChunks>
+  <StyleExpand_NoVariablesFound>未找到可用变量</StyleExpand_NoVariablesFound>
+  <StyleExpand_SelectChunkedStyle>请先选择已切分的文风</StyleExpand_SelectChunkedStyle>
+  <StyleExpand_EnterPreviewText>请输入预览文本</StyleExpand_EnterPreviewText>
+  <StyleExpand_NoChunksRetrieved>未检索到相似片段，尝试调整阈值或输入其他文本</StyleExpand_NoChunksRetrieved>
+  <StyleExpand_PreviewSuccess>预览成功，检索到 {0} 个片段</StyleExpand_PreviewSuccess>
+  <StyleExpand_PreviewResult>预览结果：</StyleExpand_PreviewResult>
+  <StyleExpand_TopK>检索数量：{0}</StyleExpand_TopK>
+  <StyleExpand_MaxChunk>片段最大长度：{0}</StyleExpand_MaxChunk>
+  <StyleExpand_Threshold>相似度阈值：{0:F2}</StyleExpand_Threshold>
+  
+  <!-- Chunking Section -->
+  <StyleExpand_ChunkingConfig>[切分配置]</StyleExpand_ChunkingConfig>
+  <StyleExpand_EnableSampling>启用大文件采样</StyleExpand_EnableSampling>
+  <StyleExpand_EnableSamplingDesc>超过阈值时自动采样代表性片段</StyleExpand_EnableSamplingDesc>
+  <StyleExpand_SampleTarget>目标片段数：{0}</StyleExpand_SampleTarget>
+  <StyleExpand_BatchSize>批处理大小：{0}</StyleExpand_BatchSize>
+  <StyleExpand_LargeFileThreshold>大文件阈值：{0} 字符</StyleExpand_LargeFileThreshold>
+  <StyleExpand_AutoResume>自动继续</StyleExpand_AutoResume>
+  <StyleExpand_AutoResumeDesc>启动时自动继续未完成的切分</StyleExpand_AutoResumeDesc>
+  
+  <!-- LLM API Section -->
+  <StyleExpand_LlmApiConfig>[LLM API 配置]</StyleExpand_LlmApiConfig>
+  <StyleExpand_UseRimTalkApi>使用 RimTalk API 配置</StyleExpand_UseRimTalkApi>
+  <StyleExpand_UseRimTalkApiDesc>复用 RimTalk 的 LLM API 配置来生成文风描述</StyleExpand_UseRimTalkApiDesc>
+  <StyleExpand_LlmApiUrl>LLM API 地址：</StyleExpand_LlmApiUrl>
+  <StyleExpand_LlmApiKey>LLM API Key：</StyleExpand_LlmApiKey>
+  <StyleExpand_LlmModel>LLM 模型名称：</StyleExpand_LlmModel>
+  <StyleExpand_GeneratePrompt>自动生成描述</StyleExpand_GeneratePrompt>
+  <StyleExpand_GeneratingPrompt>正在为 '{0}' 生成文风描述...</StyleExpand_GeneratingPrompt>
+  <StyleExpand_PromptGenerated>文风 '{0}' 描述已生成</StyleExpand_PromptGenerated>
+  <StyleExpand_GenerateFailed>生成失败：{0}</StyleExpand_GenerateFailed>
+  <StyleExpand_FileNotFound>未找到文风文件：{0}</StyleExpand_FileNotFound>
+  
+  <!-- Styles Section -->
+  <StyleExpand_StyleSelection>[文风选择（单选）]</StyleExpand_StyleSelection>
+  <StyleExpand_ScanStyles>扫描文风</StyleExpand_ScanStyles>
+  <StyleExpand_OpenFolder>打开文件夹</StyleExpand_OpenFolder>
+  <StyleExpand_ClearCache>清除缓存</StyleExpand_ClearCache>
+  <StyleExpand_ChunkAll>批量切分</StyleExpand_ChunkAll>
+  <StyleExpand_ChunkingAll>正在批量切分所有文风...</StyleExpand_ChunkingAll>
+  <StyleExpand_ChunkAllComplete>批量切分完成！处理了 {0} 个文风。</StyleExpand_ChunkAllComplete>
+  <StyleExpand_ChunkAllCancelled>批量切分已取消</StyleExpand_ChunkAllCancelled>
+  <StyleExpand_ChunksCount>{0} 个片段</StyleExpand_ChunksCount>
+  <StyleExpand_NotChunkedLabel>未切分</StyleExpand_NotChunkedLabel>
+  <StyleExpand_Selected>已选择：{0}</StyleExpand_Selected>
+  <StyleExpand_ChunkStyle>切分文风</StyleExpand_ChunkStyle>
+  <StyleExpand_Rechunk>重新切分</StyleExpand_Rechunk>
+  <StyleExpand_Resume>继续</StyleExpand_Resume>
+  <StyleExpand_Cancel>取消</StyleExpand_Cancel>
+  <StyleExpand_StylePrompt>文风提示词（描述）：</StyleExpand_StylePrompt>
+  
+  <!-- Advanced Section -->
+  <StyleExpand_AdvancedMode>[高级模式 - Scriban 变量]</StyleExpand_AdvancedMode>
+  <StyleExpand_UseVariables>在 RimTalk 高级模式中使用以下变量：</StyleExpand_UseVariables>
+  <StyleExpand_VarStyleName>{{style_name}} - 当前文风名称</StyleExpand_VarStyleName>
+  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - 基础指令提示词</StyleExpand_VarBasePrompt>
+  <StyleExpand_VarStylePrompt>{{style_prompt}} - 文风描述</StyleExpand_VarStylePrompt>
+  <StyleExpand_VarStyleChunks>{{style_chunks}} - 检索到的示例片段</StyleExpand_VarStyleChunks>
+  <StyleExpand_VarStyleFull>{{style_full}} - 完整文风提示词（以上组合）</StyleExpand_VarStyleFull>
+  <StyleExpand_ExampleUsage>在 RimTalk 预设中使用示例：</StyleExpand_ExampleUsage>
+  
+  <!-- Debug Section -->
+  <StyleExpand_Debug>[调试]</StyleExpand_Debug>
+  <StyleExpand_ShowQuery>显示 Query</StyleExpand_ShowQuery>
+  <StyleExpand_ShowQueryDesc>在日志中显示每次检索的 Query</StyleExpand_ShowQueryDesc>
+  <StyleExpand_ShowChunks>显示片段</StyleExpand_ShowChunks>
+  <StyleExpand_ShowChunksDesc>在日志中显示检索到的文风片段</StyleExpand_ShowChunksDesc>
+  
+  <!-- Reset Section -->
+  <StyleExpand_Reset>[重置]</StyleExpand_Reset>
+  <StyleExpand_ResetAllSettings>重置所有设置</StyleExpand_ResetAllSettings>
+  <StyleExpand_ClearAllCache>清除所有缓存</StyleExpand_ClearAllCache>
+  
+  <!-- Help Window -->
+  <StyleExpand_HelpTitle>RimTalk 文风扩展 - 帮助</StyleExpand_HelpTitle>
+  <StyleExpand_HelpQuickStart>== 快速开始 ==</StyleExpand_HelpQuickStart>
+  <StyleExpand_HelpStep1>1. 将 .txt 文件放入 Styles 文件夹（点击"打开文件夹"）</StyleExpand_HelpStep1>
+  <StyleExpand_HelpStep2>2. 点击"扫描文风"检测新文件</StyleExpand_HelpStep2>
+  <StyleExpand_HelpStep3>3. 从列表中选择一个文风</StyleExpand_HelpStep3>
+  <StyleExpand_HelpStep4>4. 点击"切分文风"处理文风</StyleExpand_HelpStep4>
+  <StyleExpand_HelpStep5>5. 完成！文风将用于 RimTalk 对话</StyleExpand_HelpStep5>
+  <StyleExpand_HelpApiConfig>== API 配置 ==</StyleExpand_HelpApiConfig>
+  <StyleExpand_HelpApiUrl>- 向量 API 地址：你的 embedding API 端点</StyleExpand_HelpApiUrl>
+  <StyleExpand_HelpApiSupport>- 支持 OpenAI 兼容的 API（Ollama、OpenAI 等）</StyleExpand_HelpApiSupport>
+  <StyleExpand_HelpApiModel>- 模型：embedding 模型名称（如 bge-small-zh）</StyleExpand_HelpApiModel>
+  <StyleExpand_HelpStyleFiles>== 文风文件 ==</StyleExpand_HelpStyleFiles>
+  <StyleExpand_HelpStyleOne>- 一个 .txt 文件 = 一种文风</StyleExpand_HelpStyleOne>
+  <StyleExpand_HelpStyleName>- 文件名即文风名</StyleExpand_HelpStyleName>
+  <StyleExpand_HelpStyleContent>- 文件内容用作文风示例</StyleExpand_HelpStyleContent>
+  <StyleExpand_HelpStyleSize>- 推荐字数：中文 5,000-50,000 字 | 英文 3,000-30,000 词</StyleExpand_HelpStyleSize>
+  <StyleExpand_HelpStyleSizeNote>- 更大的文件可用但处理时间更长</StyleExpand_HelpStyleSizeNote>
+  <StyleExpand_HelpChunking>== 切分 ==</StyleExpand_HelpChunking>
+  <StyleExpand_HelpChunkWhat>- 将文本切分成较小的片段</StyleExpand_HelpChunkWhat>
+  <StyleExpand_HelpChunkEmbed>- 为每个片段计算 embedding</StyleExpand_HelpChunkEmbed>
+  <StyleExpand_HelpChunkCache>- 结果缓存以加快加载</StyleExpand_HelpChunkCache>
+  <StyleExpand_HelpAdvanced>== 高级模式 ==</StyleExpand_HelpAdvanced>
+  <StyleExpand_HelpScriban>在 RimTalk 预设中使用 Scriban 变量：</StyleExpand_HelpScriban>
+</LanguageData>

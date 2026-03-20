@@ -1,0 +1,21 @@
+# Build outputs
+bin/
+obj/
+*.pdb
+*.dll.config
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache (optional - uncomment if you don't want to track cache)
+# Styles/.cache/
+
+# RimWorld specific
+Source/obj/

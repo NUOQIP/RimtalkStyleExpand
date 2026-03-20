@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>RimTalk StyleExpand</name>
+  <author>提督</author>
+  <packageId>RimTalk.StyleExpand</packageId>
+  <version>1.2.0</version>
+  <supportedVersions>
+    <li>1.5</li>
+    <li>1.6</li>
+  </supportedVersions>
+  <description>让RimTalk生成的对话模仿指定文风（古风、傲娇、鲁迅风格等）。基于向量检索相似文风片段，注入到RimTalk的Prompt中。</description>
+  <modDependencies>
+    <li>
+      <packageId>RimTalk.Core</packageId>
+      <displayName>RimTalk</displayName>
+      <downloadUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=RimTalk</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>RimTalk.Core</li>
+  </loadAfter>
+</ModMetaData>

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <GameVersion Condition=" '$(GameVersion)' == '' ">1.5</GameVersion>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net48</TargetFramework>
+        <PlatformTarget>x64</PlatformTarget>
+        <RootNamespace>RimTalkStyleExpand</RootNamespace>
+        <AssemblyName>RimTalk-StyleExpand</AssemblyName>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <LangVersion>default</LangVersion>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <Optimize>true</Optimize>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="RimTalk">
+            <HintPath>..\..\RimTalk-main\1.5\Assemblies\RimTalk.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Scriban">
+            <HintPath>..\..\RimTalk-main\Libs\Scriban.dll</HintPath>
+            <Private>true</Private>
+        </Reference>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <OutputPath>..\$(GameVersion)\Assemblies</OutputPath>
+    </PropertyGroup>
+</Project>

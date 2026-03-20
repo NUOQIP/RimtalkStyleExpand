@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Mod Name -->
+  <StyleExpand_ModName>RimTalk StyleExpand</StyleExpand_ModName>
+  <StyleExpand_Version>v1.2</StyleExpand_Version>
+  
+  <!-- General -->
+  <StyleExpand_Enable>Enable Style Expand</StyleExpand_Enable>
+  <StyleExpand_EnableDesc>Enable style functionality</StyleExpand_EnableDesc>
+  <StyleExpand_Help>Help</StyleExpand_Help>
+  
+  <!-- Status Messages -->
+  <StyleExpand_Processing>[Processing] {0}</StyleExpand_Processing>
+  <StyleExpand_Scanning>Scanning style files...</StyleExpand_Scanning>
+  <StyleExpand_Chunking>Chunking style '{0}'...</StyleExpand_Chunking>
+  <StyleExpand_ChunkingProgress>Chunking style '{0}'... ({1}/{2} chunks)</StyleExpand_ChunkingProgress>
+  <StyleExpand_ScanComplete>Scan complete! Found {0} styles.</StyleExpand_ScanComplete>
+  <StyleExpand_ChunkComplete>Style '{0}' chunked successfully! ({1} chunks)</StyleExpand_ChunkComplete>
+  <StyleExpand_CacheCleared>Cache cleared!</StyleExpand_CacheCleared>
+  <StyleExpand_AllCacheCleared>All cache cleared!</StyleExpand_AllCacheCleared>
+  <StyleExpand_SettingsReset>All settings reset to default!</StyleExpand_SettingsReset>
+  <StyleExpand_FolderOpened>Styles folder opened</StyleExpand_FolderOpened>
+  <StyleExpand_PromptReset>Base prompt reset to default</StyleExpand_PromptReset>
+  <StyleExpand_StylePromptCleared>Style prompt cleared</StyleExpand_StylePromptCleared>
+  <StyleExpand_FileTooLarge>Warning: File '{0}' is large ({1} chars). Processing may take a while.</StyleExpand_FileTooLarge>
+  <StyleExpand_RecommendedSize>Recommended: Chinese 5,000-50,000 chars | English 3,000-30,000 words</StyleExpand_RecommendedSize>
+  <StyleExpand_PartialProgress>Partial chunking progress detected: {0}</StyleExpand_PartialProgress>
+  <StyleExpand_ResumeHint>Click 'Resume' to continue from where it stopped</StyleExpand_ResumeHint>
+  <StyleExpand_ChunkingCancelled>Chunking cancelled for '{0}', progress saved.</StyleExpand_ChunkingCancelled>
+  
+  <!-- Warnings & Errors -->
+  <StyleExpand_ErrorPrefix>[Error] </StyleExpand_ErrorPrefix>
+  <StyleExpand_NotChunked>Style '{0}' is not chunked. Click 'Chunk Style' to process it.</StyleExpand_NotChunked>
+  <StyleExpand_SelectPawn>Please select a pawn in game first</StyleExpand_SelectPawn>
+  <StyleExpand_NoStyles>No styles found. Place .txt files in the Styles folder.</StyleExpand_NoStyles>
+  <StyleExpand_NoStyleSelected>No style selected. Select a style above or add .txt files to Styles folder.</StyleExpand_NoStyleSelected>
+  <StyleExpand_FolderNotFound>Cannot find Styles folder!</StyleExpand_FolderNotFound>
+  <StyleExpand_ConnectionFailed>API connection failed: {0}</StyleExpand_ConnectionFailed>
+  <StyleExpand_ConnectionSuccess>API connection successful!</StyleExpand_ConnectionSuccess>
+  <StyleExpand_Testing>Testing...</StyleExpand_Testing>
+  <StyleExpand_ConnectionSuccessShort>Connection successful!</StyleExpand_ConnectionSuccessShort>
+  <StyleExpand_ConnectionFailedShort>Connection failed: no embedding returned</StyleExpand_ConnectionFailedShort>
+  
+  <!-- API Section -->
+  <StyleExpand_ApiConfig>[API Configuration]</StyleExpand_ApiConfig>
+  <StyleExpand_ApiUrl>Vector API URL:</StyleExpand_ApiUrl>
+  <StyleExpand_ApiKey>API Key (optional):</StyleExpand_ApiKey>
+  <StyleExpand_ApiModel>Embedding Model Name:</StyleExpand_ApiModel>
+  <StyleExpand_TestConnection>Test Connection</StyleExpand_TestConnection>
+  
+  <!-- Prompt Section -->
+  <StyleExpand_PromptTemplate>[Prompt Template]</StyleExpand_PromptTemplate>
+  <StyleExpand_BasePrompt>Base Prompt Template (use {style_name}):</StyleExpand_BasePrompt>
+  <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
+  
+  <!-- Retrieval Section -->
+  <StyleExpand_RetrievalConfig>[Retrieval Configuration]</StyleExpand_RetrievalConfig>
+  <StyleExpand_QueryTemplate>Query Template (Scriban syntax):</StyleExpand_QueryTemplate>
+  <StyleExpand_InsertVariable>Insert Variable</StyleExpand_InsertVariable>
+  <StyleExpand_PreviewQuery>Preview Query</StyleExpand_PreviewQuery>
+  <StyleExpand_ManualPreview>Manual Preview</StyleExpand_ManualPreview>
+  <StyleExpand_ClearPreview>Clear</StyleExpand_ClearPreview>
+  <StyleExpand_ManualInput>Manual test input:</StyleExpand_ManualInput>
+  <StyleExpand_RetrievedChunks>Retrieved {0} style chunks:</StyleExpand_RetrievedChunks>
+  <StyleExpand_NoVariablesFound>No variables found</StyleExpand_NoVariablesFound>
+  <StyleExpand_SelectChunkedStyle>Please select a chunked style first</StyleExpand_SelectChunkedStyle>
+  <StyleExpand_EnterPreviewText>Please enter preview text</StyleExpand_EnterPreviewText>
+  <StyleExpand_NoChunksRetrieved>No similar chunks found. Try adjusting threshold or different text.</StyleExpand_NoChunksRetrieved>
+  <StyleExpand_PreviewSuccess>Preview success, retrieved {0} chunks</StyleExpand_PreviewSuccess>
+  <StyleExpand_PreviewResult>Preview result:</StyleExpand_PreviewResult>
+  <StyleExpand_TopK>Top K: {0}</StyleExpand_TopK>
+  <StyleExpand_MaxChunk>Max Chunk Length: {0}</StyleExpand_MaxChunk>
+  <StyleExpand_Threshold>Similarity Threshold: {0:F2}</StyleExpand_Threshold>
+  
+  <!-- Chunking Section -->
+  <StyleExpand_ChunkingConfig>[Chunking Configuration]</StyleExpand_ChunkingConfig>
+  <StyleExpand_EnableSampling>Enable Large File Sampling</StyleExpand_EnableSampling>
+  <StyleExpand_EnableSamplingDesc>Automatically sample representative chunks when exceeding threshold</StyleExpand_EnableSamplingDesc>
+  <StyleExpand_SampleTarget>Target Chunks: {0}</StyleExpand_SampleTarget>
+  <StyleExpand_BatchSize>Batch Size: {0}</StyleExpand_BatchSize>
+  <StyleExpand_LargeFileThreshold>Large File Threshold: {0} chars</StyleExpand_LargeFileThreshold>
+  <StyleExpand_AutoResume>Auto Resume</StyleExpand_AutoResume>
+  <StyleExpand_AutoResumeDesc>Automatically continue unfinished chunking on startup</StyleExpand_AutoResumeDesc>
+  
+  <!-- LLM API Section -->
+  <StyleExpand_LlmApiConfig>[LLM API Configuration]</StyleExpand_LlmApiConfig>
+  <StyleExpand_UseRimTalkApi>Use RimTalk API Config</StyleExpand_UseRimTalkApi>
+  <StyleExpand_UseRimTalkApiDesc>Reuse RimTalk's LLM API config for generating style descriptions</StyleExpand_UseRimTalkApiDesc>
+  <StyleExpand_LlmApiUrl>LLM API URL:</StyleExpand_LlmApiUrl>
+  <StyleExpand_LlmApiKey>LLM API Key:</StyleExpand_LlmApiKey>
+  <StyleExpand_LlmModel>LLM Model Name:</StyleExpand_LlmModel>
+  <StyleExpand_GeneratePrompt>Auto Generate Description</StyleExpand_GeneratePrompt>
+  <StyleExpand_GeneratingPrompt>Generating style description for '{0}'...</StyleExpand_GeneratingPrompt>
+  <StyleExpand_PromptGenerated>Style description generated for '{0}'</StyleExpand_PromptGenerated>
+  <StyleExpand_GenerateFailed>Generation failed: {0}</StyleExpand_GenerateFailed>
+  <StyleExpand_FileNotFound>Style file not found: {0}</StyleExpand_FileNotFound>
+  
+  <!-- Styles Section -->
+  <StyleExpand_StyleSelection>[Style Selection (Single Choice)]</StyleExpand_StyleSelection>
+  <StyleExpand_ScanStyles>Scan Styles</StyleExpand_ScanStyles>
+  <StyleExpand_OpenFolder>Open Folder</StyleExpand_OpenFolder>
+  <StyleExpand_ClearCache>Clear Cache</StyleExpand_ClearCache>
+  <StyleExpand_ChunkAll>Chunk All</StyleExpand_ChunkAll>
+  <StyleExpand_ChunkingAll>Chunking all styles...</StyleExpand_ChunkingAll>
+  <StyleExpand_ChunkAllComplete>Batch chunking complete! Processed {0} styles.</StyleExpand_ChunkAllComplete>
+  <StyleExpand_ChunkAllCancelled>Batch chunking cancelled</StyleExpand_ChunkAllCancelled>
+  <StyleExpand_ChunksCount>{0} chunks</StyleExpand_ChunksCount>
+  <StyleExpand_NotChunkedLabel>not chunked</StyleExpand_NotChunkedLabel>
+  <StyleExpand_Selected>Selected: {0}</StyleExpand_Selected>
+  <StyleExpand_ChunkStyle>Chunk Style</StyleExpand_ChunkStyle>
+  <StyleExpand_Rechunk>Re-chunk</StyleExpand_Rechunk>
+  <StyleExpand_Resume>Resume</StyleExpand_Resume>
+  <StyleExpand_Cancel>Cancel</StyleExpand_Cancel>
+  <StyleExpand_StylePrompt>Style Prompt (description):</StyleExpand_StylePrompt>
+  
+  <!-- Advanced Section -->
+  <StyleExpand_AdvancedMode>[Advanced Mode - Scriban Variables]</StyleExpand_AdvancedMode>
+  <StyleExpand_UseVariables>Use these variables in RimTalk's Advanced Prompt Mode:</StyleExpand_UseVariables>
+  <StyleExpand_VarStyleName>{{style_name}} - Current style name</StyleExpand_VarStyleName>
+  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - Base instruction prompt</StyleExpand_VarBasePrompt>
+  <StyleExpand_VarStylePrompt>{{style_prompt}} - Style description section</StyleExpand_VarStylePrompt>
+  <StyleExpand_VarStyleChunks>{{style_chunks}} - Retrieved example chunks</StyleExpand_VarStyleChunks>
+  <StyleExpand_VarStyleFull>{{style_full}} - Complete style prompt (all above combined)</StyleExpand_VarStyleFull>
+  <StyleExpand_ExampleUsage>Example usage in RimTalk preset:</StyleExpand_ExampleUsage>
+  
+  <!-- Debug Section -->
+  <StyleExpand_Debug>[Debug]</StyleExpand_Debug>
+  <StyleExpand_ShowQuery>Show Query</StyleExpand_ShowQuery>
+  <StyleExpand_ShowQueryDesc>Show query in log for each retrieval</StyleExpand_ShowQueryDesc>
+  <StyleExpand_ShowChunks>Show Chunks</StyleExpand_ShowChunks>
+  <StyleExpand_ShowChunksDesc>Show retrieved chunks in log</StyleExpand_ShowChunksDesc>
+  
+  <!-- Reset Section -->
+  <StyleExpand_Reset>[Reset]</StyleExpand_Reset>
+  <StyleExpand_ResetAllSettings>Reset All Settings</StyleExpand_ResetAllSettings>
+  <StyleExpand_ClearAllCache>Clear All Cache</StyleExpand_ClearAllCache>
+  
+  <!-- Help Window -->
+  <StyleExpand_HelpTitle>RimTalk StyleExpand - Help</StyleExpand_HelpTitle>
+  <StyleExpand_HelpQuickStart>== Quick Start ==</StyleExpand_HelpQuickStart>
+  <StyleExpand_HelpStep1>1. Place .txt files in the Styles folder (click 'Open Folder')</StyleExpand_HelpStep1>
+  <StyleExpand_HelpStep2>2. Click 'Scan Styles' to detect new files</StyleExpand_HelpStep2>
+  <StyleExpand_HelpStep3>3. Select a style from the list</StyleExpand_HelpStep3>
+  <StyleExpand_HelpStep4>4. Click 'Chunk Style' to process the style</StyleExpand_HelpStep4>
+  <StyleExpand_HelpStep5>5. Done! The style will be used in RimTalk conversations</StyleExpand_HelpStep5>
+  <StyleExpand_HelpApiConfig>== API Configuration ==</StyleExpand_HelpApiConfig>
+  <StyleExpand_HelpApiUrl>- Vector API URL: Your embedding API endpoint</StyleExpand_HelpApiUrl>
+  <StyleExpand_HelpApiSupport>- Supports OpenAI-compatible APIs (Ollama, OpenAI, etc.)</StyleExpand_HelpApiSupport>
+  <StyleExpand_HelpApiModel>- Model: The embedding model name (e.g., bge-small-zh)</StyleExpand_HelpApiModel>
+  <StyleExpand_HelpStyleFiles>== Style Files ==</StyleExpand_HelpStyleFiles>
+  <StyleExpand_HelpStyleOne>- One .txt file = one style</StyleExpand_HelpStyleOne>
+  <StyleExpand_HelpStyleName>- Filename becomes the style name</StyleExpand_HelpStyleName>
+  <StyleExpand_HelpStyleContent>- File content is used for style examples</StyleExpand_HelpStyleContent>
+  <StyleExpand_HelpStyleSize>- Recommended size: Chinese 5,000-50,000 chars | English 3,000-30,000 words</StyleExpand_HelpStyleSize>
+  <StyleExpand_HelpStyleSizeNote>- Larger files will work but take longer to process</StyleExpand_HelpStyleSizeNote>
+  <StyleExpand_HelpChunking>== Chunking ==</StyleExpand_HelpChunking>
+  <StyleExpand_HelpChunkWhat>- Chunks text into smaller pieces</StyleExpand_HelpChunkWhat>
+  <StyleExpand_HelpChunkEmbed>- Computes embeddings for each chunk</StyleExpand_HelpChunkEmbed>
+  <StyleExpand_HelpChunkCache>- Results are cached for faster loading</StyleExpand_HelpChunkCache>
+  <StyleExpand_HelpAdvanced>== Advanced Mode ==</StyleExpand_HelpAdvanced>
+  <StyleExpand_HelpScriban>Use Scriban variables in RimTalk's preset:</StyleExpand_HelpScriban>
+</LanguageData>

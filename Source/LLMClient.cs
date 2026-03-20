@@ -25,6 +25,8 @@ namespace RimTalkStyleExpand
             
             return $@"Analyze the writing style of this text and create a style guide for '{styleName}'.
 
+IMPORTANT: Focus ONLY on macro-level writing style strategies. Ignore specific characters, scenes, plot elements, and settings mentioned in the text. Extract the generalizable style patterns that can be applied to ANY content.
+
 Analyze these aspects:
 - Tone and emotional expression (formal/casual, warm/cold, serious/humorous, etc.)
 - Vocabulary patterns (archaic/modern, simple/ornate, specific word choices)

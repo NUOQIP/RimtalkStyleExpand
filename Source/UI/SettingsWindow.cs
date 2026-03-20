@@ -14,7 +14,6 @@ namespace RimTalkStyleExpand
         private static int _selectedIndex = -1;
         private static string _previewQuery = "";
         private static string _testResult = "";
-        private static float _sectionHeight = 0f;
         private static string _warningMessage = "";
         private static int _warningTick = 0;
         private static string _statusMessage = "";
@@ -59,13 +58,13 @@ namespace RimTalkStyleExpand
 
         private static void DrawSettings(Rect inRect, StyleExpandSettings settings)
         {
-            var outerRect = inRect;
-            var innerRect = new Rect(0f, 0f, outerRect.width - 20f, _sectionHeight);
+            float contentHeight = 2500f;
+            Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
             
-            Widgets.BeginScrollView(outerRect, ref _scrollPosition, innerRect);
+            Widgets.BeginScrollView(inRect, ref _scrollPosition, viewRect);
             
             var list = new Listing_Standard();
-            list.Begin(innerRect);
+            list.Begin(viewRect);
 
             var headerRow = list.GetRect(30f);
             Text.Font = GameFont.Medium;
@@ -114,9 +113,6 @@ namespace RimTalkStyleExpand
             DrawWarningMessage(list);
 
             list.End();
-            
-            _sectionHeight = list.CurHeight + 50f;
-            
             Widgets.EndScrollView();
         }
 

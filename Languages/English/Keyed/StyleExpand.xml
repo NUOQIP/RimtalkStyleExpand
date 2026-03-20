@@ -159,4 +159,9 @@
   <StyleExpand_HelpChunkCache>- Results are cached for faster loading</StyleExpand_HelpChunkCache>
   <StyleExpand_HelpAdvanced>== Advanced Mode ==</StyleExpand_HelpAdvanced>
   <StyleExpand_HelpScriban>Use Scriban variables in RimTalk's preset:</StyleExpand_HelpScriban>
+  
+  <!-- Dependency Check -->
+  <StyleExpand_MissingDependency>StyleExpand requires: {0}</StyleExpand_MissingDependency>
+  <StyleExpand_MissingHarmony>Harmony 2.x</StyleExpand_MissingHarmony>
+  <StyleExpand_MissingRimTalk>RimTalk</StyleExpand_MissingRimTalk>
 </LanguageData>

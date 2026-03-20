@@ -159,4 +159,9 @@
   <StyleExpand_HelpChunkCache>- 结果缓存以加快加载</StyleExpand_HelpChunkCache>
   <StyleExpand_HelpAdvanced>== 高级模式 ==</StyleExpand_HelpAdvanced>
   <StyleExpand_HelpScriban>在 RimTalk 预设中使用 Scriban 变量：</StyleExpand_HelpScriban>
+  
+  <!-- Dependency Check -->
+  <StyleExpand_MissingDependency>StyleExpand 缺少依赖：{0}</StyleExpand_MissingDependency>
+  <StyleExpand_MissingHarmony>Harmony 2.x</StyleExpand_MissingHarmony>
+  <StyleExpand_MissingRimTalk>RimTalk</StyleExpand_MissingRimTalk>
 </LanguageData>

@@ -12,83 +12,16 @@ namespace RimTalkStyleExpand
     {
         public static StyleExpandMod Instance { get; private set; }
         public static StyleExpandSettings Settings { get; private set; }
-        public static bool HarmonyLoaded { get; private set; }
-        public static bool RimTalkLoaded { get; private set; }
-        public static string MissingDependencyMessage { get; private set; } = "";
 
         public StyleExpandMod(ModContentPack content) : base(content)
         {
             Instance = this;
             Settings = GetSettings<StyleExpandSettings>();
             
-            HarmonyLoaded = CheckHarmony();
-            RimTalkLoaded = CheckRimTalk();
-            
-            if (!HarmonyLoaded || !RimTalkLoaded)
-            {
-                BuildMissingDependencyMessage();
-                Log.Error($"[StyleExpand] Missing dependencies! {MissingDependencyMessage}");
-                return;
-            }
-            
             var harmony = new Harmony("RimTalk.StyleExpand");
             harmony.PatchAll();
             
             LongEventHandler.ExecuteWhenFinished(OnGameLoaded);
-        }
-
-        private bool CheckHarmony()
-        {
-            try
-            {
-                var harmonyType = Type.GetType("HarmonyLib.Harmony, 0Harmony");
-                return harmonyType != null;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private bool CheckRimTalk()
-        {
-            try
-            {
-                var rimTalkAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                    .FirstOrDefault(a => a.GetName().Name == "RimTalk");
-                
-                if (rimTalkAssembly != null)
-                    return true;
-                
-                var modList = LoadedModManager.RunningMods;
-                foreach (var mod in modList)
-                {
-                    if (mod.PackageId == "RimTalk.Core" || 
-                        mod.Name?.Contains("RimTalk") == true)
-                    {
-                        return true;
-                    }
-                }
-                
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private void BuildMissingDependencyMessage()
-        {
-            var missing = new List<string>();
-            
-            if (!HarmonyLoaded)
-                missing.Add("Harmony 2.x");
-            
-            if (!RimTalkLoaded)
-                missing.Add("RimTalk");
-            
-            MissingDependencyMessage = "StyleExpand requires: " + string.Join(", ", missing);
         }
 
         private void OnGameLoaded()
@@ -157,14 +90,6 @@ namespace RimTalkStyleExpand
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
-            if (!HarmonyLoaded || !RimTalkLoaded)
-            {
-                GUI.color = Color.red;
-                Widgets.Label(inRect, MissingDependencyMessage);
-                GUI.color = Color.white;
-                return;
-            }
-            
             SettingsWindow.DoSettingsContents(inRect, Settings);
         }
     }

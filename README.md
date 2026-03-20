@@ -156,6 +156,11 @@ dotnet build -p:GameVersion=1.5
 dotnet build -p:GameVersion=1.6
 ```
 
+## 文档
+
+- [开发文档](DEV_GUIDE.md) - 架构说明、开发计划
+- [测试用例](TEST_CASES.md) - 详细测试清单
+
 ## 依赖
 
 - Harmony 2.x

@@ -169,6 +169,7 @@ namespace RimTalkStyleExpand
                     else
                     {
                         _selectedVariables.Remove(v.name);
+                        RemoveVariableFromTemplate(v.name);
                     }
                 }
 
@@ -188,6 +189,15 @@ namespace RimTalkStyleExpand
             {
                 _queryTemplate += " {{ " + varName + " }}";
             }
+        }
+
+        private void RemoveVariableFromTemplate(string varName)
+        {
+            var pattern = "\\{\\{\\s*" + varName.Replace(".", "\\.") + "\\s*\\}\\}";
+            _queryTemplate = System.Text.RegularExpressions.Regex.Replace(_queryTemplate, pattern, "").Trim();
+            
+            // 清理多余的空格
+            _queryTemplate = System.Text.RegularExpressions.Regex.Replace(_queryTemplate, @"\s+", " ").Trim();
         }
 
         #endregion

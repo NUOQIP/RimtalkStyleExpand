@@ -80,10 +80,18 @@ namespace RimTalkStyleExpand
 
             DrawStatusMessage(list, settings);
             
-            DrawApiSection(list, settings);
+            // 文风提示词相关
+            DrawStylesSection(list, settings);
             list.GapLine();
             
             DrawPromptSection(list, settings);
+            list.GapLine();
+            
+            DrawLlmApiSection(list, settings);
+            list.GapLine();
+            
+            // 向量检索相关
+            DrawApiSection(list, settings);
             list.GapLine();
             
             DrawRetrievalSection(list, settings);
@@ -92,12 +100,7 @@ namespace RimTalkStyleExpand
             DrawChunkingSection(list, settings);
             list.GapLine();
             
-            DrawLlmApiSection(list, settings);
-            list.GapLine();
-            
-            DrawStylesSection(list, settings);
-            list.GapLine();
-            
+            // 其他
             DrawAdvancedUsageSection(list, settings);
             list.GapLine();
             

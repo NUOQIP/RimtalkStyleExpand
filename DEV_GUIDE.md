@@ -23,30 +23,29 @@ AI 模仿文风生成对话
 
 ---
 
-## 二、当前版本（v1.2）状态
+## 二、当前版本（v1.3）状态
 
 **已完成功能：**
 
 | 功能 | 文件 | 说明 |
 |------|------|------|
-| 向量检索 | `VectorClient.cs` | 同步HTTP调用向量API，余弦相似度计算 |
+| API 集成 | `API/RimTalkAPIIntegration.cs` | 自动注册变量到 RimTalk |
+| 变量提供 | `API/StyleVariableProvider.cs` | `{{style_name}}` 等变量实现 |
+| 向量检索 | `VectorClient.cs` | 单例模式，异步 API，内容哈希缓存 |
 | 文本切分 | `StyleRetriever.cs` | 段落+句子二级切分，语义边界检测 |
-| Embedding缓存 | `EmbeddingCache.cs` | JSON格式，保存到 `Styles/.cache/`，支持进度保存 |
+| Embedding缓存 | `EmbeddingCache.cs` | JSON格式，保存到 `Styles/.cache/` |
 | 文风管理 | `StyleExpandSettings.cs` | 单选模式，扫描txt文件 |
 | Prompt构建 | `PromptBuilder.cs` | 基础prompt + 文风描述 + 检索片段 |
-| Scriban变量 | `StyleExpandMod.cs` | 注册到RimTalk API |
-| 配置界面 | `SettingsWindow.cs` | 完整UI，状态提示，帮助窗口 |
+| 配置界面 | `UI/SettingsWindow.cs` | 完整UI，状态提示 |
+| UI模块化 | `UI/SettingsUIDrawers.cs` | 拆分UI代码 |
+| 预览窗口 | `UI/Dialog_StylePreview.cs` | 独立预览对话框 |
 | 多语言 | `Languages/` | 中英双语 |
-| Harmony补丁 | `RimTalkPatches.cs` | 反射方式注入Prompt |
-| 分批切分 | `StyleRetriever.cs` | 支持中断后继续，进度保存 |
-| 大文件采样 | `StyleRetriever.cs` | 超过阈值自动采样代表性片段 |
+| Harmony补丁 | `Patches/RimTalkPatches.cs` | 反射方式注入Prompt |
+| 分批切分 | `StyleRetriever.cs` | 支持中断后继续 |
+| 大文件采样 | `StyleRetriever.cs` | 超过阈值自动采样 |
 | LLM生成描述 | `LLMClient.cs` | 自动分析文风生成描述 |
-| 批量切分 | `StyleRetriever.cs` | 一键切分所有文风 |
-| 文件监听 | `StyleWatcher.cs` | FileSystemWatcher自动重载 |
-| 文风预览 | `SettingsWindow.cs` | 变量选择器，手动/模板预览 |
-| 变量获取 | `VariableHelper.cs` | 从RimTalk获取可用变量列表 |
 
-**未实现（v1.3计划）：**
+**未实现（v1.4计划）：**
 - 更多预置文风
 - 性能优化
 
@@ -63,49 +62,93 @@ StyleExpand/
 ├── 1.5/Assemblies/              # RimWorld 1.5 编译输出
 ├── 1.6/Assemblies/              # RimWorld 1.6 编译输出
 ├── Styles/
-│   ├── *.txt                    # 文风文件（一个txt=一种文风）
-│   └── .cache/*.json            # 切分+embedding缓存（含进度）
+│   ├── *.txt                    # 文风文件
+│   └── .cache/*.json            # 切分+embedding缓存
 └── Source/
-    ├── StyleExpandMod.cs        # Mod入口，注册Scriban变量
+    ├── StyleExpandMod.cs        # Mod入口
     ├── StyleExpandSettings.cs   # 设置存储
     ├── StyleConfig.cs           # 数据结构定义
-    ├── StyleRetriever.cs        # 扫描、切分、检索、批量处理
-    ├── EmbeddingCache.cs        # JSON缓存读写，进度保存
-    ├── VectorClient.cs          # 向量API调用
-    ├── LLMClient.cs             # LLM API调用，文风描述生成
-    ├── VariableHelper.cs        # 从RimTalk获取可用变量
+    ├── StyleRetriever.cs        # 扫描、切分、检索
+    ├── EmbeddingCache.cs        # JSON缓存读写
+    ├── VectorClient.cs          # 向量API（单例+异步）
+    ├── LLMClient.cs             # LLM API
+    ├── VariableHelper.cs        # RimTalk变量获取
     ├── PromptBuilder.cs         # Prompt构建
     ├── StyleWatcher.cs          # 文件变化监听
     ├── Logger.cs                # 日志工具
+    ├── API/
+    │   ├── RimTalkAPIIntegration.cs   # API集成入口
+    │   └── StyleVariableProvider.cs   # 变量提供器
     ├── Patches/
-    │   └── RimTalkPatches.cs    # Harmony补丁（反射）
+    │   └── RimTalkPatches.cs    # Harmony补丁
     └── UI/
-        └── SettingsWindow.cs    # 设置界面 + 帮助窗口
+        ├── SettingsWindow.cs    # 设置界面
+        ├── SettingsUIDrawers.cs # UI模块化
+        ├── Dialog_StylePreview.cs # 预览窗口
+        └── HelpWindow.cs        # 帮助窗口
 ```
 
 ---
 
 ## 四、关键代码说明
 
-### 4.1 文风文件结构
-```
-Styles/
-├── Tsundere.txt      ← 文风名 = 文件名
-├── Classical.txt
-└── Satirical.txt
-```
+### 4.1 API 变量自动注册
 
-### 4.2 Scriban变量注册
 ```csharp
-// StyleExpandMod.cs:35-77
-RimTalkPromptAPI.RegisterContextVariable("RimTalk.StyleExpand", "style_name", ...);
-RimTalkPromptAPI.RegisterContextVariable("RimTalk.StyleExpand", "style_base_prompt", ...);
-RimTalkPromptAPI.RegisterContextVariable("RimTalk.StyleExpand", "style_prompt", ...);
-RimTalkPromptAPI.RegisterContextVariable("RimTalk.StyleExpand", "style_chunks", ...);
-RimTalkPromptAPI.RegisterContextVariable("RimTalk.StyleExpand", "style_full", ...);
+// API/RimTalkAPIIntegration.cs
+[StaticConstructorOnStartup]
+public static class RimTalkAPIIntegration
+{
+    static RimTalkAPIIntegration()
+    {
+        LongEventHandler.ExecuteWhenFinished(Initialize);
+    }
+    
+    private static void RegisterVariables()
+    {
+        // 注册 Context 变量
+        RegisterContextVariable("style_name", GetStyleName, "Current style name");
+        RegisterContextVariable("style_prompt", GetStylePrompt, "Style description");
+        RegisterContextVariable("style_chunks", GetStyleChunks, "Retrieved examples");
+        RegisterContextVariable("style_full", GetStyleFull, "Complete style prompt");
+    }
+}
 ```
 
-### 4.3 切分逻辑
+### 4.2 VectorClient 单例模式
+
+```csharp
+// VectorClient.cs
+public class VectorClient
+{
+    public static VectorClient Instance { get; }
+    
+    // 异步 API
+    public async Task<float[]> GetEmbeddingAsync(string text, VectorApiConfig config);
+    
+    // 同步 API（向后兼容）
+    public static float[] GetEmbeddingSync(string text, VectorApiConfig config);
+    
+    // 内容哈希缓存
+    private static string ComputeHash(string content);
+}
+```
+
+### 4.3 变量提供器
+
+```csharp
+// API/StyleVariableProvider.cs
+public static class StyleVariableProvider
+{
+    public static string GetStyleName(object context);
+    public static string GetStylePrompt(object context);
+    public static string GetStyleChunks(object context);  // 检索相似片段
+    public static string GetStyleFull(object context);    // 组合输出
+}
+```
+
+### 4.4 切分逻辑
+
 ```csharp
 // StyleRetriever.cs
 SplitIntoChunks(text, maxLength)
@@ -114,20 +157,14 @@ SplitIntoChunks(text, maxLength)
   → 组合成不超过maxLength的片段
 ```
 
-### 4.4 检索流程
+### 4.5 检索流程
+
 ```csharp
 // StyleRetriever.Retrieve()
 1. 渲染Query模板（替换{{ pawn.name }}等变量）
 2. 调用VectorClient.GetEmbeddingSync(query)
 3. 遍历所有片段，计算余弦相似度
 4. 返回TopK个最相似片段
-```
-
-### 4.5 Harmony补丁（反射方式）
-```csharp
-// RimTalkPatches.cs
-// 由于没有RimTalk.dll引用，使用反射获取类型
-var apiType = Type.GetType("RimTalk.API.RimTalkPromptAPI, RimTalk");
 ```
 
 ---
@@ -137,16 +174,15 @@ var apiType = Type.GetType("RimTalk.API.RimTalkPromptAPI, RimTalk");
 ```
 [Style Instruction]
 Please imitate the following writing style (Tsundere) when generating dialogue:
-                    ↑ 基础prompt（可编辑，默认值在RetrievalConfig.BasePromptTemplate）
 
 ## Tsundere Style
 Style Features:...
-                    ↑ 文风prompt（可编辑，在StyleConfig.Prompt）
+                    ↑ {{style_prompt}}
 
 ### Style Examples:
 - 哼，才不是...
 - 笨蛋！谁要...
-                    ↑ 检索切片（来自txt文件，向量检索）
+                    ↑ {{style_chunks}}
 ```
 
 ---
@@ -169,14 +205,14 @@ dotnet build -p:GameVersion=1.6
 
 ---
 
-## 七、v1.3 开发计划
+## 七、v1.4 开发计划
 
 按优先级排序：
 
 | 优先级 | 功能 | 说明 |
 |--------|------|------|
 | P1 | 更多预置文风 | 内置常见文风模板 |
-| P2 | 性能优化 | 缓存优化、并发请求 |
+| P2 | 性能优化 | 并发请求优化 |
 | P3 | 根据社区反馈迭代 | - |
 
 ---
@@ -230,7 +266,7 @@ chore: 构建/配置
 示例：
 feat: Add batch chunking with resume support
 fix: Fix embedding cache parsing error
-docs: Update v1.1 roadmap
+refactor: Modernize architecture based on ExpandMemory patterns
 ```
 
 ---
@@ -240,14 +276,15 @@ docs: Update v1.1 roadmap
 | 问题 | 检查文件 |
 |------|---------|
 | API连接失败 | `VectorClient.cs`, UI中的API配置 |
+| 变量未注册 | `API/RimTalkAPIIntegration.cs` |
 | 切分结果不对 | `StyleRetriever.SplitIntoChunks()` |
 | 检索不到片段 | `StyleRetriever.Retrieve()`, 缓存文件 |
-| Prompt没注入 | `RimTalkPatches.cs`, `PromptBuilder.cs` |
-| UI显示问题 | `SettingsWindow.cs`, 多语言xml |
+| Prompt没注入 | `Patches/RimTalkPatches.cs`, `PromptBuilder.cs` |
+| UI显示问题 | `UI/SettingsWindow.cs`, 多语言xml |
 | 设置没保存 | `StyleExpandSettings.cs` |
 
 ---
 
-**最后更新：** 2026-03-20
-**当前版本：** v1.2
-**下一版本：** v1.3
+**最后更新：** 2026-03-21
+**当前版本：** v1.3
+**下一版本：** v1.4

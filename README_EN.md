@@ -10,10 +10,15 @@ A style expansion Mod based on vector retrieval, supporting custom styles.
 
 - **Style Management**: One txt file = one style
 - **Vector Retrieval**: Automatically retrieve similar style fragments based on character traits
-- **Scriban Variables**: Support custom usage in RimTalk advanced templates
+- **Auto Variable Registration**: `{{style_xxx}}` variables auto-registered to RimTalk
 - **Caching**: Chunking results and embeddings cached locally
 - **Localization**: Chinese / English
 - **Multi-version**: RimWorld 1.5 / 1.6
+- **Async API**: Non-blocking vector retrieval
+- **Batch Processing**: Chunk all styles with one click
+- **Resume Support**: Resume interrupted chunking
+- **Smart Sampling**: Auto-sample representative chunks for large files
+- **LLM Description**: Auto-generate style descriptions
 
 ## Quick Start
 
@@ -48,12 +53,11 @@ Recommended models: `bge-small-zh`, `text-embedding-3-small`
 
 ## Scriban Variables
 
-Use in RimTalk advanced mode:
+StyleExpand auto-registers these variables to RimTalk:
 
 | Variable | Description |
 |----------|-------------|
 | `{{style_name}}` | Current style name |
-| `{{style_base_prompt}}` | Base instruction prompt |
 | `{{style_prompt}}` | Style description |
 | `{{style_chunks}}` | Retrieved example chunks |
 | `{{style_full}}` | Complete style prompt (all above combined) |
@@ -62,7 +66,7 @@ Use in RimTalk advanced mode:
 
 ```
 [Style Instruction]
-{{style_base_prompt}}
+Please imitate the following writing style ({{style_name}}) when generating dialogue:
 
 {{style_prompt}}
 
@@ -78,57 +82,67 @@ StyleExpand/
 │   ├── English/Keyed/StyleExpand.xml
 │   └── ChineseSimplified/Keyed/StyleExpand.xml
 ├── 1.5/Assemblies/
-│   ├── RimTalk-StyleExpand.dll
-│   └── Newtonsoft.Json.dll
+│   └── RimTalk-StyleExpand.dll
 ├── 1.6/Assemblies/
-│   ├── RimTalk-StyleExpand.dll
-│   └── Newtonsoft.Json.dll
+│   └── RimTalk-StyleExpand.dll
 ├── Styles/
 │   ├── Tsundere.txt
 │   ├── Classical.txt
-│   ├── Satirical.txt
 │   └── .cache/           # Auto-generated cache
 └── Source/
+    ├── API/
+    │   ├── RimTalkAPIIntegration.cs
+    │   └── StyleVariableProvider.cs
+    ├── UI/
+    │   ├── SettingsWindow.cs
+    │   ├── SettingsUIDrawers.cs
+    │   ├── Dialog_StylePreview.cs
+    │   └── HelpWindow.cs
+    ├── VectorClient.cs
+    ├── StyleRetriever.cs
+    └── ...
 ```
 
 ## Progress
 
-### v1.0 (Current)
+### v1.3 (Current)
+
+- [x] Architecture refactor (based on ExpandMemory patterns)
+  - Auto API variable registration
+  - VectorClient singleton pattern
+  - Async vector retrieval
+  - Content hash caching
+  - Modular code structure (API/, UI/ subdirectories)
+- [x] Standalone preview dialog
+  - Variable selector
+  - Query template editor
+  - Retrieval result display
+
+### v1.2
+
+- [x] Style preview
+- [x] Chunking algorithm optimization
+
+### v1.1
+
+- [x] Batch chunking + resume
+- [x] Large file sampling
+- [x] LLM auto-generate style prompt
+- [x] File change auto-reload
+
+### v1.0
 
 - [x] Vector retrieval
 - [x] Prompt injection
-- [x] Style management (single selection)
+- [x] Style management
 - [x] Configuration UI
-- [x] Text chunking (paragraph + sentence)
-- [x] Embedding cache
-- [x] Manual reload button
-- [x] Open folder button
-- [x] Scriban variable registration
-- [x] Editable base prompt
-- [x] Help window
-- [x] Status/error messages
-- [x] Reset buttons
-- [x] Chinese/English localization
-- [x] Chunking progress display
-- [x] Large file warning
+- [x] Localization
 - [x] RimWorld 1.5 / 1.6 support
 
-### v1.1 (Planned)
+### v1.4 (Planned)
 
-- [ ] Auto-reload on file changes
-- [ ] Style preview
 - [ ] More preset styles
-- [ ] Chunking algorithm optimization
-- [ ] Batch chunking button
-- [ ] Large file sampling strategy
-- [ ] Batch chunking + resume from interruption
-- [ ] LLM auto-generate style prompt
-  - Support reusing RimTalk API config
-  - Support separate API config for generation
-
-### v1.2 (Future)
-
-- [ ] Iterate based on community feedback
+- [ ] Performance optimization
 
 ## Build
 
@@ -139,6 +153,11 @@ dotnet build -p:GameVersion=1.5
 # Build for 1.6
 dotnet build -p:GameVersion=1.6
 ```
+
+## Documentation
+
+- [Developer Guide](DEV_GUIDE.md) - Architecture, development plans
+- [Test Cases](TEST_CASES.md) - Detailed test checklist
 
 ## Dependencies
 

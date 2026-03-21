@@ -10,7 +10,7 @@
 
 - **文风管理**：一个 txt 文件 = 一种文风
 - **向量检索**：根据角色特征自动检索相似文风片段
-- **Scriban 变量**：支持在 RimTalk 高级模板中自定义使用
+- **自动变量注册**：自动注册 `{{style_xxx}}` 变量到 RimTalk
 - **缓存机制**：切分结果和 embedding 缓存到本地
 - **多语言支持**：中文 / English
 - **多版本支持**：RimWorld 1.5 / 1.6
@@ -19,6 +19,7 @@
 - **LLM 描述生成**：自动分析文风生成风格描述
 - **批量处理**：一键切分所有文风
 - **文件监听**：自动检测文风文件变化
+- **异步 API**：向量检索不阻塞游戏主线程
 
 ## 快速开始
 
@@ -53,12 +54,11 @@
 
 ## Scriban 变量
 
-在 RimTalk 高级模式中使用：
+StyleExpand 自动注册以下变量到 RimTalk，在高级模式中直接使用：
 
 | 变量 | 说明 |
 |------|------|
 | `{{style_name}}` | 当前文风名称 |
-| `{{style_base_prompt}}` | 基础指令 prompt |
 | `{{style_prompt}}` | 文风描述 |
 | `{{style_chunks}}` | 检索到的示例片段 |
 | `{{style_full}}` | 完整文风 prompt（以上组合） |
@@ -67,7 +67,7 @@
 
 ```
 [Style Instruction]
-{{style_base_prompt}}
+Please imitate the following writing style ({{style_name}}) when generating dialogue:
 
 {{style_prompt}}
 
@@ -83,22 +83,43 @@ StyleExpand/
 │   ├── English/Keyed/StyleExpand.xml
 │   └── ChineseSimplified/Keyed/StyleExpand.xml
 ├── 1.5/Assemblies/
-│   ├── RimTalk-StyleExpand.dll
-│   └── Newtonsoft.Json.dll
+│   └── RimTalk-StyleExpand.dll
 ├── 1.6/Assemblies/
-│   ├── RimTalk-StyleExpand.dll
-│   └── Newtonsoft.Json.dll
+│   └── RimTalk-StyleExpand.dll
 ├── Styles/
 │   ├── Tsundere.txt
 │   ├── Classical.txt
-│   ├── Satirical.txt
 │   └── .cache/           # 自动生成的缓存
 └── Source/
+    ├── API/
+    │   ├── RimTalkAPIIntegration.cs   # API 集成入口
+    │   └── StyleVariableProvider.cs   # 变量提供器
+    ├── UI/
+    │   ├── SettingsWindow.cs
+    │   ├── SettingsUIDrawers.cs
+    │   ├── Dialog_StylePreview.cs
+    │   └── HelpWindow.cs
+    ├── VectorClient.cs
+    ├── StyleRetriever.cs
+    └── ...
 ```
 
 ## 项目进度
 
-### v1.2（当前版本）
+### v1.3（当前版本）
+
+- [x] 架构重构（借鉴 ExpandMemory 模式）
+  - API 变量自动注册
+  - VectorClient 单例模式
+  - 异步向量检索
+  - 内容哈希缓存
+  - 代码模块化（API/、UI/ 子目录）
+- [x] 独立预览窗口
+  - 变量选择器
+  - 查询模板编辑
+  - 检索结果展示
+
+### v1.2
 
 - [x] 文风预览功能
   - 变量选择器（从 RimTalk 获取）
@@ -114,12 +135,8 @@ StyleExpand/
 - [x] 分批切分 + 中断后继续
 - [x] 大文件采样策略
 - [x] LLM 自动生成文风提示词
-  - 支持复用 RimTalk API 配置
-  - 支持单独配置生成专用 API
 - [x] 批量切分按钮
 - [x] 文件变化自动重载
-- [x] 进度条显示
-- [x] 切分配置选项
 
 ### v1.0
 
@@ -127,21 +144,10 @@ StyleExpand/
 - [x] Prompt 注入
 - [x] 文风管理（单选模式）
 - [x] 配置界面
-- [x] 文本切分（段落+句子）
-- [x] Embedding 缓存
-- [x] 手动重载按钮
-- [x] 打开文件夹按钮
-- [x] Scriban 变量注册
-- [x] 基础 prompt 可编辑
-- [x] 帮助文档窗口
-- [x] 状态提示/错误提示
-- [x] 重置按钮
 - [x] 中英双语支持
-- [x] 切分进度显示
-- [x] 大文件警告
 - [x] RimWorld 1.5 / 1.6 支持
 
-### v1.3（计划中）
+### v1.4（计划中）
 
 - [ ] 更多预置文风
 - [ ] 性能优化

@@ -254,60 +254,69 @@ namespace RimTalkStyleExpand
             
             var innerRect = new Rect(outerRect.x + 5f, outerRect.y + 5f, outerRect.width - 10f, outerRect.height - 10f);
             var scrollContentHeight = contentHeight;
-            var scrollRect = new Rect(0f, 0f, innerRect.width - 16f, scrollContentHeight);
             
             bool needsScroll = scrollContentHeight > innerRect.height;
             
             if (needsScroll)
             {
+                var scrollRect = new Rect(0f, 0f, innerRect.width - 16f, scrollContentHeight);
                 Widgets.BeginScrollView(innerRect, ref _styleListScrollPosition, scrollRect);
-            }
-            
-            for (int i = 0; i < settings.Styles.Count; i++)
-            {
-                var style = settings.Styles[i];
-                var rowY = needsScroll ? i * RowSpacing : i * RowSpacing;
-                var rowWidth = needsScroll ? scrollRect.width : innerRect.width - 16f;
-                var rowRect = new Rect(0f, rowY, rowWidth, RowHeight);
-                var isSelected = style.Name == settings.SelectedStyleName;
                 
-                var bgColor = isSelected ? new Color(0.3f, 0.5f, 0.3f, 0.8f) : 
-                              i % 2 == 0 ? new Color(0.15f, 0.15f, 0.15f, 0.5f) : new Color(0.1f, 0.1f, 0.1f, 0.5f);
-                Widgets.DrawBoxSolid(rowRect, bgColor);
-                
-                var radioPos = new Vector2(rowRect.x + 5f, rowRect.y + 4f);
-                Widgets.RadioButton(radioPos, isSelected);
-                
-                var labelRect = new Rect(rowRect.x + 30f, rowRect.y, rowRect.width - 80f, rowRect.height);
-                var label = style.Name;
-                if (style.IsChunked)
+                for (int i = 0; i < settings.Styles.Count; i++)
                 {
-                    label += " [" + "StyleExpand_ChunksCount".Translate(style.ChunkCount) + "]";
+                    var style = settings.Styles[i];
+                    var rowRect = new Rect(0f, i * RowSpacing, scrollRect.width, RowHeight);
+                    DrawStyleRow(rowRect, style, settings, i);
                 }
-                else
-                {
-                    label += " [" + "StyleExpand_NotChunkedLabel".Translate() + "]";
-                }
-                Widgets.Label(labelRect, label);
                 
-                if (Widgets.ButtonInvisible(rowRect))
-                {
-                    settings.SelectStyle(style.Name);
-                    _selectedIndex = i;
-                    
-                    if (!style.IsChunked && !StyleRetriever.IsStyleChunked(style.Name))
-                    {
-                        ShowWarning("StyleExpand_NotChunked".Translate(style.Name));
-                    }
-                }
-            }
-            
-            if (needsScroll)
-            {
                 Widgets.EndScrollView();
+            }
+            else
+            {
+                for (int i = 0; i < settings.Styles.Count; i++)
+                {
+                    var style = settings.Styles[i];
+                    var rowRect = new Rect(innerRect.x, innerRect.y + i * RowSpacing, innerRect.width, RowHeight);
+                    DrawStyleRow(rowRect, style, settings, i);
+                }
             }
             
             list.Gap();
+        }
+        
+        private static void DrawStyleRow(Rect rowRect, StyleConfig style, StyleExpandSettings settings, int index)
+        {
+            var isSelected = style.Name == settings.SelectedStyleName;
+            
+            var bgColor = isSelected ? new Color(0.3f, 0.5f, 0.3f, 0.8f) : 
+                          index % 2 == 0 ? new Color(0.15f, 0.15f, 0.15f, 0.5f) : new Color(0.1f, 0.1f, 0.1f, 0.5f);
+            Widgets.DrawBoxSolid(rowRect, bgColor);
+            
+            var radioPos = new Vector2(rowRect.x + 5f, rowRect.y + 4f);
+            Widgets.RadioButton(radioPos, isSelected);
+            
+            var labelRect = new Rect(rowRect.x + 30f, rowRect.y, rowRect.width - 35f, rowRect.height);
+            var label = style.Name;
+            if (style.IsChunked)
+            {
+                label += " [" + "StyleExpand_ChunksCount".Translate(style.ChunkCount) + "]";
+            }
+            else
+            {
+                label += " [" + "StyleExpand_NotChunkedLabel".Translate() + "]";
+            }
+            Widgets.Label(labelRect, label);
+            
+            if (Widgets.ButtonInvisible(rowRect))
+            {
+                settings.SelectStyle(style.Name);
+                _selectedIndex = index;
+                
+                if (!style.IsChunked && !StyleRetriever.IsStyleChunked(style.Name))
+                {
+                    ShowWarning("StyleExpand_NotChunked".Translate(style.Name));
+                }
+            }
         }
 
         private static void DrawChunkButtons(Listing_Standard list, StyleConfig selectedStyle, StyleExpandSettings settings)
@@ -414,17 +423,6 @@ namespace RimTalkStyleExpand
         private static void DrawRetrievalSection(Listing_Standard list, StyleExpandSettings settings)
         {
             DrawSectionHeader(list, "StyleExpand_RetrievalConfig".Translate(), "StyleExpand_RetrievalConfigDesc".Translate());
-            
-            var templateRow = list.GetRect(30f);
-            Widgets.Label(new Rect(templateRow.x, templateRow.y, templateRow.width - 120f, 30f), "StyleExpand_QueryTemplate".Translate());
-            
-            if (Widgets.ButtonText(new Rect(templateRow.xMax - 110f, templateRow.y, 110f, 28f), "StyleExpand_InsertVariable".Translate()))
-            {
-                ShowVariableSelector(settings);
-            }
-            
-            settings.Retrieval.QueryTemplate = list.TextEntry(settings.Retrieval.QueryTemplate, 2);
-            list.Gap();
 
             if (list.ButtonText("StyleExpand_Preview_OpenPreview".Translate()))
             {
@@ -440,32 +438,6 @@ namespace RimTalkStyleExpand
             
             list.Label("StyleExpand_Threshold".Translate(settings.Retrieval.SimilarityThreshold));
             settings.Retrieval.SimilarityThreshold = list.Slider(settings.Retrieval.SimilarityThreshold, 0f, 1f);
-        }
-
-        private static void ShowVariableSelector(StyleExpandSettings settings)
-        {
-            var variables = VariableHelper.GetPawnVariables();
-            var options = new List<FloatMenuOption>();
-            
-            foreach (var v in variables)
-            {
-                string varName = v.name;
-                string desc = v.description;
-                
-                options.Add(new FloatMenuOption($"{varName} - {desc}", delegate
-                {
-                    settings.Retrieval.QueryTemplate += " {{" + varName + "}}";
-                }));
-            }
-            
-            if (options.Count > 0)
-            {
-                Find.WindowStack.Add(new FloatMenu(options));
-            }
-            else
-            {
-                ShowWarning("StyleExpand_NoVariablesFound".Translate());
-            }
         }
 
         private static void DrawChunkingSection(Listing_Standard list, StyleExpandSettings settings)

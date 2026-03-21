@@ -93,7 +93,6 @@ Style guide:";
                         if (start >= 0)
                         {
                             var end = start + 1;
-                            var depth = 1;
                             while (end < json.Length)
                             {
                                 if (json[end] == '\\' && end + 1 < json.Length)

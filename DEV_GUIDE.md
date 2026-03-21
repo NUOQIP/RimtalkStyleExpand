@@ -23,7 +23,7 @@ AI 模仿文风生成对话
 
 ---
 
-## 二、当前版本（v1.3）状态
+## 二、当前版本（v1.4）状态
 
 **已完成功能：**
 
@@ -37,17 +37,16 @@ AI 模仿文风生成对话
 | 文风管理 | `StyleExpandSettings.cs` | 单选模式，扫描txt文件 |
 | Prompt构建 | `PromptBuilder.cs` | 基础prompt + 文风描述 + 检索片段 |
 | 配置界面 | `UI/SettingsWindow.cs` | 完整UI，状态提示 |
-| UI模块化 | `UI/SettingsUIDrawers.cs` | 拆分UI代码 |
 | 预览窗口 | `UI/Dialog_StylePreview.cs` | 独立预览对话框 |
 | 多语言 | `Languages/` | 中英双语 |
 | Harmony补丁 | `Patches/RimTalkPatches.cs` | 反射方式注入Prompt |
 | 分批切分 | `StyleRetriever.cs` | 支持中断后继续 |
 | 大文件采样 | `StyleRetriever.cs` | 超过阈值自动采样 |
 | LLM生成描述 | `LLMClient.cs` | 自动分析文风生成描述 |
+| 文件监听 | `StyleWatcher.cs` | 自动检测文件变化 |
 
-**未实现（v1.4计划）：**
+**未实现（v1.5计划）：**
 - 更多预置文风
-- 性能优化
 
 ---
 
@@ -83,9 +82,7 @@ StyleExpand/
     │   └── RimTalkPatches.cs    # Harmony补丁
     └── UI/
         ├── SettingsWindow.cs    # 设置界面
-        ├── SettingsUIDrawers.cs # UI模块化
-        ├── Dialog_StylePreview.cs # 预览窗口
-        └── HelpWindow.cs        # 帮助窗口
+        └── Dialog_StylePreview.cs # 预览窗口
 ```
 
 ---
@@ -107,6 +104,7 @@ public static class RimTalkAPIIntegration
     private static void RegisterVariables()
     {
         // 注册 Context 变量
+        RegisterContextVariable("style_base_prompt", GetBasePrompt, "Base style instruction");
         RegisterContextVariable("style_name", GetStyleName, "Current style name");
         RegisterContextVariable("style_prompt", GetStylePrompt, "Style description");
         RegisterContextVariable("style_chunks", GetStyleChunks, "Retrieved examples");
@@ -140,8 +138,9 @@ public class VectorClient
 // API/StyleVariableProvider.cs
 public static class StyleVariableProvider
 {
-    public static string GetStyleName(object context);
-    public static string GetStylePrompt(object context);
+    public static string GetBasePrompt(object context);   // 基础文风提示
+    public static string GetStyleName(object context);    // 文风名称
+    public static string GetStylePrompt(object context);  // 文风描述
     public static string GetStyleChunks(object context);  // 检索相似片段
     public static string GetStyleFull(object context);    // 组合输出
 }
@@ -163,7 +162,7 @@ SplitIntoChunks(text, maxLength)
 // StyleRetriever.Retrieve()
 1. 渲染Query模板（替换{{ pawn.name }}等变量）
 2. 调用VectorClient.GetEmbeddingSync(query)
-3. 遍历所有片段，计算余弦相似度
+3. 遍历所有片段，计算余弦相似度（仅使用缓存的embedding）
 4. 返回TopK个最相似片段
 ```
 
@@ -174,6 +173,7 @@ SplitIntoChunks(text, maxLength)
 ```
 [Style Instruction]
 Please imitate the following writing style (Tsundere) when generating dialogue:
+                    ↑ {{style_base_prompt}}
 
 ## Tsundere Style
 Style Features:...
@@ -205,15 +205,14 @@ dotnet build -p:GameVersion=1.6
 
 ---
 
-## 七、v1.4 开发计划
+## 七、v1.5 开发计划
 
 按优先级排序：
 
 | 优先级 | 功能 | 说明 |
 |--------|------|------|
 | P1 | 更多预置文风 | 内置常见文风模板 |
-| P2 | 性能优化 | 并发请求优化 |
-| P3 | 根据社区反馈迭代 | - |
+| P2 | 根据社区反馈迭代 | - |
 
 ---
 
@@ -264,9 +263,9 @@ refactor: 重构
 chore: 构建/配置
 
 示例：
-feat: Add batch chunking with resume support
-fix: Fix embedding cache parsing error
-refactor: Modernize architecture based on ExpandMemory patterns
+feat: Add style_base_prompt variable
+fix: Fix style list position offset issue
+refactor: Remove unused code and optimize performance
 ```
 
 ---
@@ -286,5 +285,5 @@ refactor: Modernize architecture based on ExpandMemory patterns
 ---
 
 **最后更新：** 2026-03-21
-**当前版本：** v1.3
-**下一版本：** v1.4
+**当前版本：** v1.4
+**下一版本：** v1.5

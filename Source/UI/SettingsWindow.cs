@@ -17,8 +17,6 @@ namespace RimTalkStyleExpand
         private static int _warningTick = 0;
         private static string _statusMessage = "";
         private static int _statusTick = 0;
-        private static bool _isProcessing = false;
-        private static string _processingStatus = "";
         private static Vector2 _styleListScrollPosition = Vector2.zero;
 
         public static void DoSettingsContents(Rect inRect, StyleExpandSettings settings)
@@ -117,34 +115,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawStatusMessage(Listing_Standard list, StyleExpandSettings settings)
         {
-            if (_isProcessing)
-            {
-                GUI.color = Color.cyan;
-                if (StyleRetriever.ChunkTotal > 0)
-                {
-                    var progress = (float)StyleRetriever.ChunkProgress / StyleRetriever.ChunkTotal * 100;
-                    list.Label("StyleExpand_ChunkingProgress".Translate(
-                        StyleRetriever.ChunkStyleName,
-                        StyleRetriever.ChunkProgress.ToString(),
-                        StyleRetriever.ChunkTotal.ToString()) + $" ({progress:F1}%)");
-                    
-                    var progressRect = list.GetRect(20f);
-                    var progressWidth = progressRect.width * (StyleRetriever.ChunkProgress / (float)StyleRetriever.ChunkTotal);
-                    Widgets.DrawBoxSolid(progressRect, new Color(0.2f, 0.2f, 0.2f));
-                    Widgets.DrawBoxSolid(new Rect(progressRect.x, progressRect.y, progressWidth, progressRect.height), new Color(0.2f, 0.6f, 0.8f));
-                    
-                    if (Widgets.ButtonText(new Rect(progressRect.xMax - 80f, progressRect.y + 25f, 80f, 28f), "StyleExpand_Cancel".Translate()))
-                    {
-                        StyleRetriever.CancelChunking();
-                    }
-                }
-                else
-                {
-                    list.Label("StyleExpand_Processing".Translate(_processingStatus));
-                }
-                GUI.color = Color.white;
-            }
-            else if (StyleRetriever.CanResumeChunking(settings?.SelectedStyleName ?? ""))
+            if (StyleRetriever.CanResumeChunking(settings?.SelectedStyleName ?? ""))
             {
                 GUI.color = Color.yellow;
                 list.Label("StyleExpand_PartialProgress".Translate(settings?.SelectedStyleName ?? ""));
@@ -335,7 +306,7 @@ namespace RimTalkStyleExpand
             list.Gap();
 
             var btnRow = list.GetRect(30f);
-            var btnWidth = btnRow.width / 4f - 5f;
+            var btnWidth = btnRow.width / 3f - 5f;
             
             if (Widgets.ButtonText(new Rect(btnRow.x, btnRow.y, btnWidth, 30f), "StyleExpand_ScanStyles".Translate()))
             {
@@ -353,14 +324,6 @@ namespace RimTalkStyleExpand
                 ShowStatus("StyleExpand_CacheCleared".Translate());
             }
             
-            var chunkAllEnabled = !_isProcessing && StyleRetriever.GetUnchunkedCount() > 0;
-            if (!chunkAllEnabled) GUI.color = Color.grey;
-            if (Widgets.ButtonText(new Rect(btnRow.x + 3f * (btnWidth + 5f), btnRow.y, btnWidth, 30f), "StyleExpand_ChunkAll".Translate()) && chunkAllEnabled)
-            {
-                ChunkAllStylesAsync();
-            }
-            GUI.color = Color.white;
-            
             list.Gap();
 
             if (settings.Styles.Count == 0)
@@ -370,7 +333,9 @@ namespace RimTalkStyleExpand
             }
             else
             {
-                var contentHeight = settings.Styles.Count * 32f;
+                const float RowHeight = 28f;
+                const float RowSpacing = 30f;
+                var contentHeight = settings.Styles.Count * RowSpacing;
                 var viewHeight = Math.Min(contentHeight + 10f, 150f);
                 var styleRect = list.GetRect(viewHeight);
                 
@@ -378,8 +343,6 @@ namespace RimTalkStyleExpand
                 
                 var innerStyleRect = new Rect(styleRect.x + 5f, styleRect.y + 5f, styleRect.width - 10f, styleRect.height - 10f);
                 var scrollRect = new Rect(0f, 0f, innerStyleRect.width - 16f, contentHeight);
-                
-                var y = 0f;
                 
                 bool needsScroll = contentHeight > innerStyleRect.height;
                 if (needsScroll)
@@ -390,7 +353,7 @@ namespace RimTalkStyleExpand
                 for (int i = 0; i < settings.Styles.Count; i++)
                 {
                     var style = settings.Styles[i];
-                    var rowRect = new Rect(0f, y, needsScroll ? scrollRect.width : innerStyleRect.width, 28f);
+                    var rowRect = new Rect(0f, i * RowSpacing, needsScroll ? scrollRect.width : innerStyleRect.width, RowHeight);
                     var isSelected = style.Name == settings.SelectedStyleName;
                     
                     var bgColor = isSelected ? new Color(0.3f, 0.5f, 0.3f, 0.8f) : 
@@ -430,8 +393,6 @@ namespace RimTalkStyleExpand
                             ShowWarning("StyleExpand_NotChunked".Translate(style.Name));
                         }
                     }
-                    
-                    y += 32f;
                 }
                 
                 if (needsScroll)
@@ -459,28 +420,21 @@ namespace RimTalkStyleExpand
                 var btnCount = canResume ? 3 : 2;
                 var chunkBtnWidth = chunkBtnRow.width / btnCount - 5f;
                 
-                var chunkBtnEnabled = !_isProcessing;
-                if (!chunkBtnEnabled)
-                {
-                    GUI.color = Color.grey;
-                }
-                
-                if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_ChunkStyle".Translate()) && chunkBtnEnabled)
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_ChunkStyle".Translate()))
                 {
                     ChunkStyleAsync(selectedStyle.Name, false, settings);
                 }
                 
                 if (canResume)
                 {
-                    GUI.color = chunkBtnEnabled ? Color.cyan : Color.grey;
-                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Resume".Translate()) && chunkBtnEnabled)
+                    GUI.color = Color.cyan;
+                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Resume".Translate()))
                     {
                         ChunkStyleAsync(selectedStyle.Name, true, settings);
                     }
                     GUI.color = Color.white;
                     
-                    if (!chunkBtnEnabled) GUI.color = Color.grey;
-                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + 2f * (chunkBtnWidth + 5f), chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()) && chunkBtnEnabled)
+                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + 2f * (chunkBtnWidth + 5f), chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
                     {
                         EmbeddingCache.Clear(selectedStyle.Name);
                         ChunkStyleAsync(selectedStyle.Name, false, settings);
@@ -488,7 +442,7 @@ namespace RimTalkStyleExpand
                 }
                 else
                 {
-                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()) && chunkBtnEnabled)
+                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
                     {
                         EmbeddingCache.Clear(selectedStyle.Name);
                         ChunkStyleAsync(selectedStyle.Name, false, settings);
@@ -514,10 +468,8 @@ namespace RimTalkStyleExpand
                 list.Gap();
                 
                 var generateBtnRow = list.GetRect(30f);
-                var generateBtnEnabled = !_isProcessing && !string.IsNullOrEmpty(selectedStyle.Name);
-                if (!generateBtnEnabled) GUI.color = Color.grey;
                 
-                if (Widgets.ButtonText(new Rect(generateBtnRow.x, generateBtnRow.y, generateBtnRow.width / 2f - 5f, 30f), "StyleExpand_GeneratePrompt".Translate()) && generateBtnEnabled)
+                if (Widgets.ButtonText(new Rect(generateBtnRow.x, generateBtnRow.y, generateBtnRow.width / 2f - 5f, 30f), "StyleExpand_GeneratePrompt".Translate()))
                 {
                     GenerateStylePromptAsync(selectedStyle.Name);
                 }
@@ -643,12 +595,6 @@ namespace RimTalkStyleExpand
             }
         }
 
-        private static void SetProcessing(bool processing, string status = "")
-        {
-            _isProcessing = processing;
-            _processingStatus = status;
-        }
-
         private static void TestConnectionAsync(StyleExpandSettings settings)
         {
             _testResult = "StyleExpand_Testing".Translate();
@@ -675,8 +621,6 @@ namespace RimTalkStyleExpand
 
         private static void ScanStylesAsync(StyleExpandSettings settings)
         {
-            SetProcessing(true, "StyleExpand_Scanning".Translate());
-            
             try
             {
                 StyleRetriever.ScanStyleFiles();
@@ -686,10 +630,6 @@ namespace RimTalkStyleExpand
             catch (Exception ex)
             {
                 ShowError(ex.Message);
-            }
-            finally
-            {
-                SetProcessing(false);
             }
         }
 
@@ -702,13 +642,24 @@ namespace RimTalkStyleExpand
                 ShowWarning("StyleExpand_FileTooLarge".Translate(styleName, charCount.ToString()));
             }
             
-            SetProcessing(true, "StyleExpand_Chunking".Translate(styleName));
-            
-            try
+            LongEventHandler.QueueLongEvent(() =>
             {
-                StyleRetriever.ChunkStyle(styleName, resume);
-                
-                if (StyleRetriever.WasCancelled)
+                try
+                {
+                    StyleRetriever.ChunkStyle(styleName, resume);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"[StyleExpand] Chunk failed: {ex.Message}");
+                    throw;
+                }
+            }, "StyleExpand_Chunking".Translate(styleName), true, (Exception ex) =>
+            {
+                if (ex != null)
+                {
+                    ShowError(ex.Message);
+                }
+                else if (StyleRetriever.WasCancelled)
                 {
                     ShowWarning("StyleExpand_ChunkingCancelled".Translate(styleName));
                 }
@@ -716,15 +667,7 @@ namespace RimTalkStyleExpand
                 {
                     ShowStatus("StyleExpand_ChunkComplete".Translate(styleName, StyleRetriever.ChunkTotal.ToString()));
                 }
-            }
-            catch (Exception ex)
-            {
-                ShowError(ex.Message);
-            }
-            finally
-            {
-                SetProcessing(false);
-            }
+            });
         }
 
         private static void GenerateStylePromptAsync(string styleName)
@@ -742,56 +685,36 @@ namespace RimTalkStyleExpand
                 return;
             }
             
-            SetProcessing(true, "StyleExpand_GeneratingPrompt".Translate(styleName));
-            
-            try
+            LongEventHandler.QueueLongEvent(() =>
             {
-                var sampleText = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
-                var prompt = LLMClient.GenerateStylePrompt(styleName, sampleText, settings.LlmApi);
-                
-                var style = settings.Styles.FirstOrDefault(s => s.Name == styleName);
-                if (style != null)
+                try
                 {
-                    style.Prompt = prompt;
-                    settings.Write();
-                    ShowStatus("StyleExpand_PromptGenerated".Translate(styleName));
+                    var sampleText = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
+                    var prompt = LLMClient.GenerateStylePrompt(styleName, sampleText, settings.LlmApi);
+                    
+                    var style = settings.Styles.FirstOrDefault(s => s.Name == styleName);
+                    if (style != null)
+                    {
+                        style.Prompt = prompt;
+                        settings.Write();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                ShowError("StyleExpand_GenerateFailed".Translate(ex.Message));
-            }
-            finally
-            {
-                SetProcessing(false);
-            }
-        }
-
-        private static void ChunkAllStylesAsync()
-        {
-            SetProcessing(true, "StyleExpand_ChunkingAll".Translate());
-            
-            try
-            {
-                var processed = StyleRetriever.ChunkAllStyles();
-                
-                if (StyleRetriever.WasCancelled)
+                catch (Exception ex)
                 {
-                    ShowWarning("StyleExpand_ChunkAllCancelled".Translate());
+                    Log.Error($"[StyleExpand] Generate prompt failed: {ex.Message}");
+                    throw;
+                }
+            }, "StyleExpand_GeneratingPrompt".Translate(styleName), true, (Exception ex) =>
+            {
+                if (ex != null)
+                {
+                    ShowError("StyleExpand_GenerateFailed".Translate(ex.Message));
                 }
                 else
                 {
-                    ShowStatus("StyleExpand_ChunkAllComplete".Translate(processed.ToString()));
+                    ShowStatus("StyleExpand_PromptGenerated".Translate(styleName));
                 }
-            }
-            catch (Exception ex)
-            {
-                ShowError(ex.Message);
-            }
-            finally
-            {
-                SetProcessing(false);
-            }
+            });
         }
 
         private static void OpenStylesFolder()

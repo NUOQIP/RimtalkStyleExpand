@@ -9,8 +9,9 @@ namespace RimTalkStyleExpand
     /// 自动注册文风相关变量到 RimTalk
     ///
     /// 注册变量:
+    /// - {{style_base_prompt}} - 基础文风提示词
     /// - {{style_name}} - 当前文风名称
-    /// - {{style_prompt}} - 文风提示词
+    /// - {{style_prompt}} - 文风描述提示词
     /// - {{style_chunks}} - 检索到的示例片段
     /// - {{style_full}} - 完整文风提示词
     /// </summary>
@@ -49,6 +50,7 @@ namespace RimTalkStyleExpand
                 RegisterVariables();
                 
                 Log.Message("[StyleExpand] Integrated via RimTalk API");
+                Log.Message("[StyleExpand]   - Registered {{style_base_prompt}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_name}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_prompt}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_chunks}} variable");
@@ -104,6 +106,10 @@ namespace RimTalkStyleExpand
         {
             var registerCtxVar = _promptAPIType.GetMethod("RegisterContextVariable");
             if (registerCtxVar == null) return;
+            
+            RegisterContextVariable(registerCtxVar, "style_base_prompt",
+                new Func<object, string>(StyleVariableProvider.GetBasePrompt),
+                "Base style instruction prompt", 99);
             
             RegisterContextVariable(registerCtxVar, "style_name",
                 new Func<object, string>(StyleVariableProvider.GetStyleName),

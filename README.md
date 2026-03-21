@@ -17,9 +17,8 @@
 - **分批切分**：大文件支持中断后继续
 - **智能采样**：超大文件自动采样代表性片段
 - **LLM 描述生成**：自动分析文风生成风格描述
-- **批量处理**：一键切分所有文风
 - **文件监听**：自动检测文风文件变化
-- **异步 API**：向量检索不阻塞游戏主线程
+- **异步处理**：切分和生成操作不阻塞游戏主线程
 
 ## 快速开始
 
@@ -58,6 +57,7 @@ StyleExpand 自动注册以下变量到 RimTalk，在高级模式中直接使用
 
 | 变量 | 说明 |
 |------|------|
+| `{{style_base_prompt}}` | 基础文风提示词 |
 | `{{style_name}}` | 当前文风名称 |
 | `{{style_prompt}}` | 文风描述 |
 | `{{style_chunks}}` | 检索到的示例片段 |
@@ -67,7 +67,7 @@ StyleExpand 自动注册以下变量到 RimTalk，在高级模式中直接使用
 
 ```
 [Style Instruction]
-Please imitate the following writing style ({{style_name}}) when generating dialogue:
+{{style_base_prompt}}
 
 {{style_prompt}}
 
@@ -96,9 +96,7 @@ StyleExpand/
     │   └── StyleVariableProvider.cs   # 变量提供器
     ├── UI/
     │   ├── SettingsWindow.cs
-    │   ├── SettingsUIDrawers.cs
-    │   ├── Dialog_StylePreview.cs
-    │   └── HelpWindow.cs
+    │   └── Dialog_StylePreview.cs
     ├── VectorClient.cs
     ├── StyleRetriever.cs
     └── ...
@@ -106,7 +104,21 @@ StyleExpand/
 
 ## 项目进度
 
-### v1.3（当前版本）
+### v1.4（当前版本）
+
+- [x] 性能优化
+  - 使用 LongEventHandler 后台执行切分和生成
+  - 优化检索逻辑，只使用缓存的 embedding
+  - 新增 `RetrieveWithScores` 方法避免重复计算
+- [x] Bug 修复
+  - 修复文风列表位置偏移问题
+  - 移除体验不佳的批量切分功能
+- [x] 代码清理
+  - 删除未使用的 SettingsUIDrawers.cs
+  - 修复变量重复注册问题
+  - 添加 `style_base_prompt` 变量
+
+### v1.3
 
 - [x] 架构重构（借鉴 ExpandMemory 模式）
   - API 变量自动注册
@@ -135,7 +147,6 @@ StyleExpand/
 - [x] 分批切分 + 中断后继续
 - [x] 大文件采样策略
 - [x] LLM 自动生成文风提示词
-- [x] 批量切分按钮
 - [x] 文件变化自动重载
 
 ### v1.0
@@ -147,10 +158,9 @@ StyleExpand/
 - [x] 中英双语支持
 - [x] RimWorld 1.5 / 1.6 支持
 
-### v1.4（计划中）
+### v1.5（计划中）
 
 - [ ] 更多预置文风
-- [ ] 性能优化
 
 ## 编译
 

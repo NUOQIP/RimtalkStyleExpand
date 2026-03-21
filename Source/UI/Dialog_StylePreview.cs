@@ -417,19 +417,11 @@ namespace RimTalkStyleExpand
                 var settings = StyleExpandSettings.Instance;
                 if (settings == null) return;
                 
-                var chunks = StyleRetriever.Retrieve(_parsedQuery, settings.Retrieval.TopK, settings.Retrieval.SimilarityThreshold);
+                var resultsWithScores = StyleRetriever.RetrieveWithScores(_parsedQuery, settings.Retrieval.TopK, settings.Retrieval.SimilarityThreshold);
                 
-                var queryEmbedding = VectorClient.GetEmbeddingSync(_parsedQuery, settings.VectorApi);
-                
-                foreach (var chunk in chunks)
+                foreach (var result in resultsWithScores)
                 {
-                    var chunkEmbedding = VectorClient.GetEmbeddingSync(chunk.Text, settings.VectorApi);
-                    float similarity = 0f;
-                    if (queryEmbedding != null && chunkEmbedding != null)
-                    {
-                        similarity = VectorClient.CosineSimilarity(queryEmbedding, chunkEmbedding);
-                    }
-                    _retrievedChunks.Add((chunk, similarity));
+                    _retrievedChunks.Add((result.chunk, result.similarity));
                 }
             }
             catch (Exception ex)

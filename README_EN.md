@@ -14,11 +14,11 @@ A style expansion Mod based on vector retrieval, supporting custom styles.
 - **Caching**: Chunking results and embeddings cached locally
 - **Localization**: Chinese / English
 - **Multi-version**: RimWorld 1.5 / 1.6
-- **Async API**: Non-blocking vector retrieval
-- **Batch Processing**: Chunk all styles with one click
+- **Async Processing**: Non-blocking chunking and generation operations
 - **Resume Support**: Resume interrupted chunking
 - **Smart Sampling**: Auto-sample representative chunks for large files
 - **LLM Description**: Auto-generate style descriptions
+- **File Watcher**: Auto-detect style file changes
 
 ## Quick Start
 
@@ -57,6 +57,7 @@ StyleExpand auto-registers these variables to RimTalk:
 
 | Variable | Description |
 |----------|-------------|
+| `{{style_base_prompt}}` | Base style instruction prompt |
 | `{{style_name}}` | Current style name |
 | `{{style_prompt}}` | Style description |
 | `{{style_chunks}}` | Retrieved example chunks |
@@ -66,7 +67,7 @@ StyleExpand auto-registers these variables to RimTalk:
 
 ```
 [Style Instruction]
-Please imitate the following writing style ({{style_name}}) when generating dialogue:
+{{style_base_prompt}}
 
 {{style_prompt}}
 
@@ -95,9 +96,7 @@ StyleExpand/
     │   └── StyleVariableProvider.cs
     ├── UI/
     │   ├── SettingsWindow.cs
-    │   ├── SettingsUIDrawers.cs
-    │   ├── Dialog_StylePreview.cs
-    │   └── HelpWindow.cs
+    │   └── Dialog_StylePreview.cs
     ├── VectorClient.cs
     ├── StyleRetriever.cs
     └── ...
@@ -105,18 +104,24 @@ StyleExpand/
 
 ## Progress
 
-### v1.3 (Current)
+### v1.4 (Current)
+
+- [x] Performance optimization
+  - Use LongEventHandler for background chunking/generation
+  - Optimize retrieval to use cached embeddings only
+  - Add `RetrieveWithScores` method to avoid redundant calculations
+- [x] Bug fixes
+  - Fix style list position offset issue
+  - Remove poorly-designed batch chunking feature
+- [x] Code cleanup
+  - Remove unused SettingsUIDrawers.cs
+  - Fix duplicate variable registration
+  - Add `style_base_prompt` variable
+
+### v1.3
 
 - [x] Architecture refactor (based on ExpandMemory patterns)
-  - Auto API variable registration
-  - VectorClient singleton pattern
-  - Async vector retrieval
-  - Content hash caching
-  - Modular code structure (API/, UI/ subdirectories)
 - [x] Standalone preview dialog
-  - Variable selector
-  - Query template editor
-  - Retrieval result display
 
 ### v1.2
 
@@ -139,10 +144,9 @@ StyleExpand/
 - [x] Localization
 - [x] RimWorld 1.5 / 1.6 support
 
-### v1.4 (Planned)
+### v1.5 (Planned)
 
 - [ ] More preset styles
-- [ ] Performance optimization
 
 ## Build
 

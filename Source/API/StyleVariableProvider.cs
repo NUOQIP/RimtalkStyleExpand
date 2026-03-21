@@ -25,6 +25,17 @@ namespace RimTalkStyleExpand
             return style?.Name ?? "";
         }
         
+        public static string GetBasePrompt(object context)
+        {
+            var settings = StyleExpandSettings.Instance;
+            if (settings == null || !settings.IsEnabled) return "";
+            
+            var style = settings.GetSelectedStyle();
+            if (style == null) return "";
+            
+            return settings.Retrieval.BasePromptTemplate?.Replace("{style_name}", style.Name) ?? "";
+        }
+        
         public static string GetStylePrompt(object context)
         {
             var settings = StyleExpandSettings.Instance;

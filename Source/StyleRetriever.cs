@@ -81,43 +81,6 @@ namespace RimTalkStyleExpand
             _pendingEmbeddings.Clear();
         }
 
-        public static int ChunkAllStyles()
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null) return 0;
-            
-            var processed = 0;
-            var styles = settings.Styles.ToList();
-            
-            foreach (var style in styles)
-            {
-                if (_chunkCancelled) break;
-                
-                try
-                {
-                    if (!EmbeddingCache.HasCache(style.Name) || EmbeddingCache.HasPartialCache(style.Name))
-                    {
-                        ChunkStyle(style.Name, EmbeddingCache.HasPartialCache(style.Name));
-                        processed++;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Warning($"Failed to chunk style '{style.Name}': {ex.Message}");
-                }
-            }
-            
-            return processed;
-        }
-
-        public static int GetUnchunkedCount()
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null) return 0;
-            
-            return settings.Styles.Count(s => !EmbeddingCache.HasCache(s.Name) || EmbeddingCache.HasPartialCache(s.Name));
-        }
-
         public static void Initialize()
         {
             if (_initialized) return;
@@ -623,22 +586,28 @@ namespace RimTalkStyleExpand
 
         public static List<StyleChunk> Retrieve(string query, int topK = 3, float threshold = 0.5f)
         {
+            var resultsWithScores = RetrieveWithScores(query, topK, threshold);
+            return resultsWithScores.Select(r => r.chunk).ToList();
+        }
+        
+        public static List<(StyleChunk chunk, float similarity)> RetrieveWithScores(string query, int topK = 3, float threshold = 0.5f)
+        {
             if (!_initialized) Initialize();
             
             var settings = StyleExpandSettings.Instance;
             var selectedStyle = settings?.GetSelectedStyle();
-            if (selectedStyle == null) return new List<StyleChunk>();
+            if (selectedStyle == null) return new List<(StyleChunk, float)>();
 
             if (!_chunksByStyle.TryGetValue(selectedStyle.Name, out var styleChunks) || styleChunks.Count == 0)
             {
-                return new List<StyleChunk>();
+                return new List<(StyleChunk, float)>();
             }
 
             var queryEmbedding = VectorClient.GetEmbeddingSync(query);
             if (queryEmbedding == null)
             {
                 Logger.Warning("Failed to get query embedding");
-                return new List<StyleChunk>();
+                return new List<(StyleChunk, float)>();
             }
 
             var results = new List<(StyleChunk chunk, float similarity)>();
@@ -649,11 +618,7 @@ namespace RimTalkStyleExpand
                 
                 if (!_chunkEmbeddings.TryGetValue(chunk.ChunkId, out chunkEmbedding))
                 {
-                    chunkEmbedding = VectorClient.GetEmbeddingSync(chunk.Text);
-                    if (chunkEmbedding != null)
-                    {
-                        _chunkEmbeddings[chunk.ChunkId] = chunkEmbedding;
-                    }
+                    continue;
                 }
                 
                 if (chunkEmbedding == null) continue;
@@ -669,7 +634,6 @@ namespace RimTalkStyleExpand
             return results
                 .OrderByDescending(r => r.similarity)
                 .Take(topK)
-                .Select(r => r.chunk)
                 .ToList();
         }
 

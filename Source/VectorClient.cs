@@ -2,33 +2,132 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Verse;
 
 namespace RimTalkStyleExpand
 {
-    public static class VectorClient
+    /// <summary>
+    /// 向量客户端 - 单例模式
+    /// 支持：
+    /// - 异步 API（不阻塞主线程）
+    /// - 内容哈希缓存（检测变更）
+    /// - 批量 embedding 获取
+    /// </summary>
+    public class VectorClient
     {
-        private static readonly Dictionary<string, float[]> _embeddingCache = new Dictionary<string, float[]>();
+        private static VectorClient _instance;
+        private static readonly object _lock = new object();
+        
+        public static VectorClient Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new VectorClient();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+        
+        private readonly Dictionary<string, float[]> _embeddingCache = new Dictionary<string, float[]>();
+        private readonly Dictionary<string, string> _contentHashes = new Dictionary<string, string>();
+        
+        private VectorClient()
+        {
+        }
+        
+        #region 同步 API（向后兼容）
         
         public static float[] GetEmbeddingSync(string text, VectorApiConfig config = null)
         {
-            if (_embeddingCache.TryGetValue(text, out var cached))
+            return Instance.GetEmbeddingInternal(text, config);
+        }
+        
+        public float[] GetEmbeddingInternal(string text, VectorApiConfig config = null)
+        {
+            return GetEmbeddingAsync(text, config).GetAwaiter().GetResult();
+        }
+        
+        #endregion
+        
+        #region 异步 API
+        
+        public async Task<float[]> GetEmbeddingAsync(string text, VectorApiConfig config = null)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return null;
+            
+            var hash = ComputeHash(text);
+            
+            lock (_embeddingCache)
             {
-                return cached;
+                if (_embeddingCache.TryGetValue(hash, out var cached))
+                {
+                    return cached;
+                }
             }
             
-            if (config == null)
-            {
-                config = StyleExpandSettings.Instance?.VectorApi;
-            }
-            
+            config = config ?? StyleExpandSettings.Instance?.VectorApi;
             if (config == null || string.IsNullOrEmpty(config.Url))
             {
                 Logger.Error("Vector API config is null or URL is empty");
                 return null;
             }
-
+            
+            var embedding = await GetEmbeddingFromApiAsync(text, config).ConfigureAwait(false);
+            
+            if (embedding != null)
+            {
+                lock (_embeddingCache)
+                {
+                    _embeddingCache[hash] = embedding;
+                    _contentHashes[hash] = hash;
+                }
+            }
+            
+            return embedding;
+        }
+        
+        public async Task<List<float[]>> GetEmbeddingsAsync(List<string> texts, VectorApiConfig config = null)
+        {
+            var results = new List<float[]>();
+            
+            if (texts == null || texts.Count == 0) return results;
+            
+            config = config ?? StyleExpandSettings.Instance?.VectorApi;
+            if (config == null || string.IsNullOrEmpty(config.Url))
+            {
+                Logger.Error("Vector API config is null or URL is empty");
+                return results;
+            }
+            
+            foreach (var text in texts)
+            {
+                var embedding = await GetEmbeddingAsync(text, config).ConfigureAwait(false);
+                results.Add(embedding);
+                
+                await Task.Delay(100).ConfigureAwait(false);
+            }
+            
+            return results;
+        }
+        
+        private async Task<float[]> GetEmbeddingFromApiAsync(string text, VectorApiConfig config)
+        {
+            return await Task.Run(() => GetEmbeddingFromApi(text, config)).ConfigureAwait(false);
+        }
+        
+        private float[] GetEmbeddingFromApi(string text, VectorApiConfig config)
+        {
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(config.Url);
@@ -54,14 +153,7 @@ namespace RimTalkStyleExpand
                 using (var reader = new StreamReader(response.GetResponseStream()))
                 {
                     var responseJson = reader.ReadToEnd();
-                    var embedding = ParseEmbeddingResponse(responseJson);
-                    
-                    if (embedding != null)
-                    {
-                        _embeddingCache[text] = embedding;
-                    }
-                    
-                    return embedding;
+                    return ParseEmbeddingResponse(responseJson);
                 }
             }
             catch (Exception ex)
@@ -70,16 +162,32 @@ namespace RimTalkStyleExpand
                 return null;
             }
         }
-
+        
+        #endregion
+        
+        #region 工具方法
+        
+        private static string ComputeHash(string content)
+        {
+            if (string.IsNullOrEmpty(content)) return string.Empty;
+            
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(content);
+                byte[] hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
+        }
+        
         private static string EscapeJson(string text)
         {
             return text.Replace("\\", "\\\\")
-                      .Replace("\"", "\\\"")
-                      .Replace("\n", "\\n")
-                      .Replace("\r", "\\r")
-                      .Replace("\t", "\\t");
+                       .Replace("\"", "\\\"")
+                       .Replace("\n", "\\n")
+                       .Replace("\r", "\\r")
+                       .Replace("\t", "\\t");
         }
-
+        
         private static float[] ParseEmbeddingResponse(string json)
         {
             try
@@ -144,7 +252,7 @@ namespace RimTalkStyleExpand
             
             return result;
         }
-
+        
         public static float CosineSimilarity(float[] a, float[] b)
         {
             if (a == null || b == null || a.Length != b.Length)
@@ -166,10 +274,62 @@ namespace RimTalkStyleExpand
 
             return dotProduct / (float)(Math.Sqrt(normA) * Math.Sqrt(normB));
         }
-
-        public static void ClearCache()
+        
+        #endregion
+        
+        #region 缓存管理
+        
+        public void ClearCache()
         {
-            _embeddingCache.Clear();
+            lock (_embeddingCache)
+            {
+                _embeddingCache.Clear();
+                _contentHashes.Clear();
+            }
         }
+        
+        public int GetCacheCount()
+        {
+            lock (_embeddingCache)
+            {
+                return _embeddingCache.Count;
+            }
+        }
+        
+        public bool HasCached(string text)
+        {
+            var hash = ComputeHash(text);
+            lock (_embeddingCache)
+            {
+                return _embeddingCache.ContainsKey(hash);
+            }
+        }
+        
+        public void ExportCache(out List<string> hashes, out List<float[]> embeddings)
+        {
+            lock (_embeddingCache)
+            {
+                hashes = new List<string>(_embeddingCache.Keys);
+                embeddings = new List<float[]>(_embeddingCache.Values);
+            }
+        }
+        
+        public void ImportCache(List<string> hashes, List<float[]> embeddings)
+        {
+            if (hashes == null || embeddings == null) return;
+            
+            lock (_embeddingCache)
+            {
+                for (int i = 0; i < hashes.Count && i < embeddings.Count; i++)
+                {
+                    if (embeddings[i] != null)
+                    {
+                        _embeddingCache[hashes[i]] = embeddings[i];
+                    }
+                }
+            }
+        }
+        
+        #endregion
     }
 }

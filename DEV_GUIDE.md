@@ -70,7 +70,7 @@ StyleExpand/
     ├── StyleRetriever.cs        # 扫描、切分、检索
     ├── EmbeddingCache.cs        # JSON缓存读写
     ├── VectorClient.cs          # 向量API（单例+异步）
-    ├── LLMClient.cs             # LLM API
+    ├── LLMClient.cs             # LLM API（支持复用RimTalk配置）
     ├── VariableHelper.cs        # RimTalk变量获取
     ├── PromptBuilder.cs         # Prompt构建
     ├── StyleWatcher.cs          # 文件变化监听
@@ -113,7 +113,30 @@ public static class RimTalkAPIIntegration
 }
 ```
 
-### 4.2 VectorClient 单例模式
+### 4.2 LLM API 复用 RimTalk 配置
+
+```csharp
+// LLMClient.cs
+private static (string url, string apiKey, string model) GetRimTalkActiveConfig(string overrideModel)
+{
+    // 使用 GetActiveConfig() 获取 RimTalk 当前活动配置
+    var activeConfig = getActiveConfigMethod.Invoke(settingsInstance, null);
+    
+    // 获取 ApiConfig 字段
+    string apiKey = apiKeyField?.GetValue(activeConfig) as string ?? "";
+    string baseUrl = baseUrlField?.GetValue(activeConfig) as string ?? "";
+    
+    // 自动补充 API 端点路径
+    if (!baseUrl.Contains("/v1/") && !baseUrl.Contains("/api/"))
+    {
+        baseUrl = baseUrl.TrimEnd('/') + "/v1/chat/completions";
+    }
+    
+    return (baseUrl, apiKey, model);
+}
+```
+
+### 4.3 VectorClient 单例模式
 
 ```csharp
 // VectorClient.cs
@@ -129,20 +152,6 @@ public class VectorClient
     
     // 内容哈希缓存
     private static string ComputeHash(string content);
-}
-```
-
-### 4.3 变量提供器
-
-```csharp
-// API/StyleVariableProvider.cs
-public static class StyleVariableProvider
-{
-    public static string GetBasePrompt(object context);   // 基础文风提示
-    public static string GetStyleName(object context);    // 文风名称
-    public static string GetStylePrompt(object context);  // 文风描述
-    public static string GetStyleChunks(object context);  // 检索相似片段
-    public static string GetStyleFull(object context);    // 组合输出
 }
 ```
 
@@ -284,6 +293,6 @@ refactor: Remove unused code and optimize performance
 
 ---
 
-**最后更新：** 2026-03-21
+**最后更新：** 2026-03-22
 **当前版本：** v1.4
 **下一版本：** v1.5

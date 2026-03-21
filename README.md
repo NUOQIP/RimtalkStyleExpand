@@ -24,9 +24,9 @@
 
 1. 放置 `.txt` 文风文件到 `Styles/` 目录
 2. 启动游戏，打开 Mod 设置
-3. 点击 **扫描文风** 扫描文件
-4. 选择一个文风
-5. 点击 **切分文风** 处理
+3. 配置 **Embedding API**（用于切分）
+4. 点击 **扫描文风** 扫描文件
+5. 选择一个文风，点击 **切分文风**
 6. 完成！
 
 ### 文风文件建议
@@ -41,7 +41,8 @@
 ## 配置要求
 
 - **RimTalk** Mod（必须）
-- **向量 API**（本地 Ollama 或云端 API）
+- **Embedding API**（用于切分和检索）
+- **LLM API**（可选，用于自动生成文风描述）
 
 ### 支持的 API
 
@@ -50,6 +51,12 @@
 - 其他 OpenAI 兼容 API
 
 推荐模型：`bge-small-zh`、`text-embedding-3-small`
+
+### 使用 RimTalk API 配置
+
+LLM API 配置可选择复用 RimTalk 的配置：
+- 支持 RimTalk 的所有提供商（Google、OpenAI、DeepSeek、Player2、本地）
+- 自动获取 API URL、Key、Model
 
 ## Scriban 变量
 
@@ -92,8 +99,8 @@ StyleExpand/
 │   └── .cache/           # 自动生成的缓存
 └── Source/
     ├── API/
-    │   ├── RimTalkAPIIntegration.cs   # API 集成入口
-    │   └── StyleVariableProvider.cs   # 变量提供器
+    │   ├── RimTalkAPIIntegration.cs
+    │   └── StyleVariableProvider.cs
     ├── UI/
     │   ├── SettingsWindow.cs
     │   └── Dialog_StylePreview.cs
@@ -106,41 +113,36 @@ StyleExpand/
 
 ### v1.4（当前版本）
 
+- [x] UI 重构
+  - 重新设计模块顺序，优化用户体验
+  - 添加模块功能说明
+  - 高级设置可折叠
+  - 简化切分按钮逻辑
 - [x] 性能优化
   - 使用 LongEventHandler 后台执行切分和生成
   - 优化检索逻辑，只使用缓存的 embedding
   - 新增 `RetrieveWithScores` 方法避免重复计算
 - [x] Bug 修复
   - 修复文风列表位置偏移问题
-  - 移除体验不佳的批量切分功能
+  - 修复缓存清除后状态不刷新
+  - 修复预览窗口取消勾选变量不删除
+  - 修复相似度阈值显示问题
+- [x] RimTalk API 集成
+  - LLM API 支持复用 RimTalk 配置
+  - 自动适配 API 网关 URL
 - [x] 代码清理
-  - 删除未使用的 SettingsUIDrawers.cs
-  - 修复变量重复注册问题
-  - 添加 `style_base_prompt` 变量
+  - 删除未使用的代码和字段
+  - 移除不必要的配置项
 
 ### v1.3
 
 - [x] 架构重构（借鉴 ExpandMemory 模式）
-  - API 变量自动注册
-  - VectorClient 单例模式
-  - 异步向量检索
-  - 内容哈希缓存
-  - 代码模块化（API/、UI/ 子目录）
 - [x] 独立预览窗口
-  - 变量选择器
-  - 查询模板编辑
-  - 检索结果展示
 
 ### v1.2
 
 - [x] 文风预览功能
-  - 变量选择器（从 RimTalk 获取）
-  - 手动输入预览
-  - 模板渲染预览
 - [x] 切分算法优化
-  - 保持引号括号完整性
-  - 语义边界检测
-  - 缩写识别
 
 ### v1.1
 
@@ -175,7 +177,6 @@ dotnet build -p:GameVersion=1.6
 ## 文档
 
 - [开发文档](DEV_GUIDE.md) - 架构说明、开发计划
-- [测试用例](TEST_CASES.md) - 详细测试清单
 
 ## 依赖
 

@@ -24,9 +24,9 @@ A style expansion Mod based on vector retrieval, supporting custom styles.
 
 1. Place `.txt` style files in the `Styles/` directory
 2. Launch game, open Mod settings
-3. Click **Scan Styles** to scan files
-4. Select a style
-5. Click **Chunk Style** to process
+3. Configure **Embedding API** (for chunking)
+4. Click **Scan Styles** to scan files
+5. Select a style, click **Chunk Style**
 6. Done!
 
 ### Style File Recommendations
@@ -41,7 +41,8 @@ A style expansion Mod based on vector retrieval, supporting custom styles.
 ## Requirements
 
 - **RimTalk** Mod (required)
-- **Vector API** (local Ollama or cloud API)
+- **Embedding API** (for chunking and retrieval)
+- **LLM API** (optional, for auto-generating style descriptions)
 
 ### Supported APIs
 
@@ -50,6 +51,12 @@ A style expansion Mod based on vector retrieval, supporting custom styles.
 - Other OpenAI-compatible APIs
 
 Recommended models: `bge-small-zh`, `text-embedding-3-small`
+
+### Using RimTalk API Config
+
+LLM API can reuse RimTalk's configuration:
+- Supports all RimTalk providers (Google, OpenAI, DeepSeek, Player2, Local)
+- Auto-gets API URL, Key, Model
 
 ## Scriban Variables
 
@@ -106,21 +113,30 @@ StyleExpand/
 
 ### v1.4 (Current)
 
+- [x] UI redesign
+  - Reorganized module order for better UX
+  - Added module descriptions
+  - Collapsible advanced settings
+  - Simplified chunk button logic
 - [x] Performance optimization
   - Use LongEventHandler for background chunking/generation
   - Optimize retrieval to use cached embeddings only
-  - Add `RetrieveWithScores` method to avoid redundant calculations
+  - Add `RetrieveWithScores` method
 - [x] Bug fixes
-  - Fix style list position offset issue
-  - Remove poorly-designed batch chunking feature
+  - Fix style list position offset
+  - Fix cache status not refreshing after clear
+  - Fix uncheck variable not removing from template
+  - Fix similarity threshold display
+- [x] RimTalk API integration
+  - LLM API supports reusing RimTalk config
+  - Auto-adapt API gateway URLs
 - [x] Code cleanup
-  - Remove unused SettingsUIDrawers.cs
-  - Fix duplicate variable registration
-  - Add `style_base_prompt` variable
+  - Remove unused code and fields
+  - Remove unnecessary config options
 
 ### v1.3
 
-- [x] Architecture refactor (based on ExpandMemory patterns)
+- [x] Architecture refactor
 - [x] Standalone preview dialog
 
 ### v1.2
@@ -161,7 +177,6 @@ dotnet build -p:GameVersion=1.6
 ## Documentation
 
 - [Developer Guide](DEV_GUIDE.md) - Architecture, development plans
-- [Test Cases](TEST_CASES.md) - Detailed test checklist
 
 ## Dependencies
 

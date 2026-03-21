@@ -455,7 +455,7 @@ namespace RimTalkStyleExpand
             list.Label("StyleExpand_MaxChunk".Translate(settings.Retrieval.MaxChunkLength));
             settings.Retrieval.MaxChunkLength = (int)list.Slider(settings.Retrieval.MaxChunkLength, 50, 500);
             
-            list.Label("StyleExpand_Threshold".Translate(settings.Retrieval.SimilarityThreshold));
+            list.Label("StyleExpand_Threshold".Translate(settings.Retrieval.SimilarityThreshold.ToString("F2")));
             settings.Retrieval.SimilarityThreshold = list.Slider(settings.Retrieval.SimilarityThreshold, 0f, 1f);
         }
 

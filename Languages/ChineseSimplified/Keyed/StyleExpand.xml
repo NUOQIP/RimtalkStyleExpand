@@ -104,7 +104,7 @@
   <StyleExpand_PreviewResult>预览结果：</StyleExpand_PreviewResult>
   <StyleExpand_TopK>检索数量：{0}</StyleExpand_TopK>
   <StyleExpand_MaxChunk>片段最大长度：{0}</StyleExpand_MaxChunk>
-  <StyleExpand_Threshold>相似度阈值：{0:F2}</StyleExpand_Threshold>
+  <StyleExpand_Threshold>相似度阈值：{0}</StyleExpand_Threshold>
   
   <!-- Prompt Section -->
   <StyleExpand_PromptTemplate>提示词模板</StyleExpand_PromptTemplate>

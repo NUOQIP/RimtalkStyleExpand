@@ -104,7 +104,7 @@
   <StyleExpand_PreviewResult>Preview result:</StyleExpand_PreviewResult>
   <StyleExpand_TopK>Top K: {0}</StyleExpand_TopK>
   <StyleExpand_MaxChunk>Max Chunk Length: {0}</StyleExpand_MaxChunk>
-  <StyleExpand_Threshold>Similarity Threshold: {0:F2}</StyleExpand_Threshold>
+  <StyleExpand_Threshold>Similarity Threshold: {0}</StyleExpand_Threshold>
   
   <!-- Prompt Section -->
   <StyleExpand_PromptTemplate>Prompt Template</StyleExpand_PromptTemplate>

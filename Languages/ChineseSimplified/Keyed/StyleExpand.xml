@@ -120,8 +120,6 @@
   <StyleExpand_SampleTarget>目标片段数：{0}</StyleExpand_SampleTarget>
   <StyleExpand_BatchSize>批处理大小：{0}</StyleExpand_BatchSize>
   <StyleExpand_LargeFileThreshold>大文件阈值：{0} 字符</StyleExpand_LargeFileThreshold>
-  <StyleExpand_AutoResume>自动继续</StyleExpand_AutoResume>
-  <StyleExpand_AutoResumeDesc>启动时自动继续未完成的切分</StyleExpand_AutoResumeDesc>
   
   <!-- Debug Section -->
   <StyleExpand_Debug>调试</StyleExpand_Debug>

@@ -86,7 +86,6 @@ namespace RimTalkStyleExpand
         public int LargeFileThreshold = 50000;
         public int SampleTargetChunks = 500;
         public bool EnableSampling = true;
-        public bool AutoResume = true;
 
         public void ExposeData()
         {
@@ -94,7 +93,6 @@ namespace RimTalkStyleExpand
             Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 50000);
             Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 500);
             Scribe_Values.Look(ref EnableSampling, "enableSampling", true);
-            Scribe_Values.Look(ref AutoResume, "autoResume", true);
         }
     }
 

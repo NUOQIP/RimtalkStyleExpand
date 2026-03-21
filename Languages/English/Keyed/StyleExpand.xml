@@ -120,8 +120,6 @@
   <StyleExpand_SampleTarget>Target Chunks: {0}</StyleExpand_SampleTarget>
   <StyleExpand_BatchSize>Batch Size: {0}</StyleExpand_BatchSize>
   <StyleExpand_LargeFileThreshold>Large File Threshold: {0} chars</StyleExpand_LargeFileThreshold>
-  <StyleExpand_AutoResume>Auto Resume</StyleExpand_AutoResume>
-  <StyleExpand_AutoResumeDesc>Automatically continue unfinished chunking on startup</StyleExpand_AutoResumeDesc>
   
   <!-- Debug Section -->
   <StyleExpand_Debug>Debug</StyleExpand_Debug>

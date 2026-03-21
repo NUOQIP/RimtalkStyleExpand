@@ -59,7 +59,7 @@ namespace RimTalkStyleExpand
             _lastEvent = DateTime.Now;
             
             var settings = StyleExpandSettings.Instance;
-            if (settings == null || !settings.Chunking.AutoResume) return;
+            if (settings == null) return;
             
             var styleName = Path.GetFileNameWithoutExtension(e.Name);
             

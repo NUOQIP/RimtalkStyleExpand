@@ -248,8 +248,6 @@ namespace RimTalkStyleExpand
                 
                 DrawChunkButtons(list, selectedStyle, settings);
                 
-                list.CheckboxLabeled("StyleExpand_AutoResume".Translate(), ref settings.Chunking.AutoResume, "StyleExpand_AutoResumeDesc".Translate());
-                
                 list.Gap();
                 
                 DrawStylePromptEditor(list, selectedStyle, settings);

@@ -80,6 +80,7 @@
   <StyleExpand_ApiKey>API Key (optional):</StyleExpand_ApiKey>
   <StyleExpand_ApiModel>Model Name:</StyleExpand_ApiModel>
   <StyleExpand_TestConnection>Test Connection</StyleExpand_TestConnection>
+  <StyleExpand_ApiNotConfigured>Please configure Embedding API URL and model name first</StyleExpand_ApiNotConfigured>
   
   <!-- Advanced Settings -->
   <StyleExpand_AdvancedSettings>Advanced Settings</StyleExpand_AdvancedSettings>

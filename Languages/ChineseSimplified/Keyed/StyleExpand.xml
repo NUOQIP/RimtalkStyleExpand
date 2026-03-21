@@ -80,6 +80,7 @@
   <StyleExpand_ApiKey>API Key（可选）：</StyleExpand_ApiKey>
   <StyleExpand_ApiModel>模型名称：</StyleExpand_ApiModel>
   <StyleExpand_TestConnection>测试连接</StyleExpand_TestConnection>
+  <StyleExpand_ApiNotConfigured>请先配置 Embedding API 地址和模型名称</StyleExpand_ApiNotConfigured>
   
   <!-- Advanced Settings -->
   <StyleExpand_AdvancedSettings>高级设置</StyleExpand_AdvancedSettings>

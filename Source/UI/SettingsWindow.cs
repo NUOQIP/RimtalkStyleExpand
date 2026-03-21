@@ -645,6 +645,12 @@ namespace RimTalkStyleExpand
 
         private static void ChunkStyleAsync(string styleName, bool resume, StyleExpandSettings settings)
         {
+            if (string.IsNullOrEmpty(settings?.VectorApi?.Url) || string.IsNullOrEmpty(settings?.VectorApi?.Model))
+            {
+                ShowWarning("StyleExpand_ApiNotConfigured".Translate());
+                return;
+            }
+            
             var charCount = StyleRetriever.GetFileCharCount(styleName);
             
             if (!resume && charCount > (settings?.Chunking?.LargeFileThreshold ?? 50000))

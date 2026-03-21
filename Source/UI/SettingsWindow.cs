@@ -82,7 +82,7 @@ namespace RimTalkStyleExpand
             list.CheckboxLabeled("StyleExpand_Enable".Translate(), ref settings.IsEnabled, "StyleExpand_EnableDesc".Translate());
             list.GapLine();
 
-            DrawStatusMessage(list);
+            DrawStatusMessage(list, settings);
             
             DrawApiSection(list, settings);
             list.GapLine();
@@ -116,7 +116,7 @@ namespace RimTalkStyleExpand
             Widgets.EndScrollView();
         }
 
-        private static void DrawStatusMessage(Listing_Standard list)
+        private static void DrawStatusMessage(Listing_Standard list, StyleExpandSettings settings)
         {
             if (_isProcessing)
             {
@@ -145,13 +145,13 @@ namespace RimTalkStyleExpand
                 }
                 GUI.color = Color.white;
             }
-            else if (StyleRetriever.CanResumeChunking(StyleExpandSettings.Instance?.SelectedStyleName ?? ""))
+            else if (StyleRetriever.CanResumeChunking(settings?.SelectedStyleName ?? ""))
             {
                 GUI.color = Color.yellow;
-                list.Label("StyleExpand_PartialProgress".Translate(StyleExpandSettings.Instance?.SelectedStyleName ?? ""));
+                list.Label("StyleExpand_PartialProgress".Translate(settings?.SelectedStyleName ?? ""));
                 GUI.color = Color.white;
             }
-            else if (!string.IsNullOrEmpty(_statusMessage) && Find.TickManager.TicksGame - _statusTick < 300)
+            else if (!string.IsNullOrEmpty(_statusMessage))
             {
                 GUI.color = Color.green;
                 list.Label(_statusMessage);
@@ -161,7 +161,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawWarningMessage(Listing_Standard list)
         {
-            if (!string.IsNullOrEmpty(_warningMessage) && Find.TickManager.TicksGame - _warningTick < 300)
+            if (!string.IsNullOrEmpty(_warningMessage))
             {
                 list.Gap();
                 GUI.color = Color.yellow;
@@ -189,7 +189,7 @@ namespace RimTalkStyleExpand
 
             if (list.ButtonText("StyleExpand_TestConnection".Translate()))
             {
-                TestConnectionAsync();
+                TestConnectionAsync(settings);
             }
             
             if (!string.IsNullOrEmpty(_testResult))
@@ -245,7 +245,7 @@ namespace RimTalkStyleExpand
             
             if (Widgets.ButtonText(new Rect(previewBtnRow.x, previewBtnRow.y, btnWidth, 30f), "StyleExpand_PreviewQuery".Translate()))
             {
-                PreviewQuery();
+                PreviewQuery(settings);
             }
             
             if (Widgets.ButtonText(new Rect(previewBtnRow.x + btnWidth + 5f, previewBtnRow.y, btnWidth, 30f), "StyleExpand_ManualPreview".Translate()))
@@ -442,7 +442,7 @@ namespace RimTalkStyleExpand
             
             if (Widgets.ButtonText(new Rect(btnRow.x, btnRow.y, btnWidth, 30f), "StyleExpand_ScanStyles".Translate()))
             {
-                ScanStylesAsync();
+                ScanStylesAsync(settings);
             }
             
             if (Widgets.ButtonText(new Rect(btnRow.x + btnWidth + 5f, btnRow.y, btnWidth, 30f), "StyleExpand_OpenFolder".Translate()))
@@ -563,7 +563,7 @@ namespace RimTalkStyleExpand
                 
                 if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_ChunkStyle".Translate()) && chunkBtnEnabled)
                 {
-                    ChunkStyleAsync(selectedStyle.Name, false);
+                    ChunkStyleAsync(selectedStyle.Name, false, settings);
                 }
                 
                 if (canResume)
@@ -571,7 +571,7 @@ namespace RimTalkStyleExpand
                     GUI.color = chunkBtnEnabled ? Color.cyan : Color.grey;
                     if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Resume".Translate()) && chunkBtnEnabled)
                     {
-                        ChunkStyleAsync(selectedStyle.Name, true);
+                        ChunkStyleAsync(selectedStyle.Name, true, settings);
                     }
                     GUI.color = Color.white;
                     
@@ -579,7 +579,7 @@ namespace RimTalkStyleExpand
                     if (Widgets.ButtonText(new Rect(chunkBtnRow.x + 2f * (chunkBtnWidth + 5f), chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()) && chunkBtnEnabled)
                     {
                         EmbeddingCache.Clear(selectedStyle.Name);
-                        ChunkStyleAsync(selectedStyle.Name, false);
+                        ChunkStyleAsync(selectedStyle.Name, false, settings);
                     }
                 }
                 else
@@ -587,7 +587,7 @@ namespace RimTalkStyleExpand
                     if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()) && chunkBtnEnabled)
                     {
                         EmbeddingCache.Clear(selectedStyle.Name);
-                        ChunkStyleAsync(selectedStyle.Name, false);
+                        ChunkStyleAsync(selectedStyle.Name, false, settings);
                     }
                 }
                 
@@ -711,20 +711,32 @@ namespace RimTalkStyleExpand
         private static void ShowWarning(string message)
         {
             _warningMessage = message;
-            _warningTick = Find.TickManager.TicksGame;
+            _warningTick = GetCurrentTick();
         }
 
         private static void ShowStatus(string message)
         {
             _statusMessage = message;
-            _statusTick = Find.TickManager.TicksGame;
+            _statusTick = GetCurrentTick();
         }
 
         private static void ShowError(string message)
         {
             _warningMessage = "StyleExpand_ErrorPrefix".Translate() + message;
-            _warningTick = Find.TickManager.TicksGame;
+            _warningTick = GetCurrentTick();
             Log.Error($"[StyleExpand] {message}");
+        }
+
+        private static int GetCurrentTick()
+        {
+            try
+            {
+                return Find.TickManager?.TicksGame ?? 0;
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         private static void SetProcessing(bool processing, string status = "")
@@ -733,13 +745,13 @@ namespace RimTalkStyleExpand
             _processingStatus = status;
         }
 
-        private static void TestConnectionAsync()
+        private static void TestConnectionAsync(StyleExpandSettings settings)
         {
             _testResult = "StyleExpand_Testing".Translate();
             
             try
             {
-                var embedding = VectorClient.GetEmbeddingSync("test");
+                var embedding = VectorClient.GetEmbeddingSync("test", settings?.VectorApi);
                 _testResult = embedding != null ? "StyleExpand_ConnectionSuccessShort".Translate() : "StyleExpand_ConnectionFailedShort".Translate();
                 if (embedding == null)
                 {
@@ -757,7 +769,7 @@ namespace RimTalkStyleExpand
             }
         }
 
-        private static void ScanStylesAsync()
+        private static void ScanStylesAsync(StyleExpandSettings settings)
         {
             SetProcessing(true, "StyleExpand_Scanning".Translate());
             
@@ -765,7 +777,7 @@ namespace RimTalkStyleExpand
             {
                 StyleRetriever.ScanStyleFiles();
                 _selectedIndex = -1;
-                ShowStatus("StyleExpand_ScanComplete".Translate(StyleExpandSettings.Instance.Styles.Count));
+                ShowStatus("StyleExpand_ScanComplete".Translate(settings?.Styles?.Count ?? 0));
             }
             catch (Exception ex)
             {
@@ -777,12 +789,11 @@ namespace RimTalkStyleExpand
             }
         }
 
-        private static void ChunkStyleAsync(string styleName, bool resume)
+        private static void ChunkStyleAsync(string styleName, bool resume, StyleExpandSettings settings)
         {
             var charCount = StyleRetriever.GetFileCharCount(styleName);
-            var settings = StyleExpandSettings.Instance;
             
-            if (!resume && charCount > (settings?.Chunking.LargeFileThreshold ?? 50000))
+            if (!resume && charCount > (settings?.Chunking?.LargeFileThreshold ?? 50000))
             {
                 ShowWarning("StyleExpand_FileTooLarge".Translate(styleName, charCount.ToString()));
             }
@@ -879,9 +890,8 @@ namespace RimTalkStyleExpand
             }
         }
 
-        private static void PreviewQuery()
+        private static void PreviewQuery(StyleExpandSettings settings)
         {
-            var settings = StyleExpandSettings.Instance;
             if (settings == null) return;
 
             var pawn = Find.Selector?.SelectedPawns?.FirstOrDefault();

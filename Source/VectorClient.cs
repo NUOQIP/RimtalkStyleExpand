@@ -11,14 +11,18 @@ namespace RimTalkStyleExpand
     {
         private static readonly Dictionary<string, float[]> _embeddingCache = new Dictionary<string, float[]>();
         
-        public static float[] GetEmbeddingSync(string text)
+        public static float[] GetEmbeddingSync(string text, VectorApiConfig config = null)
         {
             if (_embeddingCache.TryGetValue(text, out var cached))
             {
                 return cached;
             }
             
-            var config = StyleExpandSettings.Instance?.VectorApi;
+            if (config == null)
+            {
+                config = StyleExpandSettings.Instance?.VectorApi;
+            }
+            
             if (config == null || string.IsNullOrEmpty(config.Url))
             {
                 Logger.Error("Vector API config is null or URL is empty");

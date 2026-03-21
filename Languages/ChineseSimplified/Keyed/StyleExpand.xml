@@ -69,6 +69,9 @@
   <StyleExpand_PromptGenerated>文风 '{0}' 描述已生成</StyleExpand_PromptGenerated>
   <StyleExpand_GenerateFailed>生成失败：{0}</StyleExpand_GenerateFailed>
   <StyleExpand_FileNotFound>未找到文风文件：{0}</StyleExpand_FileNotFound>
+  <StyleExpand_TestLlmConnection>测试连接</StyleExpand_TestLlmConnection>
+  <StyleExpand_LlmConnectionSuccess>LLM API 连接成功！</StyleExpand_LlmConnectionSuccess>
+  <StyleExpand_LlmConnectionFailed>LLM API 连接失败：{0}</StyleExpand_LlmConnectionFailed>
   
   <!-- Embedding API Section -->
   <StyleExpand_EmbeddingApiConfig>Embedding API 配置</StyleExpand_EmbeddingApiConfig>

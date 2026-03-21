@@ -177,10 +177,30 @@ namespace RimTalkStyleExpand
                 
                 list.Label("StyleExpand_LlmApiKey".Translate());
                 settings.LlmApi.ApiKey = list.TextEntry(settings.LlmApi.ApiKey);
+                
+                list.Label("StyleExpand_LlmModel".Translate());
+                settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
+                
+                list.Gap();
+                
+                if (list.ButtonText("StyleExpand_TestLlmConnection".Translate()))
+                {
+                    TestLlmConnectionAsync(settings);
+                }
+                
+                if (!string.IsNullOrEmpty(_llmTestResult))
+                {
+                    var color = GUI.color;
+                    GUI.color = _llmTestResult.Contains("StyleExpand_ConnectionSuccessShort".Translate()) ? Color.green : Color.red;
+                    list.Label(_llmTestResult);
+                    GUI.color = color;
+                }
             }
-            
-            list.Label("StyleExpand_LlmModel".Translate());
-            settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
+            else
+            {
+                list.Label("StyleExpand_LlmModel".Translate());
+                settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
+            }
         }
 
         private static void DrawStylesSection(Listing_Standard list, StyleExpandSettings settings)
@@ -582,6 +602,35 @@ namespace RimTalkStyleExpand
             {
                 _testResult = "StyleExpand_ConnectionFailed".Translate(ex.Message);
                 ShowError("StyleExpand_ConnectionFailed".Translate(ex.Message));
+            }
+        }
+
+        private static string _llmTestResult = "";
+        
+        private static void TestLlmConnectionAsync(StyleExpandSettings settings)
+        {
+            _llmTestResult = "StyleExpand_Testing".Translate();
+            
+            try
+            {
+                var result = LLMClient.GenerateStylePrompt("test", "This is a test text for connection verification.", settings.LlmApi);
+                _llmTestResult = !string.IsNullOrEmpty(result) 
+                    ? "StyleExpand_ConnectionSuccessShort".Translate() 
+                    : "StyleExpand_ConnectionFailedShort".Translate();
+                
+                if (string.IsNullOrEmpty(result))
+                {
+                    ShowError("StyleExpand_LlmConnectionFailed".Translate("no response"));
+                }
+                else
+                {
+                    ShowStatus("StyleExpand_LlmConnectionSuccess".Translate());
+                }
+            }
+            catch (Exception ex)
+            {
+                _llmTestResult = "StyleExpand_LlmConnectionFailed".Translate(ex.Message);
+                ShowError("StyleExpand_LlmConnectionFailed".Translate(ex.Message));
             }
         }
 

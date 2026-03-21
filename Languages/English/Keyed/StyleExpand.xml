@@ -69,6 +69,9 @@
   <StyleExpand_PromptGenerated>Style description generated for '{0}'</StyleExpand_PromptGenerated>
   <StyleExpand_GenerateFailed>Generation failed: {0}</StyleExpand_GenerateFailed>
   <StyleExpand_FileNotFound>Style file not found: {0}</StyleExpand_FileNotFound>
+  <StyleExpand_TestLlmConnection>Test Connection</StyleExpand_TestLlmConnection>
+  <StyleExpand_LlmConnectionSuccess>LLM API connection successful!</StyleExpand_LlmConnectionSuccess>
+  <StyleExpand_LlmConnectionFailed>LLM API connection failed: {0}</StyleExpand_LlmConnectionFailed>
   
   <!-- Embedding API Section -->
   <StyleExpand_EmbeddingApiConfig>Embedding API Configuration</StyleExpand_EmbeddingApiConfig>

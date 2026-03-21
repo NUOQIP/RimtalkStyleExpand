@@ -23,28 +23,45 @@ namespace RimTalkStyleExpand
 
             var prompt = BuildAnalysisPrompt(styleName, sampleText);
             
+            string url;
+            string apiKey;
+            string model;
+
             if (config.UseRimTalkApi)
             {
-                var (url, apiKey, model) = GetRimTalkActiveConfig(config.Model);
-                return CallLLMApi(prompt, url, apiKey, model);
+                var rimTalkConfig = GetRimTalkActiveConfig(config.Model);
+                url = rimTalkConfig.url;
+                apiKey = rimTalkConfig.apiKey;
+                model = rimTalkConfig.model;
             }
             else
             {
-                return CallLLMApi(prompt, config.Url, config.ApiKey, config.Model);
+                url = config.Url;
+                apiKey = config.ApiKey;
+                model = config.Model;
             }
+
+            // 自动补充 API 端点路径
+            if (!url.Contains("/v1/") && !url.Contains("/api/") && !url.Contains(":11434"))
+            {
+                url = url.TrimEnd('/') + "/v1/chat/completions";
+            }
+
+            return CallLLMApi(prompt, url, apiKey, model);
         }
 
         public static bool TestConnection(LlmApiConfig config)
         {
+            string url;
+            string apiKey;
+            string model;
+
             if (config.UseRimTalkApi)
             {
-                var (url, apiKey, model) = GetRimTalkActiveConfig(config.Model);
-                if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(model))
-                {
-                    throw new Exception("RimTalk API URL or Model not configured");
-                }
-                var result = CallLLMApi("Hello", url, apiKey, model);
-                return !string.IsNullOrEmpty(result);
+                var rimTalkConfig = GetRimTalkActiveConfig(config.Model);
+                url = rimTalkConfig.url;
+                apiKey = rimTalkConfig.apiKey;
+                model = rimTalkConfig.model;
             }
             else
             {
@@ -52,9 +69,19 @@ namespace RimTalkStyleExpand
                 {
                     throw new Exception("URL or Model not configured");
                 }
-                var result = CallLLMApi("Hello", config.Url, config.ApiKey, config.Model);
-                return !string.IsNullOrEmpty(result);
+                url = config.Url;
+                apiKey = config.ApiKey;
+                model = config.Model;
             }
+
+            // 自动补充 API 端点路径
+            if (!url.Contains("/v1/") && !url.Contains("/api/") && !url.Contains(":11434"))
+            {
+                url = url.TrimEnd('/') + "/v1/chat/completions";
+            }
+
+            var result = CallLLMApi("Hello", url, apiKey, model);
+            return !string.IsNullOrEmpty(result);
         }
 
         private static void ResolveRimTalkTypes()
@@ -153,10 +180,18 @@ namespace RimTalkStyleExpand
                 throw new Exception("RimTalk API URL is not configured");
             }
 
+            // 自动补充 API 端点路径
+            if (!baseUrl.Contains("/v1/") && !baseUrl.Contains("/api/") && !baseUrl.Contains(":11434"))
+            {
+                baseUrl = baseUrl.TrimEnd('/') + "/v1/chat/completions";
+            }
+
             if (string.IsNullOrEmpty(model))
             {
                 model = "gpt-3.5-turbo";
             }
+
+            Logger.Message($"Using RimTalk config - Provider: {provider}, Model: {model}, URL: {baseUrl}");
 
             return (baseUrl, apiKey, model);
         }
@@ -217,7 +252,12 @@ Style guide:";
             using (var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
             {
                 var jsonResponse = reader.ReadToEnd();
-                return ParseLLMResponse(jsonResponse, isOllama);
+                var result = ParseLLMResponse(jsonResponse, isOllama);
+                if (string.IsNullOrEmpty(result))
+                {
+                    Logger.Warning($"Failed to parse LLM response. Response: {jsonResponse.Substring(0, Math.Min(500, jsonResponse.Length))}");
+                }
+                return result;
             }
         }
 

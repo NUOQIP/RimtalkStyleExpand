@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using Verse;
 
@@ -8,6 +10,13 @@ namespace RimTalkStyleExpand
 {
     public static class LLMClient
     {
+        private static Assembly _rimTalkAssembly;
+        private static Type _rimTalkSettingsType;
+        private static PropertyInfo _llmApiUrlProperty;
+        private static PropertyInfo _llmApiKeyProperty;
+        private static PropertyInfo _llmModelProperty;
+        private static bool _rimTalkResolved = false;
+
         public static string GenerateStylePrompt(string styleName, string sampleText, LlmApiConfig config)
         {
             if (string.IsNullOrEmpty(sampleText))
@@ -16,7 +25,99 @@ namespace RimTalkStyleExpand
             }
 
             var prompt = BuildAnalysisPrompt(styleName, sampleText);
-            return CallLLMApi(prompt, config);
+            
+            if (config.UseRimTalkApi)
+            {
+                return CallLLMApiWithRimTalkConfig(prompt, config.Model);
+            }
+            else
+            {
+                return CallLLMApi(prompt, config.Url, config.ApiKey, config.Model);
+            }
+        }
+
+        public static bool TestConnection(LlmApiConfig config)
+        {
+            try
+            {
+                if (config.UseRimTalkApi)
+                {
+                    return CallLLMApiWithRimTalkConfig("Hello", config.Model) != null;
+                }
+                else
+                {
+                    return CallLLMApi("Hello", config.Url, config.ApiKey, config.Model) != null;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static void ResolveRimTalkTypes()
+        {
+            if (_rimTalkResolved) return;
+            _rimTalkResolved = true;
+
+            try
+            {
+                _rimTalkAssembly = AppDomain.CurrentDomain.GetAssemblies()
+                    .FirstOrDefault(a => a.GetName().Name == "RimTalk");
+                
+                if (_rimTalkAssembly == null) return;
+
+                _rimTalkSettingsType = _rimTalkAssembly.GetType("RimTalk.RimTalkSettings");
+                if (_rimTalkSettingsType == null) return;
+
+                var instanceProperty = _rimTalkSettingsType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                if (instanceProperty == null) return;
+
+                var settingsInstance = instanceProperty.GetValue(null);
+                if (settingsInstance == null) return;
+
+                var settingsType = settingsInstance.GetType();
+                _llmApiUrlProperty = settingsType.GetProperty("LlmApiUrl");
+                _llmApiKeyProperty = settingsType.GetProperty("LlmApiKey");
+                _llmModelProperty = settingsType.GetProperty("LlmModel");
+            }
+            catch
+            {
+            }
+        }
+
+        private static string CallLLMApiWithRimTalkConfig(string prompt, string overrideModel)
+        {
+            ResolveRimTalkTypes();
+
+            if (_rimTalkSettingsType == null)
+            {
+                throw new Exception("RimTalk settings not found");
+            }
+
+            var instanceProperty = _rimTalkSettingsType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            var settingsInstance = instanceProperty?.GetValue(null);
+            
+            if (settingsInstance == null)
+            {
+                throw new Exception("RimTalk settings instance is null");
+            }
+
+            string url = _llmApiUrlProperty?.GetValue(settingsInstance) as string;
+            string apiKey = _llmApiKeyProperty?.GetValue(settingsInstance) as string;
+            string model = overrideModel;
+            
+            if (string.IsNullOrEmpty(model))
+            {
+                model = _llmModelProperty?.GetValue(settingsInstance) as string;
+            }
+
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new Exception("RimTalk LLM API URL is not configured");
+            }
+
+            return CallLLMApi(prompt, url, apiKey, model);
         }
 
         private static string BuildAnalysisPrompt(string styleName, string sampleText)
@@ -46,22 +147,22 @@ Sample text:
 Style guide:";
         }
 
-        private static string CallLLMApi(string prompt, LlmApiConfig config)
+        private static string CallLLMApi(string prompt, string url, string apiKey, string model)
         {
-            var request = (HttpWebRequest)WebRequest.Create(config.Url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
             request.ContentType = "application/json";
             request.Timeout = 60000;
 
-            if (!string.IsNullOrEmpty(config.ApiKey))
+            if (!string.IsNullOrEmpty(apiKey))
             {
-                request.Headers.Add("Authorization", $"Bearer {config.ApiKey}");
+                request.Headers.Add("Authorization", $"Bearer {apiKey}");
             }
 
-            var isOllama = config.Url.Contains("ollama") || config.Url.Contains(":11434");
+            var isOllama = url.Contains("ollama") || url.Contains(":11434");
             var requestBody = isOllama
-                ? $"{{\"model\":\"{config.Model}\",\"prompt\":\"{EscapeJsonString(prompt)}\",\"stream\":false}}"
-                : $"{{\"model\":\"{config.Model}\",\"messages\":[{{\"role\":\"user\",\"content\":\"{EscapeJsonString(prompt)}\"}}]}}";
+                ? $"{{\"model\":\"{model}\",\"prompt\":\"{EscapeJsonString(prompt)}\",\"stream\":false}}"
+                : $"{{\"model\":\"{model}\",\"messages\":[{{\"role\":\"user\",\"content\":\"{EscapeJsonString(prompt)}\"}}]}}";
 
             var bytes = Encoding.UTF8.GetBytes(requestBody);
             request.ContentLength = bytes.Length;

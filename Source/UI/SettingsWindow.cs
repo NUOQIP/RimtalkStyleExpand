@@ -180,26 +180,21 @@ namespace RimTalkStyleExpand
                 
                 list.Label("StyleExpand_LlmModel".Translate());
                 settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
-                
-                list.Gap();
-                
-                if (list.ButtonText("StyleExpand_TestLlmConnection".Translate()))
-                {
-                    TestLlmConnectionAsync(settings);
-                }
-                
-                if (!string.IsNullOrEmpty(_llmTestResult))
-                {
-                    var color = GUI.color;
-                    GUI.color = _llmTestResult.Contains("StyleExpand_ConnectionSuccessShort".Translate()) ? Color.green : Color.red;
-                    list.Label(_llmTestResult);
-                    GUI.color = color;
-                }
             }
-            else
+            
+            list.Gap();
+            
+            if (list.ButtonText("StyleExpand_TestLlmConnection".Translate()))
             {
-                list.Label("StyleExpand_LlmModel".Translate());
-                settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
+                TestLlmConnectionAsync(settings);
+            }
+            
+            if (!string.IsNullOrEmpty(_llmTestResult))
+            {
+                var color = GUI.color;
+                GUI.color = _llmTestResult.Contains("StyleExpand_ConnectionSuccessShort".Translate()) ? Color.green : Color.red;
+                list.Label(_llmTestResult);
+                GUI.color = color;
             }
         }
 
@@ -613,12 +608,12 @@ namespace RimTalkStyleExpand
             
             try
             {
-                var result = LLMClient.GenerateStylePrompt("test", "This is a test text for connection verification.", settings.LlmApi);
-                _llmTestResult = !string.IsNullOrEmpty(result) 
+                var success = LLMClient.TestConnection(settings.LlmApi);
+                _llmTestResult = success 
                     ? "StyleExpand_ConnectionSuccessShort".Translate() 
                     : "StyleExpand_ConnectionFailedShort".Translate();
                 
-                if (string.IsNullOrEmpty(result))
+                if (!success)
                 {
                     ShowError("StyleExpand_LlmConnectionFailed".Translate("no response"));
                 }

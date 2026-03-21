@@ -2,7 +2,7 @@
 <LanguageData>
   <!-- Mod Name -->
   <StyleExpand_ModName>RimTalk 文风扩展</StyleExpand_ModName>
-  <StyleExpand_Version>v1.2</StyleExpand_Version>
+  <StyleExpand_Version>v1.4</StyleExpand_Version>
   
   <!-- General -->
   <StyleExpand_Enable>启用文风扩展</StyleExpand_Enable>
@@ -41,20 +41,49 @@
   <StyleExpand_ConnectionSuccessShort>连接成功！</StyleExpand_ConnectionSuccessShort>
   <StyleExpand_ConnectionFailedShort>连接失败：未获取到 embedding</StyleExpand_ConnectionFailedShort>
   
-  <!-- API Section -->
-  <StyleExpand_ApiConfig>[向量检索模型 API 配置]</StyleExpand_ApiConfig>
-  <StyleExpand_ApiUrl>向量 API 地址：</StyleExpand_ApiUrl>
+  <!-- Style Management Section -->
+  <StyleExpand_StyleManagement>文风管理</StyleExpand_StyleManagement>
+  <StyleExpand_StyleManagementDesc>放置 .txt 文件到 Styles 文件夹，扫描后选择并切分</StyleExpand_StyleManagementDesc>
+  <StyleExpand_ScanStyles>扫描文风</StyleExpand_ScanStyles>
+  <StyleExpand_OpenFolder>打开文件夹</StyleExpand_OpenFolder>
+  <StyleExpand_ClearCache>清除缓存</StyleExpand_ClearCache>
+  <StyleExpand_ChunksCount>{0} 个片段</StyleExpand_ChunksCount>
+  <StyleExpand_NotChunkedLabel>未切分</StyleExpand_NotChunkedLabel>
+  <StyleExpand_Selected>已选择：{0}</StyleExpand_Selected>
+  <StyleExpand_ChunkStyle>切分文风</StyleExpand_ChunkStyle>
+  <StyleExpand_Rechunk>重新切分</StyleExpand_Rechunk>
+  <StyleExpand_Resume>继续</StyleExpand_Resume>
+  <StyleExpand_Cancel>取消</StyleExpand_Cancel>
+  <StyleExpand_StylePrompt>文风提示词（描述）：</StyleExpand_StylePrompt>
+  
+  <!-- LLM API Section -->
+  <StyleExpand_LlmApiConfig>LLM API 配置</StyleExpand_LlmApiConfig>
+  <StyleExpand_LlmApiDesc>使用 LLM 自动分析文风特征，生成风格描述</StyleExpand_LlmApiDesc>
+  <StyleExpand_UseRimTalkApi>使用 RimTalk API 配置</StyleExpand_UseRimTalkApi>
+  <StyleExpand_UseRimTalkApiDesc>复用 RimTalk 的 LLM API 配置来生成文风描述</StyleExpand_UseRimTalkApiDesc>
+  <StyleExpand_LlmApiUrl>LLM API 地址：</StyleExpand_LlmApiUrl>
+  <StyleExpand_LlmApiKey>LLM API Key：</StyleExpand_LlmApiKey>
+  <StyleExpand_LlmModel>LLM 模型名称：</StyleExpand_LlmModel>
+  <StyleExpand_GeneratePrompt>自动生成描述</StyleExpand_GeneratePrompt>
+  <StyleExpand_GeneratingPrompt>正在为 '{0}' 生成文风描述...</StyleExpand_GeneratingPrompt>
+  <StyleExpand_PromptGenerated>文风 '{0}' 描述已生成</StyleExpand_PromptGenerated>
+  <StyleExpand_GenerateFailed>生成失败：{0}</StyleExpand_GenerateFailed>
+  <StyleExpand_FileNotFound>未找到文风文件：{0}</StyleExpand_FileNotFound>
+  
+  <!-- Embedding API Section -->
+  <StyleExpand_EmbeddingApiConfig>Embedding API 配置</StyleExpand_EmbeddingApiConfig>
+  <StyleExpand_EmbeddingApiDesc>将文风文本转换为向量，用于切分和相似度检索</StyleExpand_EmbeddingApiDesc>
+  <StyleExpand_ApiUrl>API 地址：</StyleExpand_ApiUrl>
   <StyleExpand_ApiKey>API Key（可选）：</StyleExpand_ApiKey>
-  <StyleExpand_ApiModel>Embedding 模型名称：</StyleExpand_ApiModel>
+  <StyleExpand_ApiModel>模型名称：</StyleExpand_ApiModel>
   <StyleExpand_TestConnection>测试连接</StyleExpand_TestConnection>
   
-  <!-- Prompt Section -->
-  <StyleExpand_PromptTemplate>[提示词模板]</StyleExpand_PromptTemplate>
-  <StyleExpand_BasePrompt>基础提示词模板（使用 {style_name} 作为占位符）：</StyleExpand_BasePrompt>
-  <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
+  <!-- Advanced Settings -->
+  <StyleExpand_AdvancedSettings>高级设置</StyleExpand_AdvancedSettings>
   
   <!-- Retrieval Section -->
-  <StyleExpand_RetrievalConfig>[检索配置]</StyleExpand_RetrievalConfig>
+  <StyleExpand_RetrievalConfig>检索配置</StyleExpand_RetrievalConfig>
+  <StyleExpand_RetrievalConfigDesc>调整检索相似片段的数量和相似度阈值</StyleExpand_RetrievalConfigDesc>
   <StyleExpand_QueryTemplate>Query 模板（Scriban 语法）：</StyleExpand_QueryTemplate>
   <StyleExpand_InsertVariable>插入变量</StyleExpand_InsertVariable>
   <StyleExpand_PreviewQuery>预览 Query</StyleExpand_PreviewQuery>
@@ -72,8 +101,15 @@
   <StyleExpand_MaxChunk>片段最大长度：{0}</StyleExpand_MaxChunk>
   <StyleExpand_Threshold>相似度阈值：{0:F2}</StyleExpand_Threshold>
   
+  <!-- Prompt Section -->
+  <StyleExpand_PromptTemplate>提示词模板</StyleExpand_PromptTemplate>
+  <StyleExpand_PromptTemplateDesc>自定义注入给 AI 的基础文风指令</StyleExpand_PromptTemplateDesc>
+  <StyleExpand_BasePrompt>基础提示词模板（使用 {style_name} 作为占位符）：</StyleExpand_BasePrompt>
+  <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
+  
   <!-- Chunking Section -->
-  <StyleExpand_ChunkingConfig>[切分配置]</StyleExpand_ChunkingConfig>
+  <StyleExpand_ChunkingConfig>切分参数</StyleExpand_ChunkingConfig>
+  <StyleExpand_ChunkingConfigDesc>大文件采样和批处理设置，通常无需调整</StyleExpand_ChunkingConfigDesc>
   <StyleExpand_EnableSampling>启用大文件采样</StyleExpand_EnableSampling>
   <StyleExpand_EnableSamplingDesc>超过阈值时自动采样代表性片段</StyleExpand_EnableSamplingDesc>
   <StyleExpand_SampleTarget>目标片段数：{0}</StyleExpand_SampleTarget>
@@ -82,56 +118,15 @@
   <StyleExpand_AutoResume>自动继续</StyleExpand_AutoResume>
   <StyleExpand_AutoResumeDesc>启动时自动继续未完成的切分</StyleExpand_AutoResumeDesc>
   
-  <!-- LLM API Section -->
-  <StyleExpand_LlmApiConfig>[文风提示词生成 LLM API 配置]</StyleExpand_LlmApiConfig>
-  <StyleExpand_UseRimTalkApi>使用 RimTalk API 配置</StyleExpand_UseRimTalkApi>
-  <StyleExpand_UseRimTalkApiDesc>复用 RimTalk 的 LLM API 配置来生成文风描述</StyleExpand_UseRimTalkApiDesc>
-  <StyleExpand_LlmApiUrl>LLM API 地址：</StyleExpand_LlmApiUrl>
-  <StyleExpand_LlmApiKey>LLM API Key：</StyleExpand_LlmApiKey>
-  <StyleExpand_LlmModel>LLM 模型名称：</StyleExpand_LlmModel>
-  <StyleExpand_GeneratePrompt>自动生成描述</StyleExpand_GeneratePrompt>
-  <StyleExpand_GeneratingPrompt>正在为 '{0}' 生成文风描述...</StyleExpand_GeneratingPrompt>
-  <StyleExpand_PromptGenerated>文风 '{0}' 描述已生成</StyleExpand_PromptGenerated>
-  <StyleExpand_GenerateFailed>生成失败：{0}</StyleExpand_GenerateFailed>
-  <StyleExpand_FileNotFound>未找到文风文件：{0}</StyleExpand_FileNotFound>
-  
-  <!-- Styles Section -->
-  <StyleExpand_StyleSelection>[文风选择（单选）]</StyleExpand_StyleSelection>
-  <StyleExpand_ScanStyles>扫描文风</StyleExpand_ScanStyles>
-  <StyleExpand_OpenFolder>打开文件夹</StyleExpand_OpenFolder>
-  <StyleExpand_ClearCache>清除缓存</StyleExpand_ClearCache>
-  <StyleExpand_ChunkAll>批量切分</StyleExpand_ChunkAll>
-  <StyleExpand_ChunkingAll>正在批量切分所有文风...</StyleExpand_ChunkingAll>
-  <StyleExpand_ChunkAllComplete>批量切分完成！处理了 {0} 个文风。</StyleExpand_ChunkAllComplete>
-  <StyleExpand_ChunkAllCancelled>批量切分已取消</StyleExpand_ChunkAllCancelled>
-  <StyleExpand_ChunksCount>{0} 个片段</StyleExpand_ChunksCount>
-  <StyleExpand_NotChunkedLabel>未切分</StyleExpand_NotChunkedLabel>
-  <StyleExpand_Selected>已选择：{0}</StyleExpand_Selected>
-  <StyleExpand_ChunkStyle>切分文风</StyleExpand_ChunkStyle>
-  <StyleExpand_Rechunk>重新切分</StyleExpand_Rechunk>
-  <StyleExpand_Resume>继续</StyleExpand_Resume>
-  <StyleExpand_Cancel>取消</StyleExpand_Cancel>
-  <StyleExpand_StylePrompt>文风提示词（描述）：</StyleExpand_StylePrompt>
-  
-  <!-- Advanced Section -->
-  <StyleExpand_AdvancedMode>[高级模式 - Scriban 变量]</StyleExpand_AdvancedMode>
-  <StyleExpand_UseVariables>在 RimTalk 高级模式中使用以下变量：</StyleExpand_UseVariables>
-  <StyleExpand_VarStyleName>{{style_name}} - 当前文风名称</StyleExpand_VarStyleName>
-  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - 基础指令提示词</StyleExpand_VarBasePrompt>
-  <StyleExpand_VarStylePrompt>{{style_prompt}} - 文风描述</StyleExpand_VarStylePrompt>
-  <StyleExpand_VarStyleChunks>{{style_chunks}} - 检索到的示例片段</StyleExpand_VarStyleChunks>
-  <StyleExpand_VarStyleFull>{{style_full}} - 完整文风提示词（以上组合）</StyleExpand_VarStyleFull>
-  <StyleExpand_ExampleUsage>在 RimTalk 预设中使用示例：</StyleExpand_ExampleUsage>
-  
   <!-- Debug Section -->
-  <StyleExpand_Debug>[调试]</StyleExpand_Debug>
+  <StyleExpand_Debug>调试</StyleExpand_Debug>
   <StyleExpand_ShowQuery>显示 Query</StyleExpand_ShowQuery>
   <StyleExpand_ShowQueryDesc>在日志中显示每次检索的 Query</StyleExpand_ShowQueryDesc>
   <StyleExpand_ShowChunks>显示片段</StyleExpand_ShowChunks>
   <StyleExpand_ShowChunksDesc>在日志中显示检索到的文风片段</StyleExpand_ShowChunksDesc>
   
   <!-- Reset Section -->
-  <StyleExpand_Reset>[重置]</StyleExpand_Reset>
+  <StyleExpand_Reset>重置</StyleExpand_Reset>
   <StyleExpand_ResetAllSettings>重置所有设置</StyleExpand_ResetAllSettings>
   <StyleExpand_ClearAllCache>清除所有缓存</StyleExpand_ClearAllCache>
   
@@ -183,4 +178,12 @@
   <StyleExpand_Preview_Score>相似度: {0}</StyleExpand_Preview_Score>
   <StyleExpand_Preview_EnterManualInput>请先输入手动查询文本</StyleExpand_Preview_EnterManualInput>
   <StyleExpand_Preview_OpenPreview>打开预览</StyleExpand_Preview_OpenPreview>
+  
+  <!-- Variables -->
+  <StyleExpand_VarStyleName>{{style_name}} - 当前文风名称</StyleExpand_VarStyleName>
+  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - 基础指令提示词</StyleExpand_VarBasePrompt>
+  <StyleExpand_VarStylePrompt>{{style_prompt}} - 文风描述</StyleExpand_VarStylePrompt>
+  <StyleExpand_VarStyleChunks>{{style_chunks}} - 检索到的示例片段</StyleExpand_VarStyleChunks>
+  <StyleExpand_VarStyleFull>{{style_full}} - 完整文风提示词（以上组合）</StyleExpand_VarStyleFull>
+  <StyleExpand_ExampleUsage>在 RimTalk 预设中使用示例：</StyleExpand_ExampleUsage>
 </LanguageData>

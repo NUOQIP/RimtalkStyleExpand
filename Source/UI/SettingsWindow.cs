@@ -18,6 +18,8 @@ namespace RimTalkStyleExpand
         private static string _statusMessage = "";
         private static int _statusTick = 0;
         private static Vector2 _styleListScrollPosition = Vector2.zero;
+        
+        private static bool _showAdvanced = false;
 
         public static void DoSettingsContents(Rect inRect, StyleExpandSettings settings)
         {
@@ -52,7 +54,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawSettings(Rect inRect, StyleExpandSettings settings)
         {
-            float contentHeight = 2500f;
+            float contentHeight = 2200f;
             Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
             
             Widgets.BeginScrollView(inRect, ref _scrollPosition, viewRect);
@@ -78,34 +80,16 @@ namespace RimTalkStyleExpand
 
             DrawStatusMessage(list, settings);
             
-            // 文风提示词相关
             DrawStylesSection(list, settings);
-            list.GapLine();
-            
-            DrawPromptSection(list, settings);
             list.GapLine();
             
             DrawLlmApiSection(list, settings);
             list.GapLine();
             
-            // 向量检索相关
-            DrawApiSection(list, settings);
+            DrawEmbeddingApiSection(list, settings);
             list.GapLine();
             
-            DrawRetrievalSection(list, settings);
-            list.GapLine();
-            
-            DrawChunkingSection(list, settings);
-            list.GapLine();
-            
-            // 其他
-            DrawAdvancedUsageSection(list, settings);
-            list.GapLine();
-            
-            DrawDebugSection(list, settings);
-            list.GapLine();
-            
-            DrawResetSection(list, settings);
+            DrawAdvancedSection(list, settings);
 
             DrawWarningMessage(list);
 
@@ -140,12 +124,21 @@ namespace RimTalkStyleExpand
             }
         }
 
-        private static void DrawApiSection(Listing_Standard list, StyleExpandSettings settings)
+        private static void DrawSectionHeader(Listing_Standard list, string title, string description)
         {
             Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_ApiConfig".Translate());
+            list.Label(title);
             Text.Font = GameFont.Small;
+            
+            GUI.color = new Color(0.7f, 0.7f, 0.7f);
+            list.Label(description);
+            GUI.color = Color.white;
             list.Gap();
+        }
+
+        private static void DrawEmbeddingApiSection(Listing_Standard list, StyleExpandSettings settings)
+        {
+            DrawSectionHeader(list, "StyleExpand_EmbeddingApiConfig".Translate(), "StyleExpand_EmbeddingApiDesc".Translate());
             
             list.Label("StyleExpand_ApiUrl".Translate());
             settings.VectorApi.Url = list.TextEntry(settings.VectorApi.Url);
@@ -171,33 +164,256 @@ namespace RimTalkStyleExpand
             }
         }
 
-        private static void DrawPromptSection(Listing_Standard list, StyleExpandSettings settings)
+        private static void DrawLlmApiSection(Listing_Standard list, StyleExpandSettings settings)
         {
-            Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_PromptTemplate".Translate());
-            Text.Font = GameFont.Small;
-            list.Gap();
+            DrawSectionHeader(list, "StyleExpand_LlmApiConfig".Translate(), "StyleExpand_LlmApiDesc".Translate());
             
-            var promptRow = list.GetRect(30f);
-            Widgets.Label(new Rect(promptRow.x, promptRow.y, promptRow.width - 120f, 30f), "StyleExpand_BasePrompt".Translate());
+            list.CheckboxLabeled("StyleExpand_UseRimTalkApi".Translate(), ref settings.LlmApi.UseRimTalkApi, "StyleExpand_UseRimTalkApiDesc".Translate());
             
-            if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetToDefault".Translate()))
+            if (!settings.LlmApi.UseRimTalkApi)
             {
-                settings.Retrieval.BasePromptTemplate = "Please imitate the following writing style ({style_name}) when generating dialogue:";
-                ShowStatus("StyleExpand_PromptReset".Translate());
+                list.Label("StyleExpand_LlmApiUrl".Translate());
+                settings.LlmApi.Url = list.TextEntry(settings.LlmApi.Url);
+                
+                list.Label("StyleExpand_LlmApiKey".Translate());
+                settings.LlmApi.ApiKey = list.TextEntry(settings.LlmApi.ApiKey);
             }
             
-            var baseRect = list.GetRect(50f);
-            settings.Retrieval.BasePromptTemplate = Widgets.TextArea(baseRect, settings.Retrieval.BasePromptTemplate);
+            list.Label("StyleExpand_LlmModel".Translate());
+            settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
+        }
+
+        private static void DrawStylesSection(Listing_Standard list, StyleExpandSettings settings)
+        {
+            DrawSectionHeader(list, "StyleExpand_StyleManagement".Translate(), "StyleExpand_StyleManagementDesc".Translate());
+
+            var btnRow = list.GetRect(30f);
+            var btnWidth = btnRow.width / 3f - 5f;
+            
+            if (Widgets.ButtonText(new Rect(btnRow.x, btnRow.y, btnWidth, 30f), "StyleExpand_ScanStyles".Translate()))
+            {
+                ScanStylesAsync(settings);
+            }
+            
+            if (Widgets.ButtonText(new Rect(btnRow.x + btnWidth + 5f, btnRow.y, btnWidth, 30f), "StyleExpand_OpenFolder".Translate()))
+            {
+                OpenStylesFolder();
+            }
+            
+            if (Widgets.ButtonText(new Rect(btnRow.x + 2f * (btnWidth + 5f), btnRow.y, btnWidth, 30f), "StyleExpand_ClearCache".Translate()))
+            {
+                EmbeddingCache.ClearAll();
+                ShowStatus("StyleExpand_CacheCleared".Translate());
+            }
+            
             list.Gap();
+
+            if (settings.Styles.Count == 0)
+            {
+                list.Label("StyleExpand_NoStyles".Translate());
+                list.Gap();
+            }
+            else
+            {
+                DrawStyleList(list, settings);
+            }
+
+            var selectedStyle = settings.GetSelectedStyle();
+            if (selectedStyle != null)
+            {
+                list.Label("StyleExpand_Selected".Translate(selectedStyle.Name));
+                
+                if (StyleRetriever.CanResumeChunking(selectedStyle.Name))
+                {
+                    GUI.color = Color.yellow;
+                    list.Label("StyleExpand_ResumeHint".Translate());
+                    GUI.color = Color.white;
+                }
+                
+                DrawChunkButtons(list, selectedStyle, settings);
+                
+                list.Gap();
+                
+                DrawStylePromptEditor(list, selectedStyle, settings);
+            }
+            else
+            {
+                list.Label("StyleExpand_NoStyleSelected".Translate());
+            }
+        }
+
+        private static void DrawStyleList(Listing_Standard list, StyleExpandSettings settings)
+        {
+            const float RowHeight = 28f;
+            const float RowSpacing = 30f;
+            var contentHeight = settings.Styles.Count * RowSpacing;
+            var viewHeight = Math.Min(contentHeight + 10f, 180f);
+            var outerRect = list.GetRect(viewHeight);
+            
+            Widgets.DrawBoxSolid(outerRect, new Color(0.15f, 0.15f, 0.15f, 0.5f));
+            
+            var innerRect = new Rect(outerRect.x + 5f, outerRect.y + 5f, outerRect.width - 10f, outerRect.height - 10f);
+            var scrollContentHeight = contentHeight;
+            var scrollRect = new Rect(0f, 0f, innerRect.width - 16f, scrollContentHeight);
+            
+            bool needsScroll = scrollContentHeight > innerRect.height;
+            
+            if (needsScroll)
+            {
+                Widgets.BeginScrollView(innerRect, ref _styleListScrollPosition, scrollRect);
+            }
+            
+            for (int i = 0; i < settings.Styles.Count; i++)
+            {
+                var style = settings.Styles[i];
+                var rowY = needsScroll ? i * RowSpacing : i * RowSpacing;
+                var rowWidth = needsScroll ? scrollRect.width : innerRect.width - 16f;
+                var rowRect = new Rect(0f, rowY, rowWidth, RowHeight);
+                var isSelected = style.Name == settings.SelectedStyleName;
+                
+                var bgColor = isSelected ? new Color(0.3f, 0.5f, 0.3f, 0.8f) : 
+                              i % 2 == 0 ? new Color(0.15f, 0.15f, 0.15f, 0.5f) : new Color(0.1f, 0.1f, 0.1f, 0.5f);
+                Widgets.DrawBoxSolid(rowRect, bgColor);
+                
+                var radioPos = new Vector2(rowRect.x + 5f, rowRect.y + 4f);
+                Widgets.RadioButton(radioPos, isSelected);
+                
+                var labelRect = new Rect(rowRect.x + 30f, rowRect.y, rowRect.width - 80f, rowRect.height);
+                var label = style.Name;
+                if (style.IsChunked)
+                {
+                    label += " [" + "StyleExpand_ChunksCount".Translate(style.ChunkCount) + "]";
+                }
+                else
+                {
+                    label += " [" + "StyleExpand_NotChunkedLabel".Translate() + "]";
+                }
+                Widgets.Label(labelRect, label);
+                
+                if (Widgets.ButtonInvisible(rowRect))
+                {
+                    settings.SelectStyle(style.Name);
+                    _selectedIndex = i;
+                    
+                    if (!style.IsChunked && !StyleRetriever.IsStyleChunked(style.Name))
+                    {
+                        ShowWarning("StyleExpand_NotChunked".Translate(style.Name));
+                    }
+                }
+            }
+            
+            if (needsScroll)
+            {
+                Widgets.EndScrollView();
+            }
+            
+            list.Gap();
+        }
+
+        private static void DrawChunkButtons(Listing_Standard list, StyleConfig selectedStyle, StyleExpandSettings settings)
+        {
+            var chunkBtnRow = list.GetRect(30f);
+            var canResume = StyleRetriever.CanResumeChunking(selectedStyle.Name);
+            var btnCount = canResume ? 3 : 2;
+            var chunkBtnWidth = chunkBtnRow.width / btnCount - 5f;
+            
+            if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_ChunkStyle".Translate()))
+            {
+                ChunkStyleAsync(selectedStyle.Name, false, settings);
+            }
+            
+            if (canResume)
+            {
+                GUI.color = Color.cyan;
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Resume".Translate()))
+                {
+                    ChunkStyleAsync(selectedStyle.Name, true, settings);
+                }
+                GUI.color = Color.white;
+                
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x + 2f * (chunkBtnWidth + 5f), chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
+                {
+                    EmbeddingCache.Clear(selectedStyle.Name);
+                    ChunkStyleAsync(selectedStyle.Name, false, settings);
+                }
+            }
+            else
+            {
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
+                {
+                    EmbeddingCache.Clear(selectedStyle.Name);
+                    ChunkStyleAsync(selectedStyle.Name, false, settings);
+                }
+            }
+            
+            GUI.color = Color.white;
+        }
+
+        private static void DrawStylePromptEditor(Listing_Standard list, StyleConfig selectedStyle, StyleExpandSettings settings)
+        {
+            var stylePromptRow = list.GetRect(30f);
+            Widgets.Label(new Rect(stylePromptRow.x, stylePromptRow.y, stylePromptRow.width - 120f, 30f), "StyleExpand_StylePrompt".Translate());
+            
+            if (Widgets.ButtonText(new Rect(stylePromptRow.xMax - 110f, stylePromptRow.y, 110f, 28f), "StyleExpand_ResetToDefault".Translate()))
+            {
+                selectedStyle.Prompt = "";
+                ShowStatus("StyleExpand_StylePromptCleared".Translate());
+            }
+            
+            var textRect = list.GetRect(60f);
+            selectedStyle.Prompt = Widgets.TextArea(textRect, selectedStyle.Prompt);
+            
+            list.Gap();
+            
+            var generateBtnRow = list.GetRect(30f);
+            
+            if (Widgets.ButtonText(new Rect(generateBtnRow.x, generateBtnRow.y, generateBtnRow.width / 2f - 5f, 30f), "StyleExpand_GeneratePrompt".Translate()))
+            {
+                GenerateStylePromptAsync(selectedStyle.Name);
+            }
+            
+            GUI.color = Color.white;
+        }
+
+        private static void DrawAdvancedSection(Listing_Standard list, StyleExpandSettings settings)
+        {
+            var foldoutRect = list.GetRect(30f);
+            string foldoutLabel = _showAdvanced ? "▼ " + "StyleExpand_AdvancedSettings".Translate() : "▶ " + "StyleExpand_AdvancedSettings".Translate();
+            
+            if (Widgets.ButtonInvisible(foldoutRect))
+            {
+                _showAdvanced = !_showAdvanced;
+            }
+            
+            GUI.color = new Color(0.8f, 0.8f, 0.8f);
+            Text.Font = GameFont.Medium;
+            Widgets.Label(foldoutRect, foldoutLabel);
+            Text.Font = GameFont.Small;
+            GUI.color = Color.white;
+            
+            if (_showAdvanced)
+            {
+                list.Gap();
+                
+                DrawRetrievalSection(list, settings);
+                list.GapLine();
+                
+                DrawPromptSection(list, settings);
+                list.GapLine();
+                
+                DrawChunkingSection(list, settings);
+                list.GapLine();
+                
+                DrawDebugSection(list, settings);
+                list.GapLine();
+                
+                DrawResetSection(list, settings);
+            }
         }
 
         private static void DrawRetrievalSection(Listing_Standard list, StyleExpandSettings settings)
         {
-            Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_RetrievalConfig".Translate());
-            Text.Font = GameFont.Small;
-            list.Gap();
+            DrawSectionHeader(list, "StyleExpand_RetrievalConfig".Translate(), "StyleExpand_RetrievalConfigDesc".Translate());
             
             var templateRow = list.GetRect(30f);
             Widgets.Label(new Rect(templateRow.x, templateRow.y, templateRow.width - 120f, 30f), "StyleExpand_QueryTemplate".Translate());
@@ -254,10 +470,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawChunkingSection(Listing_Standard list, StyleExpandSettings settings)
         {
-            Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_ChunkingConfig".Translate());
-            Text.Font = GameFont.Small;
-            list.Gap();
+            DrawSectionHeader(list, "StyleExpand_ChunkingConfig".Translate(), "StyleExpand_ChunkingConfigDesc".Translate());
             
             list.CheckboxLabeled("StyleExpand_EnableSampling".Translate(), ref settings.Chunking.EnableSampling, "StyleExpand_EnableSamplingDesc".Translate());
             
@@ -276,241 +489,22 @@ namespace RimTalkStyleExpand
             list.CheckboxLabeled("StyleExpand_AutoResume".Translate(), ref settings.Chunking.AutoResume, "StyleExpand_AutoResumeDesc".Translate());
         }
 
-        private static void DrawLlmApiSection(Listing_Standard list, StyleExpandSettings settings)
+        private static void DrawPromptSection(Listing_Standard list, StyleExpandSettings settings)
         {
-            Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_LlmApiConfig".Translate());
-            Text.Font = GameFont.Small;
+            DrawSectionHeader(list, "StyleExpand_PromptTemplate".Translate(), "StyleExpand_PromptTemplateDesc".Translate());
+            
+            var promptRow = list.GetRect(30f);
+            Widgets.Label(new Rect(promptRow.x, promptRow.y, promptRow.width - 120f, 30f), "StyleExpand_BasePrompt".Translate());
+            
+            if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetToDefault".Translate()))
+            {
+                settings.Retrieval.BasePromptTemplate = "Please imitate the following writing style ({style_name}) when generating dialogue:";
+                ShowStatus("StyleExpand_PromptReset".Translate());
+            }
+            
+            var baseRect = list.GetRect(50f);
+            settings.Retrieval.BasePromptTemplate = Widgets.TextArea(baseRect, settings.Retrieval.BasePromptTemplate);
             list.Gap();
-            
-            list.CheckboxLabeled("StyleExpand_UseRimTalkApi".Translate(), ref settings.LlmApi.UseRimTalkApi, "StyleExpand_UseRimTalkApiDesc".Translate());
-            
-            if (!settings.LlmApi.UseRimTalkApi)
-            {
-                list.Label("StyleExpand_LlmApiUrl".Translate());
-                settings.LlmApi.Url = list.TextEntry(settings.LlmApi.Url);
-                
-                list.Label("StyleExpand_LlmApiKey".Translate());
-                settings.LlmApi.ApiKey = list.TextEntry(settings.LlmApi.ApiKey);
-            }
-            
-            list.Label("StyleExpand_LlmModel".Translate());
-            settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
-        }
-
-        private static void DrawStylesSection(Listing_Standard list, StyleExpandSettings settings)
-        {
-            Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_StyleSelection".Translate());
-            Text.Font = GameFont.Small;
-            list.Gap();
-
-            var btnRow = list.GetRect(30f);
-            var btnWidth = btnRow.width / 3f - 5f;
-            
-            if (Widgets.ButtonText(new Rect(btnRow.x, btnRow.y, btnWidth, 30f), "StyleExpand_ScanStyles".Translate()))
-            {
-                ScanStylesAsync(settings);
-            }
-            
-            if (Widgets.ButtonText(new Rect(btnRow.x + btnWidth + 5f, btnRow.y, btnWidth, 30f), "StyleExpand_OpenFolder".Translate()))
-            {
-                OpenStylesFolder();
-            }
-            
-            if (Widgets.ButtonText(new Rect(btnRow.x + 2f * (btnWidth + 5f), btnRow.y, btnWidth, 30f), "StyleExpand_ClearCache".Translate()))
-            {
-                EmbeddingCache.ClearAll();
-                ShowStatus("StyleExpand_CacheCleared".Translate());
-            }
-            
-            list.Gap();
-
-            if (settings.Styles.Count == 0)
-            {
-                list.Label("StyleExpand_NoStyles".Translate());
-                list.Gap();
-            }
-            else
-            {
-                const float RowHeight = 28f;
-                const float RowSpacing = 30f;
-                var contentHeight = settings.Styles.Count * RowSpacing;
-                var viewHeight = Math.Min(contentHeight + 10f, 150f);
-                var styleRect = list.GetRect(viewHeight);
-                
-                Widgets.DrawBoxSolid(styleRect, new Color(0.15f, 0.15f, 0.15f, 0.5f));
-                
-                var innerStyleRect = new Rect(styleRect.x + 5f, styleRect.y + 5f, styleRect.width - 10f, styleRect.height - 10f);
-                var scrollRect = new Rect(0f, 0f, innerStyleRect.width - 16f, contentHeight);
-                
-                bool needsScroll = contentHeight > innerStyleRect.height;
-                if (needsScroll)
-                {
-                    Widgets.BeginScrollView(innerStyleRect, ref _styleListScrollPosition, scrollRect);
-                }
-                
-                for (int i = 0; i < settings.Styles.Count; i++)
-                {
-                    var style = settings.Styles[i];
-                    var rowRect = new Rect(0f, i * RowSpacing, needsScroll ? scrollRect.width : innerStyleRect.width, RowHeight);
-                    var isSelected = style.Name == settings.SelectedStyleName;
-                    
-                    var bgColor = isSelected ? new Color(0.3f, 0.5f, 0.3f, 0.8f) : 
-                                  i % 2 == 0 ? new Color(0.15f, 0.15f, 0.15f, 0.5f) : new Color(0.1f, 0.1f, 0.1f, 0.5f);
-                    Widgets.DrawBoxSolid(rowRect, bgColor);
-                    
-                    var radioPos = new Vector2(rowRect.x + 5f, rowRect.y + 4f);
-                    Widgets.RadioButton(radioPos, isSelected);
-                    
-                    var labelRect = new Rect(rowRect.x + 30f, rowRect.y, rowRect.width - 80f, rowRect.height);
-                    var label = style.Name;
-                    if (style.IsChunked)
-                    {
-                        label += " [" + "StyleExpand_ChunksCount".Translate(style.ChunkCount) + "]";
-                    }
-                    else
-                    {
-                        label += " [" + "StyleExpand_NotChunkedLabel".Translate() + "]";
-                    }
-                    Widgets.Label(labelRect, label);
-                    
-                    var chunkedIndicator = new Rect(rowRect.xMax - 25f, rowRect.y + 4f, 20f, 20f);
-                    if (style.IsChunked)
-                    {
-                        GUI.color = Color.green;
-                        Widgets.Label(chunkedIndicator, "*");
-                        GUI.color = Color.white;
-                    }
-                    
-                    if (Widgets.ButtonInvisible(rowRect))
-                    {
-                        settings.SelectStyle(style.Name);
-                        _selectedIndex = i;
-                        
-                        if (!style.IsChunked && !StyleRetriever.IsStyleChunked(style.Name))
-                        {
-                            ShowWarning("StyleExpand_NotChunked".Translate(style.Name));
-                        }
-                    }
-                }
-                
-                if (needsScroll)
-                {
-                    Widgets.EndScrollView();
-                }
-                
-                list.Gap();
-            }
-
-            var selectedStyle = settings.GetSelectedStyle();
-            if (selectedStyle != null)
-            {
-                list.Label("StyleExpand_Selected".Translate(selectedStyle.Name));
-                
-                if (StyleRetriever.CanResumeChunking(selectedStyle.Name))
-                {
-                    GUI.color = Color.yellow;
-                    list.Label("StyleExpand_ResumeHint".Translate());
-                    GUI.color = Color.white;
-                }
-                
-                var chunkBtnRow = list.GetRect(30f);
-                var canResume = StyleRetriever.CanResumeChunking(selectedStyle.Name);
-                var btnCount = canResume ? 3 : 2;
-                var chunkBtnWidth = chunkBtnRow.width / btnCount - 5f;
-                
-                if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_ChunkStyle".Translate()))
-                {
-                    ChunkStyleAsync(selectedStyle.Name, false, settings);
-                }
-                
-                if (canResume)
-                {
-                    GUI.color = Color.cyan;
-                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Resume".Translate()))
-                    {
-                        ChunkStyleAsync(selectedStyle.Name, true, settings);
-                    }
-                    GUI.color = Color.white;
-                    
-                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + 2f * (chunkBtnWidth + 5f), chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
-                    {
-                        EmbeddingCache.Clear(selectedStyle.Name);
-                        ChunkStyleAsync(selectedStyle.Name, false, settings);
-                    }
-                }
-                else
-                {
-                    if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
-                    {
-                        EmbeddingCache.Clear(selectedStyle.Name);
-                        ChunkStyleAsync(selectedStyle.Name, false, settings);
-                    }
-                }
-                
-                GUI.color = Color.white;
-                
-                list.Gap();
-                
-                var stylePromptRow = list.GetRect(30f);
-                Widgets.Label(new Rect(stylePromptRow.x, stylePromptRow.y, stylePromptRow.width - 120f, 30f), "StyleExpand_StylePrompt".Translate());
-                
-                if (Widgets.ButtonText(new Rect(stylePromptRow.xMax - 110f, stylePromptRow.y, 110f, 28f), "StyleExpand_ResetToDefault".Translate()))
-                {
-                    selectedStyle.Prompt = "";
-                    ShowStatus("StyleExpand_StylePromptCleared".Translate());
-                }
-                
-                var textRect = list.GetRect(60f);
-                selectedStyle.Prompt = Widgets.TextArea(textRect, selectedStyle.Prompt);
-                
-                list.Gap();
-                
-                var generateBtnRow = list.GetRect(30f);
-                
-                if (Widgets.ButtonText(new Rect(generateBtnRow.x, generateBtnRow.y, generateBtnRow.width / 2f - 5f, 30f), "StyleExpand_GeneratePrompt".Translate()))
-                {
-                    GenerateStylePromptAsync(selectedStyle.Name);
-                }
-                
-                GUI.color = Color.white;
-            }
-            else
-            {
-                list.Label("StyleExpand_NoStyleSelected".Translate());
-            }
-        }
-
-        private static void DrawAdvancedUsageSection(Listing_Standard list, StyleExpandSettings settings)
-        {
-            Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_AdvancedMode".Translate());
-            Text.Font = GameFont.Small;
-            list.Gap();
-            
-            list.Label("StyleExpand_UseVariables".Translate());
-            list.Gap();
-            
-            GUI.color = new Color(0.7f, 0.9f, 0.7f);
-            list.Label("StyleExpand_VarStyleName".Translate());
-            list.Label("StyleExpand_VarBasePrompt".Translate());
-            list.Label("StyleExpand_VarStylePrompt".Translate());
-            list.Label("StyleExpand_VarStyleChunks".Translate());
-            list.Label("StyleExpand_VarStyleFull".Translate());
-            GUI.color = Color.white;
-            
-            list.Gap();
-            list.Label("StyleExpand_ExampleUsage".Translate());
-            
-            var exampleRect = list.GetRect(80f);
-            var exampleText = @"[Style Instruction]
-{{style_base_prompt}}
-
-{{style_prompt}}
-
-{{style_chunks}}";
-            Widgets.TextArea(exampleRect, exampleText, true);
         }
 
         private static void DrawDebugSection(Listing_Standard list, StyleExpandSettings settings)

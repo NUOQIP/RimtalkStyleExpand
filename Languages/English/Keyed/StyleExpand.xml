@@ -2,7 +2,7 @@
 <LanguageData>
   <!-- Mod Name -->
   <StyleExpand_ModName>RimTalk StyleExpand</StyleExpand_ModName>
-  <StyleExpand_Version>v1.2</StyleExpand_Version>
+  <StyleExpand_Version>v1.4</StyleExpand_Version>
   
   <!-- General -->
   <StyleExpand_Enable>Enable Style Expand</StyleExpand_Enable>
@@ -41,20 +41,49 @@
   <StyleExpand_ConnectionSuccessShort>Connection successful!</StyleExpand_ConnectionSuccessShort>
   <StyleExpand_ConnectionFailedShort>Connection failed: no embedding returned</StyleExpand_ConnectionFailedShort>
   
-  <!-- API Section -->
-  <StyleExpand_ApiConfig>[Vector Retrieval Model API Configuration]</StyleExpand_ApiConfig>
-  <StyleExpand_ApiUrl>Vector API URL:</StyleExpand_ApiUrl>
+  <!-- Style Management Section -->
+  <StyleExpand_StyleManagement>Style Management</StyleExpand_StyleManagement>
+  <StyleExpand_StyleManagementDesc>Place .txt files in the Styles folder, scan and select to chunk</StyleExpand_StyleManagementDesc>
+  <StyleExpand_ScanStyles>Scan Styles</StyleExpand_ScanStyles>
+  <StyleExpand_OpenFolder>Open Folder</StyleExpand_OpenFolder>
+  <StyleExpand_ClearCache>Clear Cache</StyleExpand_ClearCache>
+  <StyleExpand_ChunksCount>{0} chunks</StyleExpand_ChunksCount>
+  <StyleExpand_NotChunkedLabel>not chunked</StyleExpand_NotChunkedLabel>
+  <StyleExpand_Selected>Selected: {0}</StyleExpand_Selected>
+  <StyleExpand_ChunkStyle>Chunk Style</StyleExpand_ChunkStyle>
+  <StyleExpand_Rechunk>Re-chunk</StyleExpand_Rechunk>
+  <StyleExpand_Resume>Resume</StyleExpand_Resume>
+  <StyleExpand_Cancel>Cancel</StyleExpand_Cancel>
+  <StyleExpand_StylePrompt>Style Prompt (description):</StyleExpand_StylePrompt>
+  
+  <!-- LLM API Section -->
+  <StyleExpand_LlmApiConfig>LLM API Configuration</StyleExpand_LlmApiConfig>
+  <StyleExpand_LlmApiDesc>Use LLM to analyze style characteristics and generate descriptions</StyleExpand_LlmApiDesc>
+  <StyleExpand_UseRimTalkApi>Use RimTalk API Config</StyleExpand_UseRimTalkApi>
+  <StyleExpand_UseRimTalkApiDesc>Reuse RimTalk's LLM API config for generating style descriptions</StyleExpand_UseRimTalkApiDesc>
+  <StyleExpand_LlmApiUrl>LLM API URL:</StyleExpand_LlmApiUrl>
+  <StyleExpand_LlmApiKey>LLM API Key:</StyleExpand_LlmApiKey>
+  <StyleExpand_LlmModel>LLM Model Name:</StyleExpand_LlmModel>
+  <StyleExpand_GeneratePrompt>Auto Generate Description</StyleExpand_GeneratePrompt>
+  <StyleExpand_GeneratingPrompt>Generating style description for '{0}'...</StyleExpand_GeneratingPrompt>
+  <StyleExpand_PromptGenerated>Style description generated for '{0}'</StyleExpand_PromptGenerated>
+  <StyleExpand_GenerateFailed>Generation failed: {0}</StyleExpand_GenerateFailed>
+  <StyleExpand_FileNotFound>Style file not found: {0}</StyleExpand_FileNotFound>
+  
+  <!-- Embedding API Section -->
+  <StyleExpand_EmbeddingApiConfig>Embedding API Configuration</StyleExpand_EmbeddingApiConfig>
+  <StyleExpand_EmbeddingApiDesc>Convert style text to vectors for chunking and similarity retrieval</StyleExpand_EmbeddingApiDesc>
+  <StyleExpand_ApiUrl>API URL:</StyleExpand_ApiUrl>
   <StyleExpand_ApiKey>API Key (optional):</StyleExpand_ApiKey>
-  <StyleExpand_ApiModel>Embedding Model Name:</StyleExpand_ApiModel>
+  <StyleExpand_ApiModel>Model Name:</StyleExpand_ApiModel>
   <StyleExpand_TestConnection>Test Connection</StyleExpand_TestConnection>
   
-  <!-- Prompt Section -->
-  <StyleExpand_PromptTemplate>[Prompt Template]</StyleExpand_PromptTemplate>
-  <StyleExpand_BasePrompt>Base Prompt Template (use {style_name}):</StyleExpand_BasePrompt>
-  <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
+  <!-- Advanced Settings -->
+  <StyleExpand_AdvancedSettings>Advanced Settings</StyleExpand_AdvancedSettings>
   
   <!-- Retrieval Section -->
-  <StyleExpand_RetrievalConfig>[Retrieval Configuration]</StyleExpand_RetrievalConfig>
+  <StyleExpand_RetrievalConfig>Retrieval Configuration</StyleExpand_RetrievalConfig>
+  <StyleExpand_RetrievalConfigDesc>Adjust the number and similarity threshold of retrieved chunks</StyleExpand_RetrievalConfigDesc>
   <StyleExpand_QueryTemplate>Query Template (Scriban syntax):</StyleExpand_QueryTemplate>
   <StyleExpand_InsertVariable>Insert Variable</StyleExpand_InsertVariable>
   <StyleExpand_PreviewQuery>Preview Query</StyleExpand_PreviewQuery>
@@ -72,8 +101,15 @@
   <StyleExpand_MaxChunk>Max Chunk Length: {0}</StyleExpand_MaxChunk>
   <StyleExpand_Threshold>Similarity Threshold: {0:F2}</StyleExpand_Threshold>
   
+  <!-- Prompt Section -->
+  <StyleExpand_PromptTemplate>Prompt Template</StyleExpand_PromptTemplate>
+  <StyleExpand_PromptTemplateDesc>Customize the base style instruction injected to AI</StyleExpand_PromptTemplateDesc>
+  <StyleExpand_BasePrompt>Base Prompt Template (use {style_name}):</StyleExpand_BasePrompt>
+  <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
+  
   <!-- Chunking Section -->
-  <StyleExpand_ChunkingConfig>[Chunking Configuration]</StyleExpand_ChunkingConfig>
+  <StyleExpand_ChunkingConfig>Chunking Parameters</StyleExpand_ChunkingConfig>
+  <StyleExpand_ChunkingConfigDesc>Large file sampling and batch processing settings, usually no need to adjust</StyleExpand_ChunkingConfigDesc>
   <StyleExpand_EnableSampling>Enable Large File Sampling</StyleExpand_EnableSampling>
   <StyleExpand_EnableSamplingDesc>Automatically sample representative chunks when exceeding threshold</StyleExpand_EnableSamplingDesc>
   <StyleExpand_SampleTarget>Target Chunks: {0}</StyleExpand_SampleTarget>
@@ -82,56 +118,15 @@
   <StyleExpand_AutoResume>Auto Resume</StyleExpand_AutoResume>
   <StyleExpand_AutoResumeDesc>Automatically continue unfinished chunking on startup</StyleExpand_AutoResumeDesc>
   
-  <!-- LLM API Section -->
-  <StyleExpand_LlmApiConfig>[Style Prompt Generation LLM API Configuration]</StyleExpand_LlmApiConfig>
-  <StyleExpand_UseRimTalkApi>Use RimTalk API Config</StyleExpand_UseRimTalkApi>
-  <StyleExpand_UseRimTalkApiDesc>Reuse RimTalk's LLM API config for generating style descriptions</StyleExpand_UseRimTalkApiDesc>
-  <StyleExpand_LlmApiUrl>LLM API URL:</StyleExpand_LlmApiUrl>
-  <StyleExpand_LlmApiKey>LLM API Key:</StyleExpand_LlmApiKey>
-  <StyleExpand_LlmModel>LLM Model Name:</StyleExpand_LlmModel>
-  <StyleExpand_GeneratePrompt>Auto Generate Description</StyleExpand_GeneratePrompt>
-  <StyleExpand_GeneratingPrompt>Generating style description for '{0}'...</StyleExpand_GeneratingPrompt>
-  <StyleExpand_PromptGenerated>Style description generated for '{0}'</StyleExpand_PromptGenerated>
-  <StyleExpand_GenerateFailed>Generation failed: {0}</StyleExpand_GenerateFailed>
-  <StyleExpand_FileNotFound>Style file not found: {0}</StyleExpand_FileNotFound>
-  
-  <!-- Styles Section -->
-  <StyleExpand_StyleSelection>[Style Selection (Single Choice)]</StyleExpand_StyleSelection>
-  <StyleExpand_ScanStyles>Scan Styles</StyleExpand_ScanStyles>
-  <StyleExpand_OpenFolder>Open Folder</StyleExpand_OpenFolder>
-  <StyleExpand_ClearCache>Clear Cache</StyleExpand_ClearCache>
-  <StyleExpand_ChunkAll>Chunk All</StyleExpand_ChunkAll>
-  <StyleExpand_ChunkingAll>Chunking all styles...</StyleExpand_ChunkingAll>
-  <StyleExpand_ChunkAllComplete>Batch chunking complete! Processed {0} styles.</StyleExpand_ChunkAllComplete>
-  <StyleExpand_ChunkAllCancelled>Batch chunking cancelled</StyleExpand_ChunkAllCancelled>
-  <StyleExpand_ChunksCount>{0} chunks</StyleExpand_ChunksCount>
-  <StyleExpand_NotChunkedLabel>not chunked</StyleExpand_NotChunkedLabel>
-  <StyleExpand_Selected>Selected: {0}</StyleExpand_Selected>
-  <StyleExpand_ChunkStyle>Chunk Style</StyleExpand_ChunkStyle>
-  <StyleExpand_Rechunk>Re-chunk</StyleExpand_Rechunk>
-  <StyleExpand_Resume>Resume</StyleExpand_Resume>
-  <StyleExpand_Cancel>Cancel</StyleExpand_Cancel>
-  <StyleExpand_StylePrompt>Style Prompt (description):</StyleExpand_StylePrompt>
-  
-  <!-- Advanced Section -->
-  <StyleExpand_AdvancedMode>[Advanced Mode - Scriban Variables]</StyleExpand_AdvancedMode>
-  <StyleExpand_UseVariables>Use these variables in RimTalk's Advanced Prompt Mode:</StyleExpand_UseVariables>
-  <StyleExpand_VarStyleName>{{style_name}} - Current style name</StyleExpand_VarStyleName>
-  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - Base instruction prompt</StyleExpand_VarBasePrompt>
-  <StyleExpand_VarStylePrompt>{{style_prompt}} - Style description section</StyleExpand_VarStylePrompt>
-  <StyleExpand_VarStyleChunks>{{style_chunks}} - Retrieved example chunks</StyleExpand_VarStyleChunks>
-  <StyleExpand_VarStyleFull>{{style_full}} - Complete style prompt (all above combined)</StyleExpand_VarStyleFull>
-  <StyleExpand_ExampleUsage>Example usage in RimTalk preset:</StyleExpand_ExampleUsage>
-  
   <!-- Debug Section -->
-  <StyleExpand_Debug>[Debug]</StyleExpand_Debug>
+  <StyleExpand_Debug>Debug</StyleExpand_Debug>
   <StyleExpand_ShowQuery>Show Query</StyleExpand_ShowQuery>
   <StyleExpand_ShowQueryDesc>Show query in log for each retrieval</StyleExpand_ShowQueryDesc>
   <StyleExpand_ShowChunks>Show Chunks</StyleExpand_ShowChunks>
   <StyleExpand_ShowChunksDesc>Show retrieved chunks in log</StyleExpand_ShowChunksDesc>
   
   <!-- Reset Section -->
-  <StyleExpand_Reset>[Reset]</StyleExpand_Reset>
+  <StyleExpand_Reset>Reset</StyleExpand_Reset>
   <StyleExpand_ResetAllSettings>Reset All Settings</StyleExpand_ResetAllSettings>
   <StyleExpand_ClearAllCache>Clear All Cache</StyleExpand_ClearAllCache>
   
@@ -183,4 +178,12 @@
   <StyleExpand_Preview_Score>Similarity: {0}</StyleExpand_Preview_Score>
   <StyleExpand_Preview_EnterManualInput>Please enter manual query text first</StyleExpand_Preview_EnterManualInput>
   <StyleExpand_Preview_OpenPreview>Open Preview</StyleExpand_Preview_OpenPreview>
+  
+  <!-- Variables -->
+  <StyleExpand_VarStyleName>{{style_name}} - Current style name</StyleExpand_VarStyleName>
+  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - Base instruction prompt</StyleExpand_VarBasePrompt>
+  <StyleExpand_VarStylePrompt>{{style_prompt}} - Style description section</StyleExpand_VarStylePrompt>
+  <StyleExpand_VarStyleChunks>{{style_chunks}} - Retrieved example chunks</StyleExpand_VarStyleChunks>
+  <StyleExpand_VarStyleFull>{{style_full}} - Complete style prompt (all above combined)</StyleExpand_VarStyleFull>
+  <StyleExpand_ExampleUsage>Example usage in RimTalk preset:</StyleExpand_ExampleUsage>
 </LanguageData>

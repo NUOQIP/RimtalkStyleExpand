@@ -11,10 +11,17 @@ namespace RimTalkStyleExpand
     public static class LLMClient
     {
         private static Assembly _rimTalkAssembly;
-        private static Type _rimTalkSettingsType;
-        private static PropertyInfo _llmApiUrlProperty;
-        private static PropertyInfo _llmApiKeyProperty;
-        private static PropertyInfo _llmModelProperty;
+        private static Type _settingsType;
+        private static MethodInfo _getSettingsMethod;
+        private static PropertyInfo _localConfigProperty;
+        private static PropertyInfo _useCloudProvidersProperty;
+        private static PropertyInfo _useSimpleConfigProperty;
+        private static PropertyInfo _simpleApiKeyProperty;
+        private static Type _apiConfigType;
+        private static PropertyInfo _baseUrlProperty;
+        private static PropertyInfo _apiKeyProperty;
+        private static PropertyInfo _selectedModelProperty;
+        private static PropertyInfo _customModelNameProperty;
         private static bool _rimTalkResolved = false;
 
         public static string GenerateStylePrompt(string styleName, string sampleText, LlmApiConfig config)
@@ -28,7 +35,8 @@ namespace RimTalkStyleExpand
             
             if (config.UseRimTalkApi)
             {
-                return CallLLMApiWithRimTalkConfig(prompt, config.Model);
+                var (url, apiKey, model) = GetRimTalkLlmConfig(config.Model);
+                return CallLLMApi(prompt, url, apiKey, model);
             }
             else
             {
@@ -38,20 +46,24 @@ namespace RimTalkStyleExpand
 
         public static bool TestConnection(LlmApiConfig config)
         {
-            try
+            if (config.UseRimTalkApi)
             {
-                if (config.UseRimTalkApi)
+                var (url, apiKey, model) = GetRimTalkLlmConfig(config.Model);
+                if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(model))
                 {
-                    return CallLLMApiWithRimTalkConfig("Hello", config.Model) != null;
+                    throw new Exception("RimTalk local provider URL or Model not configured");
                 }
-                else
-                {
-                    return CallLLMApi("Hello", config.Url, config.ApiKey, config.Model) != null;
-                }
+                var result = CallLLMApi("Hello", url, apiKey, model);
+                return !string.IsNullOrEmpty(result);
             }
-            catch
+            else
             {
-                return false;
+                if (string.IsNullOrEmpty(config.Url) || string.IsNullOrEmpty(config.Model))
+                {
+                    throw new Exception("URL or Model not configured");
+                }
+                var result = CallLLMApi("Hello", config.Url, config.ApiKey, config.Model);
+                return !string.IsNullOrEmpty(result);
             }
         }
 
@@ -67,57 +79,86 @@ namespace RimTalkStyleExpand
                 
                 if (_rimTalkAssembly == null) return;
 
-                _rimTalkSettingsType = _rimTalkAssembly.GetType("RimTalk.RimTalkSettings");
-                if (_rimTalkSettingsType == null) return;
+                _settingsType = _rimTalkAssembly.GetType("RimTalk.Settings");
+                if (_settingsType == null) return;
 
-                var instanceProperty = _rimTalkSettingsType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
-                if (instanceProperty == null) return;
+                _getSettingsMethod = _settingsType.GetMethod("Get", BindingFlags.Public | BindingFlags.Static);
+                if (_getSettingsMethod == null) return;
 
-                var settingsInstance = instanceProperty.GetValue(null);
-                if (settingsInstance == null) return;
+                var rimTalkSettingsType = _rimTalkAssembly.GetType("RimTalk.RimTalkSettings");
+                if (rimTalkSettingsType == null) return;
 
-                var settingsType = settingsInstance.GetType();
-                _llmApiUrlProperty = settingsType.GetProperty("LlmApiUrl");
-                _llmApiKeyProperty = settingsType.GetProperty("LlmApiKey");
-                _llmModelProperty = settingsType.GetProperty("LlmModel");
+                _localConfigProperty = rimTalkSettingsType.GetProperty("LocalConfig");
+                _useCloudProvidersProperty = rimTalkSettingsType.GetProperty("UseCloudProviders");
+                _useSimpleConfigProperty = rimTalkSettingsType.GetProperty("UseSimpleConfig");
+                _simpleApiKeyProperty = rimTalkSettingsType.GetProperty("SimpleApiKey");
+
+                _apiConfigType = _rimTalkAssembly.GetType("RimTalk.ApiConfig");
+                if (_apiConfigType == null) return;
+
+                _baseUrlProperty = _apiConfigType.GetProperty("BaseUrl");
+                _apiKeyProperty = _apiConfigType.GetProperty("ApiKey");
+                _selectedModelProperty = _apiConfigType.GetProperty("SelectedModel");
+                _customModelNameProperty = _apiConfigType.GetProperty("CustomModelName");
             }
             catch
             {
             }
         }
 
-        private static string CallLLMApiWithRimTalkConfig(string prompt, string overrideModel)
+        private static (string url, string apiKey, string model) GetRimTalkLlmConfig(string overrideModel)
         {
             ResolveRimTalkTypes();
 
-            if (_rimTalkSettingsType == null)
+            if (_getSettingsMethod == null)
             {
-                throw new Exception("RimTalk settings not found");
+                throw new Exception("RimTalk not found");
             }
 
-            var instanceProperty = _rimTalkSettingsType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
-            var settingsInstance = instanceProperty?.GetValue(null);
-            
+            var settingsInstance = _getSettingsMethod.Invoke(null, null);
             if (settingsInstance == null)
             {
-                throw new Exception("RimTalk settings instance is null");
+                throw new Exception("RimTalk settings not available");
             }
 
-            string url = _llmApiUrlProperty?.GetValue(settingsInstance) as string;
-            string apiKey = _llmApiKeyProperty?.GetValue(settingsInstance) as string;
-            string model = overrideModel;
+            bool useSimpleConfig = (bool)(_useSimpleConfigProperty?.GetValue(settingsInstance) ?? true);
+            bool useCloudProviders = (bool)(_useCloudProvidersProperty?.GetValue(settingsInstance) ?? true);
+
+            if (useSimpleConfig)
+            {
+                throw new Exception("RimTalk is using Simple Mode (Google Gemini). Please switch to Advanced Mode with Local provider for LLM style generation.");
+            }
+
+            if (useCloudProviders)
+            {
+                throw new Exception("RimTalk is using Cloud providers. Please switch to Local provider (Ollama) for LLM style generation.");
+            }
+
+            var localConfig = _localConfigProperty?.GetValue(settingsInstance);
+            if (localConfig == null)
+            {
+                throw new Exception("RimTalk local config is not set");
+            }
+
+            string url = _baseUrlProperty?.GetValue(localConfig) as string ?? "";
+            string apiKey = _apiKeyProperty?.GetValue(localConfig) as string ?? "";
             
+            string model = overrideModel;
             if (string.IsNullOrEmpty(model))
             {
-                model = _llmModelProperty?.GetValue(settingsInstance) as string;
+                model = _selectedModelProperty?.GetValue(localConfig) as string ?? "";
+                if (model == "Custom" || string.IsNullOrEmpty(model))
+                {
+                    model = _customModelNameProperty?.GetValue(localConfig) as string ?? "";
+                }
             }
 
             if (string.IsNullOrEmpty(url))
             {
-                throw new Exception("RimTalk LLM API URL is not configured");
+                throw new Exception("RimTalk local provider BaseUrl is not configured");
             }
 
-            return CallLLMApi(prompt, url, apiKey, model);
+            return (url, apiKey, model);
         }
 
         private static string BuildAnalysisPrompt(string styleName, string sampleText)

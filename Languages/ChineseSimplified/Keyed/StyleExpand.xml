@@ -72,6 +72,7 @@
   <StyleExpand_TestLlmConnection>测试连接</StyleExpand_TestLlmConnection>
   <StyleExpand_LlmConnectionSuccess>LLM API 连接成功！</StyleExpand_LlmConnectionSuccess>
   <StyleExpand_LlmConnectionFailed>LLM API 连接失败：{0}</StyleExpand_LlmConnectionFailed>
+  <StyleExpand_LlmRimTalkNotLocal>请将 RimTalk 切换到高级模式并使用本地提供商（Ollama）</StyleExpand_LlmRimTalkNotLocal>
   
   <!-- Embedding API Section -->
   <StyleExpand_EmbeddingApiConfig>Embedding API 配置</StyleExpand_EmbeddingApiConfig>

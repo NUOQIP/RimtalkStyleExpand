@@ -10,10 +10,6 @@ namespace RimTalkStyleExpand
         public string Prompt;
         public bool IsChunked;
         public int ChunkCount;
-        public int ProcessedChunks;
-        public int TotalChunks;
-        public string FileHash;
-        public bool IsProcessing;
 
         public StyleConfig()
         {
@@ -21,10 +17,6 @@ namespace RimTalkStyleExpand
             Prompt = "";
             IsChunked = false;
             ChunkCount = 0;
-            ProcessedChunks = 0;
-            TotalChunks = 0;
-            FileHash = "";
-            IsProcessing = false;
         }
 
         public StyleConfig(string name)
@@ -33,15 +25,7 @@ namespace RimTalkStyleExpand
             Prompt = "";
             IsChunked = false;
             ChunkCount = 0;
-            ProcessedChunks = 0;
-            TotalChunks = 0;
-            FileHash = "";
-            IsProcessing = false;
         }
-
-        public float Progress => TotalChunks > 0 ? (float)ProcessedChunks / TotalChunks : 0f;
-
-        public bool HasPartialProgress => ProcessedChunks > 0 && ProcessedChunks < TotalChunks;
 
         public void ExposeData()
         {
@@ -49,10 +33,6 @@ namespace RimTalkStyleExpand
             Scribe_Values.Look(ref Prompt, "prompt", "");
             Scribe_Values.Look(ref IsChunked, "isChunked", false);
             Scribe_Values.Look(ref ChunkCount, "chunkCount", 0);
-            Scribe_Values.Look(ref ProcessedChunks, "processedChunks", 0);
-            Scribe_Values.Look(ref TotalChunks, "totalChunks", 0);
-            Scribe_Values.Look(ref FileHash, "fileHash", "");
-            Scribe_Values.Look(ref IsProcessing, "isProcessing", false);
         }
     }
 

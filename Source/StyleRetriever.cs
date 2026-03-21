@@ -26,7 +26,6 @@ namespace RimTalkStyleExpand
         public static string ChunkStyleName => _chunkStyleName;
         public static bool IsChunking => !string.IsNullOrEmpty(_chunkStyleName);
         public static bool WasCancelled => _chunkCancelled;
-        public static bool HasPartialProgress => _chunkProgress > 0 && _chunkProgress < _chunkTotal;
 
         public class StyleChunk
         {
@@ -346,16 +345,6 @@ namespace RimTalkStyleExpand
         {
             EmbeddingCache.SaveProgress(styleName, _pendingChunks, _pendingEmbeddings, 
                 _chunkProgress, fileHash, fileInfo.Length, fileInfo.LastWriteTime);
-            
-            var settings = StyleExpandSettings.Instance;
-            var style = settings?.Styles.FirstOrDefault(s => s.Name == styleName);
-            if (style != null)
-            {
-                style.ProcessedChunks = _chunkProgress;
-                style.TotalChunks = _chunkTotal;
-                style.IsProcessing = false;
-                settings?.Write();
-            }
         }
 
         private static void FinalizeChunking(string styleName, StyleConfig style, int failedEmbeddings)
@@ -373,9 +362,6 @@ namespace RimTalkStyleExpand
             _chunksByStyle[styleName] = styleChunks;
             style.IsChunked = true;
             style.ChunkCount = _pendingChunks.Count;
-            style.ProcessedChunks = _pendingChunks.Count;
-            style.TotalChunks = _pendingChunks.Count;
-            style.IsProcessing = false;
             
             var settings = StyleExpandSettings.Instance;
             settings?.Write();

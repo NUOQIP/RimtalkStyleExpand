@@ -20,13 +20,5 @@ namespace RimTalkStyleExpand
         {
             Log.Error(Prefix + message);
         }
-
-        public static void Debug(string message)
-        {
-            if (StyleExpandSettings.Instance?.Debug?.ShowQuery ?? false)
-            {
-                Log.Message(Prefix + "[Debug] " + message);
-            }
-        }
     }
 }

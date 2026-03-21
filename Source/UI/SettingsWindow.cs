@@ -218,6 +218,7 @@ namespace RimTalkStyleExpand
             if (Widgets.ButtonText(new Rect(btnRow.x + 2f * (btnWidth + 5f), btnRow.y, btnWidth, 30f), "StyleExpand_ClearCache".Translate()))
             {
                 EmbeddingCache.ClearAll();
+                StyleRetriever.RefreshStylesCacheStatus();
                 ShowStatus("StyleExpand_CacheCleared".Translate());
             }
             

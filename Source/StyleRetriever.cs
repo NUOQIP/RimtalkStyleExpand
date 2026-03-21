@@ -151,6 +151,31 @@ namespace RimTalkStyleExpand
                 settings.SelectStyle(settings.Styles[0].Name);
             }
 
+            RefreshStylesCacheStatus();
+            
+            settings.Write();
+        }
+
+        public static void RefreshStylesCacheStatus()
+        {
+            var settings = StyleExpandSettings.Instance;
+            if (settings == null) return;
+
+            foreach (var style in settings.Styles)
+            {
+                var cached = EmbeddingCache.Load(style.Name);
+                if (cached != null && cached.Chunks.Count > 0 && cached.ProcessedIndex >= cached.Chunks.Count - 1)
+                {
+                    style.IsChunked = true;
+                    style.ChunkCount = cached.Chunks.Count;
+                }
+                else
+                {
+                    style.IsChunked = false;
+                    style.ChunkCount = 0;
+                }
+            }
+
             settings.Write();
         }
 

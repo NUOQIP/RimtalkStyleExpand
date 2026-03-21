@@ -164,4 +164,23 @@
   <StyleExpand_MissingDependency>StyleExpand 缺少依赖：{0}</StyleExpand_MissingDependency>
   <StyleExpand_MissingHarmony>Harmony 2.x</StyleExpand_MissingHarmony>
   <StyleExpand_MissingRimTalk>RimTalk</StyleExpand_MissingRimTalk>
+  
+  <!-- Preview Dialog -->
+  <StyleExpand_Preview_Title>文风检索预览</StyleExpand_Preview_Title>
+  <StyleExpand_Preview_Variables>变量选择</StyleExpand_Preview_Variables>
+  <StyleExpand_Preview_VariablesHint>点击变量自动插入到查询模板</StyleExpand_Preview_VariablesHint>
+  <StyleExpand_Preview_NoVariables>未找到可用变量</StyleExpand_Preview_NoVariables>
+  <StyleExpand_Preview_QueryTemplate>查询模板：</StyleExpand_Preview_QueryTemplate>
+  <StyleExpand_Preview_Parse>解析</StyleExpand_Preview_Parse>
+  <StyleExpand_Preview_Retrieve>检索</StyleExpand_Preview_Retrieve>
+  <StyleExpand_Preview_Clear>清除</StyleExpand_Preview_Clear>
+  <StyleExpand_Preview_ManualRetrieve>手动检索</StyleExpand_Preview_ManualRetrieve>
+  <StyleExpand_Preview_NoStyleSelected>请先选择并切分一个文风</StyleExpand_Preview_NoStyleSelected>
+  <StyleExpand_Preview_ParsedQuery>解析后的查询：</StyleExpand_Preview_ParsedQuery>
+  <StyleExpand_Preview_ClickParse>点击"解析"按钮预览查询</StyleExpand_Preview_ClickParse>
+  <StyleExpand_Preview_RetrievedChunks>检索结果 ({0} 个片段)</StyleExpand_Preview_RetrievedChunks>
+  <StyleExpand_Preview_NoChunks>点击"检索"按钮获取相似片段</StyleExpand_Preview_NoChunks>
+  <StyleExpand_Preview_Score>相似度: {0}</StyleExpand_Preview_Score>
+  <StyleExpand_Preview_EnterManualInput>请先输入手动查询文本</StyleExpand_Preview_EnterManualInput>
+  <StyleExpand_Preview_OpenPreview>打开预览</StyleExpand_Preview_OpenPreview>
 </LanguageData>

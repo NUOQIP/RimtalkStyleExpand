@@ -12,7 +12,6 @@ namespace RimTalkStyleExpand
     {
         private static Vector2 _scrollPosition;
         private static int _selectedIndex = -1;
-        private static string _previewQuery = "";
         private static string _testResult = "";
         private static string _warningMessage = "";
         private static int _warningTick = 0;
@@ -20,10 +19,7 @@ namespace RimTalkStyleExpand
         private static int _statusTick = 0;
         private static bool _isProcessing = false;
         private static string _processingStatus = "";
-        private static string _manualPreviewInput = "";
-        private static List<StyleRetriever.StyleChunk> _previewChunks = null;
-        private static Vector2 _variableScrollPosition = Vector2.zero;
-        private static Vector2 _previewScrollPosition = Vector2.zero;
+        private static Vector2 _styleListScrollPosition = Vector2.zero;
 
         public static void DoSettingsContents(Rect inRect, StyleExpandSettings settings)
         {
@@ -240,77 +236,10 @@ namespace RimTalkStyleExpand
             settings.Retrieval.QueryTemplate = list.TextEntry(settings.Retrieval.QueryTemplate, 2);
             list.Gap();
 
-            var previewBtnRow = list.GetRect(30f);
-            var btnWidth = previewBtnRow.width / 3f - 5f;
-            
-            if (Widgets.ButtonText(new Rect(previewBtnRow.x, previewBtnRow.y, btnWidth, 30f), "StyleExpand_PreviewQuery".Translate()))
+            if (list.ButtonText("StyleExpand_Preview_OpenPreview".Translate()))
             {
-                PreviewQuery(settings);
+                Find.WindowStack.Add(new Dialog_StylePreview());
             }
-            
-            if (Widgets.ButtonText(new Rect(previewBtnRow.x + btnWidth + 5f, previewBtnRow.y, btnWidth, 30f), "StyleExpand_ManualPreview".Translate()))
-            {
-                ManualPreview(settings);
-            }
-            
-            if (Widgets.ButtonText(new Rect(previewBtnRow.x + 2f * (btnWidth + 5f), previewBtnRow.y, btnWidth, 30f), "StyleExpand_ClearPreview".Translate()))
-            {
-                _previewQuery = "";
-                _manualPreviewInput = "";
-                _previewChunks = null;
-            }
-            
-            list.Gap();
-            
-            if (!string.IsNullOrEmpty(_previewQuery))
-            {
-                list.Label("StyleExpand_PreviewResult".Translate());
-                var boxRect = list.GetRect(30f);
-                Widgets.TextArea(boxRect, _previewQuery, true);
-            }
-            
-            if (!string.IsNullOrEmpty(_manualPreviewInput))
-            {
-                GUI.color = new Color(0.8f, 0.9f, 1f);
-                list.Label("StyleExpand_ManualInput".Translate());
-                GUI.color = Color.white;
-                var inputRect = list.GetRect(50f);
-                _manualPreviewInput = Widgets.TextArea(inputRect, _manualPreviewInput);
-            }
-            
-            if (_previewChunks != null && _previewChunks.Count > 0)
-            {
-                GUI.color = new Color(0.5f, 1f, 0.5f);
-                list.Label("StyleExpand_RetrievedChunks".Translate(_previewChunks.Count.ToString()));
-                GUI.color = Color.white;
-                
-                var chunkRect = list.GetRect(Math.Min(_previewChunks.Count * 60f + 20f, 180f));
-                Widgets.DrawBoxSolid(chunkRect, new Color(0.1f, 0.1f, 0.1f, 0.5f));
-                
-                var innerRect = chunkRect.ContractedBy(5f);
-                var contentHeight = _previewChunks.Count * 55f;
-                var scrollViewRect = new Rect(0f, 0f, innerRect.width - 16f, contentHeight);
-                
-                Widgets.BeginScrollView(innerRect, ref _previewScrollPosition, scrollViewRect);
-                
-                float y = 0f;
-                foreach (var chunk in _previewChunks)
-                {
-                    var rect = new Rect(0f, y, scrollViewRect.width - 5f, 50f);
-                    Widgets.DrawBoxSolid(rect, new Color(0.15f, 0.15f, 0.15f, 0.8f));
-                    
-                    var textRect = rect.ContractedBy(3f);
-                    Text.Font = GameFont.Tiny;
-                    var displayText = chunk.Text.Length > 100 ? chunk.Text.Substring(0, 97) + "..." : chunk.Text;
-                    Widgets.Label(textRect, displayText);
-                    Text.Font = GameFont.Small;
-                    
-                    y += 55f;
-                }
-                
-                Widgets.EndScrollView();
-            }
-
             list.Gap();
 
             list.Label("StyleExpand_TopK".Translate(settings.Retrieval.TopK));
@@ -346,41 +275,6 @@ namespace RimTalkStyleExpand
             else
             {
                 ShowWarning("StyleExpand_NoVariablesFound".Translate());
-            }
-        }
-
-        private static void ManualPreview(StyleExpandSettings settings)
-        {
-            var selectedStyle = settings.GetSelectedStyle();
-            if (selectedStyle == null || !selectedStyle.IsChunked)
-            {
-                ShowWarning("StyleExpand_SelectChunkedStyle".Translate());
-                return;
-            }
-            
-            if (string.IsNullOrEmpty(_manualPreviewInput))
-            {
-                ShowWarning("StyleExpand_EnterPreviewText".Translate());
-                return;
-            }
-            
-            try
-            {
-                _previewChunks = StyleRetriever.Retrieve(_manualPreviewInput, settings.Retrieval.TopK, settings.Retrieval.SimilarityThreshold);
-                _previewQuery = _manualPreviewInput;
-                
-                if (_previewChunks.Count == 0)
-                {
-                    ShowWarning("StyleExpand_NoChunksRetrieved".Translate());
-                }
-                else
-                {
-                    ShowStatus("StyleExpand_PreviewSuccess".Translate(_previewChunks.Count.ToString()));
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowError(ex.Message);
             }
         }
 
@@ -473,23 +367,27 @@ namespace RimTalkStyleExpand
             }
             else
             {
-                var height = Math.Min(settings.Styles.Count * 32f + 10f, 150f);
-                var styleRect = list.GetRect(height);
+                var contentHeight = settings.Styles.Count * 32f;
+                var viewHeight = Math.Min(contentHeight + 10f, 150f);
+                var styleRect = list.GetRect(viewHeight);
                 
                 Widgets.DrawBoxSolid(styleRect, new Color(0.15f, 0.15f, 0.15f, 0.5f));
                 
                 var innerStyleRect = new Rect(styleRect.x + 5f, styleRect.y + 5f, styleRect.width - 10f, styleRect.height - 10f);
-                var scrollRect = new Rect(0f, 0f, innerStyleRect.width - 20f, settings.Styles.Count * 32f);
+                var scrollRect = new Rect(0f, 0f, innerStyleRect.width - 16f, contentHeight);
                 
-                Vector2 styleScroll = Vector2.zero;
                 var y = 0f;
                 
-                Widgets.BeginScrollView(innerStyleRect, ref styleScroll, scrollRect);
+                bool needsScroll = contentHeight > innerStyleRect.height;
+                if (needsScroll)
+                {
+                    Widgets.BeginScrollView(innerStyleRect, ref _styleListScrollPosition, scrollRect);
+                }
                 
                 for (int i = 0; i < settings.Styles.Count; i++)
                 {
                     var style = settings.Styles[i];
-                    var rowRect = new Rect(0f, y, scrollRect.width, 28f);
+                    var rowRect = new Rect(0f, y, needsScroll ? scrollRect.width : innerStyleRect.width, 28f);
                     var isSelected = style.Name == settings.SelectedStyleName;
                     
                     var bgColor = isSelected ? new Color(0.3f, 0.5f, 0.3f, 0.8f) : 
@@ -533,7 +431,10 @@ namespace RimTalkStyleExpand
                     y += 32f;
                 }
                 
-                Widgets.EndScrollView();
+                if (needsScroll)
+                {
+                    Widgets.EndScrollView();
+                }
                 
                 list.Gap();
             }
@@ -888,21 +789,6 @@ namespace RimTalkStyleExpand
             {
                 SetProcessing(false);
             }
-        }
-
-        private static void PreviewQuery(StyleExpandSettings settings)
-        {
-            if (settings == null) return;
-
-            var pawn = Find.Selector?.SelectedPawns?.FirstOrDefault();
-            if (pawn == null)
-            {
-                ShowWarning("StyleExpand_SelectPawn".Translate());
-                _previewQuery = "";
-                return;
-            }
-
-            _previewQuery = StyleRetriever.RenderQueryTemplate(settings.Retrieval.QueryTemplate, pawn);
         }
 
         private static void OpenStylesFolder()

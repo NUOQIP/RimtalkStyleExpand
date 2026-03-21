@@ -247,6 +247,8 @@ namespace RimTalkStyleExpand
                 
                 DrawChunkButtons(list, selectedStyle, settings);
                 
+                list.CheckboxLabeled("StyleExpand_AutoResume".Translate(), ref settings.Chunking.AutoResume, "StyleExpand_AutoResumeDesc".Translate());
+                
                 list.Gap();
                 
                 DrawStylePromptEditor(list, selectedStyle, settings);
@@ -338,24 +340,28 @@ namespace RimTalkStyleExpand
         {
             var chunkBtnRow = list.GetRect(30f);
             var canResume = StyleRetriever.CanResumeChunking(selectedStyle.Name);
-            var btnCount = canResume ? 3 : 2;
-            var chunkBtnWidth = chunkBtnRow.width / btnCount - 5f;
-            
-            if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_ChunkStyle".Translate()))
-            {
-                ChunkStyleAsync(selectedStyle.Name, false, settings);
-            }
+            var isChunked = selectedStyle.IsChunked;
             
             if (canResume)
             {
+                var btnWidth = chunkBtnRow.width / 2f - 5f;
+                
                 GUI.color = Color.cyan;
-                if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Resume".Translate()))
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, btnWidth, 30f), "StyleExpand_Resume".Translate()))
                 {
                     ChunkStyleAsync(selectedStyle.Name, true, settings);
                 }
                 GUI.color = Color.white;
                 
-                if (Widgets.ButtonText(new Rect(chunkBtnRow.x + 2f * (chunkBtnWidth + 5f), chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x + btnWidth + 5f, chunkBtnRow.y, btnWidth, 30f), "StyleExpand_Rechunk".Translate()))
+                {
+                    EmbeddingCache.Clear(selectedStyle.Name);
+                    ChunkStyleAsync(selectedStyle.Name, false, settings);
+                }
+            }
+            else if (isChunked)
+            {
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnRow.width, 30f), "StyleExpand_Rechunk".Translate()))
                 {
                     EmbeddingCache.Clear(selectedStyle.Name);
                     ChunkStyleAsync(selectedStyle.Name, false, settings);
@@ -363,9 +369,8 @@ namespace RimTalkStyleExpand
             }
             else
             {
-                if (Widgets.ButtonText(new Rect(chunkBtnRow.x + chunkBtnWidth + 5f, chunkBtnRow.y, chunkBtnWidth, 30f), "StyleExpand_Rechunk".Translate()))
+                if (Widgets.ButtonText(new Rect(chunkBtnRow.x, chunkBtnRow.y, chunkBtnRow.width, 30f), "StyleExpand_ChunkStyle".Translate()))
                 {
-                    EmbeddingCache.Clear(selectedStyle.Name);
                     ChunkStyleAsync(selectedStyle.Name, false, settings);
                 }
             }
@@ -472,8 +477,6 @@ namespace RimTalkStyleExpand
             
             list.Label("StyleExpand_LargeFileThreshold".Translate(settings.Chunking.LargeFileThreshold));
             settings.Chunking.LargeFileThreshold = (int)list.Slider(settings.Chunking.LargeFileThreshold, 10000, 200000);
-            
-            list.CheckboxLabeled("StyleExpand_AutoResume".Translate(), ref settings.Chunking.AutoResume, "StyleExpand_AutoResumeDesc".Translate());
         }
 
         private static void DrawPromptSection(Listing_Standard list, StyleExpandSettings settings)

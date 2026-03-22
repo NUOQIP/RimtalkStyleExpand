@@ -213,7 +213,6 @@ Analyze these aspects:
 Output format:
 1. Style summary (1-2 sentences describing the overall style)
 2. Key characteristics (2-4 bullet points with specific traits)
-3. Example phrases (1-2 typical expressions if identifiable)
 
 Write in the same language as the sample text.
 

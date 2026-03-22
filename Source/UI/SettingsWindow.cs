@@ -775,7 +775,9 @@ namespace RimTalkStyleExpand
 
     public class HelpWindow : Window
     {
-        public override Vector2 InitialSize => new Vector2(600f, 500f);
+        private Vector2 _helpScrollPosition = Vector2.zero;
+        
+        public override Vector2 InitialSize => new Vector2(600f, 550f);
 
         public HelpWindow()
         {
@@ -787,7 +789,12 @@ namespace RimTalkStyleExpand
         public override void DoWindowContents(Rect inRect)
         {
             var list = new Listing_Standard();
-            list.Begin(inRect);
+            
+            float contentHeight = 900f;
+            var viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
+            
+            Widgets.BeginScrollView(inRect, ref _helpScrollPosition, viewRect);
+            list.Begin(viewRect);
             
             Text.Font = GameFont.Medium;
             list.Label("StyleExpand_HelpTitle".Translate());
@@ -832,6 +839,7 @@ namespace RimTalkStyleExpand
             list.Label("  " + "StyleExpand_VarStyleFull".Translate());
             
             list.End();
+            Widgets.EndScrollView();
         }
     }
 }

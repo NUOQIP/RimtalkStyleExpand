@@ -118,6 +118,8 @@ StyleExpand/
   - 添加模块功能说明
   - 高级设置可折叠
   - 简化切分按钮逻辑
+  - 文风提示词编辑框放大 + 滚动条
+  - 高级设置添加 Scriban 变量说明
 - [x] 性能优化
   - 使用 LongEventHandler 后台执行切分和生成
   - 优化检索逻辑，只使用缓存的 embedding
@@ -127,12 +129,14 @@ StyleExpand/
   - 修复缓存清除后状态不刷新
   - 修复预览窗口取消勾选变量不删除
   - 修复相似度阈值显示问题
+  - 修复 RimTalk API 配置复用时模型名错误
 - [x] RimTalk API 集成
   - LLM API 支持复用 RimTalk 配置
   - 自动适配 API 网关 URL
 - [x] 代码清理
   - 删除未使用的代码和字段
   - 移除不必要的配置项
+  - 移除 LLM 生成中的 Example Phrases 要求
 
 ### v1.3
 

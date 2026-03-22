@@ -118,6 +118,8 @@ StyleExpand/
   - Added module descriptions
   - Collapsible advanced settings
   - Simplified chunk button logic
+  - Enlarged style prompt editor with scrollbar
+  - Added Scriban variables section to advanced settings
 - [x] Performance optimization
   - Use LongEventHandler for background chunking/generation
   - Optimize retrieval to use cached embeddings only
@@ -127,12 +129,14 @@ StyleExpand/
   - Fix cache status not refreshing after clear
   - Fix uncheck variable not removing from template
   - Fix similarity threshold display
+  - Fix RimTalk API config reuse returning wrong model name
 - [x] RimTalk API integration
   - LLM API supports reusing RimTalk config
   - Auto-adapt API gateway URLs
 - [x] Code cleanup
   - Remove unused code and fields
   - Remove unnecessary config options
+  - Remove Example Phrases from LLM prompt
 
 ### v1.3
 

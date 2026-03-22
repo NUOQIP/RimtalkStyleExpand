@@ -128,6 +128,10 @@
   <StyleExpand_ShowChunks>Show Chunks</StyleExpand_ShowChunks>
   <StyleExpand_ShowChunksDesc>Show retrieved chunks in log</StyleExpand_ShowChunksDesc>
   
+  <!-- Scriban Variables Section -->
+  <StyleExpand_ScribanVariables>Scriban Variables</StyleExpand_ScribanVariables>
+  <StyleExpand_ScribanDesc>Use these variables in RimTalk's advanced mode to inject style prompts:</StyleExpand_ScribanDesc>
+  
   <!-- Reset Section -->
   <StyleExpand_Reset>Reset</StyleExpand_Reset>
   <StyleExpand_ResetAllSettings>Reset All Settings</StyleExpand_ResetAllSettings>

@@ -444,6 +444,9 @@ namespace RimTalkStyleExpand
                 DrawChunkingSection(list, settings);
                 list.GapLine();
                 
+                DrawScribanSection(list, settings);
+                list.GapLine();
+                
                 DrawDebugSection(list, settings);
                 list.GapLine();
                 
@@ -488,6 +491,25 @@ namespace RimTalkStyleExpand
             
             list.Label("StyleExpand_LargeFileThreshold".Translate(settings.Chunking.LargeFileThreshold));
             settings.Chunking.LargeFileThreshold = (int)list.Slider(settings.Chunking.LargeFileThreshold, 10000, 200000);
+        }
+
+        private static void DrawScribanSection(Listing_Standard list, StyleExpandSettings settings)
+        {
+            Text.Font = GameFont.Medium;
+            list.Label("StyleExpand_ScribanVariables".Translate());
+            Text.Font = GameFont.Small;
+            list.Gap();
+            
+            GUI.color = new Color(0.7f, 0.7f, 0.7f);
+            list.Label("StyleExpand_ScribanDesc".Translate());
+            GUI.color = Color.white;
+            list.Gap();
+            
+            list.Label("  " + "StyleExpand_VarStyleName".Translate());
+            list.Label("  " + "StyleExpand_VarBasePrompt".Translate());
+            list.Label("  " + "StyleExpand_VarStylePrompt".Translate());
+            list.Label("  " + "StyleExpand_VarStyleChunks".Translate());
+            list.Label("  " + "StyleExpand_VarStyleFull".Translate());
         }
 
         private static void DrawPromptSection(Listing_Standard list, StyleExpandSettings settings)

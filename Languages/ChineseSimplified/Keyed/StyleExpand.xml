@@ -128,6 +128,10 @@
   <StyleExpand_ShowChunks>显示片段</StyleExpand_ShowChunks>
   <StyleExpand_ShowChunksDesc>在日志中显示检索到的文风片段</StyleExpand_ShowChunksDesc>
   
+  <!-- Scriban Variables Section -->
+  <StyleExpand_ScribanVariables>Scriban 变量</StyleExpand_ScribanVariables>
+  <StyleExpand_ScribanDesc>在 RimTalk 高级模式中使用以下变量注入文风提示词：</StyleExpand_ScribanDesc>
+  
   <!-- Reset Section -->
   <StyleExpand_Reset>重置</StyleExpand_Reset>
   <StyleExpand_ResetAllSettings>重置所有设置</StyleExpand_ResetAllSettings>

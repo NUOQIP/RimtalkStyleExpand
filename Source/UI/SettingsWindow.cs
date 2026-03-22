@@ -18,6 +18,7 @@ namespace RimTalkStyleExpand
         private static string _statusMessage = "";
         private static int _statusTick = 0;
         private static Vector2 _styleListScrollPosition = Vector2.zero;
+        private static Vector2 _stylePromptScrollPosition = Vector2.zero;
         
         private static bool _showAdvanced = false;
 
@@ -388,8 +389,19 @@ namespace RimTalkStyleExpand
                 ShowStatus("StyleExpand_StylePromptCleared".Translate());
             }
             
-            var textRect = list.GetRect(60f);
-            selectedStyle.Prompt = Widgets.TextArea(textRect, selectedStyle.Prompt);
+            var textRect = list.GetRect(150f);
+            Widgets.DrawBoxSolid(textRect, new Color(0.1f, 0.1f, 0.1f, 0.9f));
+            
+            var innerRect = textRect.ContractedBy(5f);
+            float textHeight = Math.Max(Text.CalcHeight(selectedStyle.Prompt, innerRect.width - 16f), innerRect.height);
+            var viewRect = new Rect(0f, 0f, innerRect.width - 16f, textHeight);
+            
+            Widgets.BeginScrollView(innerRect, ref _stylePromptScrollPosition, viewRect);
+            
+            GUI.SetNextControlName("StylePromptTextField");
+            selectedStyle.Prompt = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, textHeight), selectedStyle.Prompt);
+            
+            Widgets.EndScrollView();
             
             list.Gap();
             

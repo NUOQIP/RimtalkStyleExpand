@@ -29,7 +29,7 @@ namespace RimTalkStyleExpand
 
             if (config.UseRimTalkApi)
             {
-                var rimTalkConfig = GetRimTalkActiveConfig(config.Model);
+                var rimTalkConfig = GetRimTalkActiveConfig(null);
                 url = rimTalkConfig.url;
                 apiKey = rimTalkConfig.apiKey;
                 model = rimTalkConfig.model;
@@ -58,7 +58,7 @@ namespace RimTalkStyleExpand
 
             if (config.UseRimTalkApi)
             {
-                var rimTalkConfig = GetRimTalkActiveConfig(config.Model);
+                var rimTalkConfig = GetRimTalkActiveConfig(null);
                 url = rimTalkConfig.url;
                 apiKey = rimTalkConfig.apiKey;
                 model = rimTalkConfig.model;

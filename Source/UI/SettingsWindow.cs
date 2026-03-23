@@ -55,7 +55,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawSettings(Rect inRect, StyleExpandSettings settings)
         {
-            float contentHeight = 2200f;
+            float contentHeight = 2600f;
             Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
             
             Widgets.BeginScrollView(inRect, ref _scrollPosition, viewRect);
@@ -380,14 +380,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawStylePromptEditor(Listing_Standard list, StyleConfig selectedStyle, StyleExpandSettings settings)
         {
-            var stylePromptRow = list.GetRect(30f);
-            Widgets.Label(new Rect(stylePromptRow.x, stylePromptRow.y, stylePromptRow.width - 120f, 30f), "StyleExpand_StylePrompt".Translate());
-            
-            if (Widgets.ButtonText(new Rect(stylePromptRow.xMax - 110f, stylePromptRow.y, 110f, 28f), "StyleExpand_ResetToDefault".Translate()))
-            {
-                selectedStyle.Prompt = "";
-                ShowStatus("StyleExpand_StylePromptCleared".Translate());
-            }
+            list.Label("StyleExpand_StylePrompt".Translate());
             
             var textRect = list.GetRect(150f);
             Widgets.DrawBoxSolid(textRect, new Color(0.1f, 0.1f, 0.1f, 0.9f));

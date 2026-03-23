@@ -23,7 +23,7 @@ AI 模仿文风生成对话
 
 ---
 
-## 二、当前版本（v1.4）状态
+## 二、当前版本（v1.4.1）状态
 
 **已完成功能：**
 
@@ -31,7 +31,7 @@ AI 模仿文风生成对话
 |------|------|------|
 | API 集成 | `API/RimTalkAPIIntegration.cs` | 自动注册变量到 RimTalk |
 | 变量提供 | `API/StyleVariableProvider.cs` | `{{style_name}}` 等变量实现 |
-| 向量检索 | `VectorClient.cs` | 单例模式，异步 API，内容哈希缓存 |
+| 向量检索 | `VectorClient.cs` | 单例模式，异步 API，LRU缓存，重试机制 |
 | 文本切分 | `StyleRetriever.cs` | 段落+句子二级切分，语义边界检测 |
 | Embedding缓存 | `EmbeddingCache.cs` | JSON格式，保存到 `Styles/.cache/` |
 | 文风管理 | `StyleExpandSettings.cs` | 单选模式，扫描txt文件 |
@@ -42,7 +42,7 @@ AI 模仿文风生成对话
 | Harmony补丁 | `Patches/RimTalkPatches.cs` | 反射方式注入Prompt |
 | 分批切分 | `StyleRetriever.cs` | 支持中断后继续 |
 | 大文件采样 | `StyleRetriever.cs` | 超过阈值自动采样 |
-| LLM生成描述 | `LLMClient.cs` | 自动分析文风生成描述 |
+| LLM生成描述 | `LLMClient.cs` | 自动分析文风，分段采样，新prompt设计 |
 | 文件监听 | `StyleWatcher.cs` | 自动检测文件变化 |
 
 **未实现（v1.5计划）：**
@@ -150,8 +150,15 @@ public class VectorClient
     // 同步 API（向后兼容）
     public static float[] GetEmbeddingSync(string text, VectorApiConfig config);
     
-    // 内容哈希缓存
-    private static string ComputeHash(string content);
+    // 重试机制：最多3次 + 指数退避
+    private const int MAX_RETRIES = 3;
+    
+    // LRU 缓存：最大1000条
+    private const int MAX_CACHE_SIZE = 1000;
+    
+    // Ollama 兼容：自动使用 prompt 字段
+    var isOllama = config.Url.Contains(":11434");
+    var inputField = isOllama ? "prompt" : "input";
 }
 ```
 
@@ -245,7 +252,7 @@ warning MSB3245: 未能解析此引用。未能找到程序集"Scriban"
 
 ### 8.4 向量API配置
 默认：`http://localhost:11434/api/embeddings`（Ollama）
-推荐模型：`bge-small-zh`
+推荐模型：`nomic-embed-text`
 
 ---
 
@@ -293,6 +300,6 @@ refactor: Remove unused code and optimize performance
 
 ---
 
-**最后更新：** 2026-03-22
-**当前版本：** v1.4
+**最后更新：** 2026-03-23
+**当前版本：** v1.4.1
 **下一版本：** v1.5

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -452,7 +453,7 @@ namespace RimTalkStyleExpand
                     
                     for (int k = 0; k < parts.Length; k++)
                     {
-                        if (float.TryParse(parts[k].Trim(), out var val))
+                        if (float.TryParse(parts[k].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var val))
                         {
                             embedding[k] = val;
                         }

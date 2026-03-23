@@ -1,8 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using Verse;
 
@@ -10,9 +8,8 @@ namespace RimTalkStyleExpand
 {
     public static class LLMClient
     {
-        private static Assembly _rimTalkAssembly;
-        private static MethodInfo _getSettingsMethod;
-        private static bool _rimTalkResolved = false;
+        private const int MAX_RETRIES = 3;
+        private const int BASE_RETRY_DELAY_MS = 1000;
 
         public static string GenerateStylePrompt(string styleName, string sampleText, LlmApiConfig config)
         {
@@ -29,7 +26,7 @@ namespace RimTalkStyleExpand
 
             if (config.UseRimTalkApi)
             {
-                var rimTalkConfig = GetRimTalkActiveConfig(null);
+                var rimTalkConfig = RimTalkAPIIntegration.GetRimTalkActiveConfig(null);
                 url = rimTalkConfig.url;
                 apiKey = rimTalkConfig.apiKey;
                 model = rimTalkConfig.model;
@@ -41,7 +38,6 @@ namespace RimTalkStyleExpand
                 model = config.Model;
             }
 
-            // 自动补充 API 端点路径
             if (!url.Contains("/v1/") && !url.Contains("/api/") && !url.Contains(":11434"))
             {
                 url = url.TrimEnd('/') + "/v1/chat/completions";
@@ -58,7 +54,7 @@ namespace RimTalkStyleExpand
 
             if (config.UseRimTalkApi)
             {
-                var rimTalkConfig = GetRimTalkActiveConfig(null);
+                var rimTalkConfig = RimTalkAPIIntegration.GetRimTalkActiveConfig(null);
                 url = rimTalkConfig.url;
                 apiKey = rimTalkConfig.apiKey;
                 model = rimTalkConfig.model;
@@ -74,7 +70,6 @@ namespace RimTalkStyleExpand
                 model = config.Model;
             }
 
-            // 自动补充 API 端点路径
             if (!url.Contains("/v1/") && !url.Contains("/api/") && !url.Contains(":11434"))
             {
                 url = url.TrimEnd('/') + "/v1/chat/completions";
@@ -84,180 +79,124 @@ namespace RimTalkStyleExpand
             return !string.IsNullOrEmpty(result);
         }
 
-        private static void ResolveRimTalkTypes()
+private static string BuildAnalysisPrompt(string styleName, string sampleText)
         {
-            if (_rimTalkResolved) return;
-            _rimTalkResolved = true;
+            var sampledText = SampleTextSegments(sampleText, 0.1f);
+            
+            return $@"You are a writing style analyst. Your task is to examine the provided text sample and extract the distinctive stylistic patterns that define how this author writes, independent of what they write about.
 
-            try
-            {
-                _rimTalkAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                    .FirstOrDefault(a => a.GetName().Name == "RimTalk");
-                
-                if (_rimTalkAssembly == null) return;
+【Style Name】
+{styleName}
 
-                var settingsType = _rimTalkAssembly.GetType("RimTalk.Settings");
-                if (settingsType == null) return;
+【Requirements】
+- Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
+- Focus exclusively on HOW the writing works, not WHAT it contains. Extract only transferable stylistic elements that could be applied to any content.
+- Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
 
-                _getSettingsMethod = settingsType.GetMethod("Get", BindingFlags.Public | BindingFlags.Static);
-            }
-            catch
-            {
-            }
+【Forbidden】
+Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
+
+【Output】
+- Produce a comprehensive style profile of approximately 500 words that captures the essence of this writing approach.
+- Write in the same language as the input text.
+
+【Sample Text】
+{sampledText}";
         }
-
-        private static (string url, string apiKey, string model) GetRimTalkActiveConfig(string overrideModel)
+        
+        private static string SampleTextSegments(string text, float ratio)
         {
-            ResolveRimTalkTypes();
-
-            if (_getSettingsMethod == null)
-            {
-                throw new Exception("RimTalk not found");
-            }
-
-            var settingsInstance = _getSettingsMethod.Invoke(null, null);
-            if (settingsInstance == null)
-            {
-                throw new Exception("RimTalk settings not available");
-            }
-
-            var getActiveConfigMethod = settingsInstance.GetType().GetMethod("GetActiveConfig");
-            if (getActiveConfigMethod == null)
-            {
-                throw new Exception("RimTalk GetActiveConfig method not found");
-            }
-
-            var activeConfig = getActiveConfigMethod.Invoke(settingsInstance, null);
-            if (activeConfig == null)
-            {
-                throw new Exception("RimTalk has no active API configuration. Please configure RimTalk first.");
-            }
-
-            var configType = activeConfig.GetType();
+            if (string.IsNullOrEmpty(text)) return "";
             
-            var apiKeyField = configType.GetField("ApiKey");
-            var baseUrlField = configType.GetField("BaseUrl");
-            var providerField = configType.GetField("Provider");
-            var selectedModelField = configType.GetField("SelectedModel");
-            var customModelNameField = configType.GetField("CustomModelName");
-
-            string apiKey = apiKeyField?.GetValue(activeConfig) as string ?? "";
-            string baseUrl = baseUrlField?.GetValue(activeConfig) as string ?? "";
-            string provider = providerField?.GetValue(activeConfig)?.ToString() ?? "";
+            var totalLength = text.Length;
+            var sampleLength = (int)(totalLength * ratio);
             
-            string model = overrideModel;
-            if (string.IsNullOrEmpty(model))
-            {
-                model = selectedModelField?.GetValue(activeConfig) as string ?? "";
-                if (model == "Custom" || string.IsNullOrEmpty(model))
-                {
-                    model = customModelNameField?.GetValue(activeConfig) as string ?? "";
-                }
-            }
-
-            if (string.IsNullOrEmpty(baseUrl))
-            {
-                if (provider == "OpenAI")
-                {
-                    baseUrl = "https://api.openai.com/v1/chat/completions";
-                }
-                else if (provider == "DeepSeek")
-                {
-                    baseUrl = "https://api.deepseek.com/v1/chat/completions";
-                }
-                else if (provider == "Google")
-                {
-                    baseUrl = "https://generativelanguage.googleapis.com/v1beta/models/MODEL_PLACEHOLDER:generateContent?key=API_KEY_PLACEHOLDER";
-                }
-                else if (provider == "Player2")
-                {
-                    baseUrl = "https://api.player2.live/v1/chat/completions";
-                }
-            }
-
-            if (string.IsNullOrEmpty(baseUrl))
-            {
-                throw new Exception("RimTalk API URL is not configured");
-            }
-
-            // 自动补充 API 端点路径
-            if (!baseUrl.Contains("/v1/") && !baseUrl.Contains("/api/") && !baseUrl.Contains(":11434"))
-            {
-                baseUrl = baseUrl.TrimEnd('/') + "/v1/chat/completions";
-            }
-
-            if (string.IsNullOrEmpty(model))
-            {
-                model = "gpt-3.5-turbo";
-            }
-
-            Logger.Message($"Using RimTalk config - Provider: {provider}, Model: {model}, URL: {baseUrl}");
-
-            return (baseUrl, apiKey, model);
-        }
-
-        private static string BuildAnalysisPrompt(string styleName, string sampleText)
-        {
-            var truncatedSample = sampleText.Length > 3000 ? sampleText.Substring(0, 3000) + "..." : sampleText;
+            if (sampleLength >= totalLength) return text;
+            if (sampleLength < 1000) return text.Length <= 1500 ? text : text.Substring(0, Math.Min(1500, totalLength));
             
-            return $@"Analyze the writing style of this text and create a style guide for '{styleName}'.
-
-IMPORTANT: Focus ONLY on macro-level writing style strategies. Ignore specific characters, scenes, plot elements, and settings mentioned in the text. Extract the generalizable style patterns that can be applied to ANY content.
-
-Analyze these aspects:
-- Tone and emotional expression (formal/casual, warm/cold, serious/humorous, etc.)
-- Vocabulary patterns (archaic/modern, simple/ornate, specific word choices)
-- Sentence structure (short/long, simple/complex, rhetorical devices used)
-- Characteristic expressions or catchphrases
-
-Output format:
-1. Style summary (1-2 sentences describing the overall style)
-2. Key characteristics (2-4 bullet points with specific traits)
-
-Write in the same language as the sample text.
-
-Sample text:
-{truncatedSample}
-
-Style guide:";
+            var segmentLength = sampleLength / 3;
+            
+            var startSegment = text.Substring(0, segmentLength);
+            
+            var midStart = totalLength / 2 - segmentLength / 2;
+            var midSegment = text.Substring(midStart, segmentLength);
+            
+            var endStart = Math.Max(0, totalLength - segmentLength);
+            var endSegment = text.Substring(endStart, segmentLength);
+            
+            return $"[开头部分]\n{startSegment}\n\n[中间部分]\n{midSegment}\n\n[结尾部分]\n{endSegment}";
         }
 
         private static string CallLLMApi(string prompt, string url, string apiKey, string model)
         {
-            var request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = "POST";
-            request.ContentType = "application/json";
-            request.Timeout = 60000;
-
-            if (!string.IsNullOrEmpty(apiKey))
+            for (int attempt = 1; attempt <= MAX_RETRIES; attempt++)
             {
-                request.Headers.Add("Authorization", $"Bearer {apiKey}");
-            }
-
-            var isOllama = url.Contains("ollama") || url.Contains(":11434");
-            var requestBody = isOllama
-                ? $"{{\"model\":\"{model}\",\"prompt\":\"{EscapeJsonString(prompt)}\",\"stream\":false}}"
-                : $"{{\"model\":\"{model}\",\"messages\":[{{\"role\":\"user\",\"content\":\"{EscapeJsonString(prompt)}\"}}]}}";
-
-            var bytes = Encoding.UTF8.GetBytes(requestBody);
-            request.ContentLength = bytes.Length;
-
-            using (var stream = request.GetRequestStream())
-            {
-                stream.Write(bytes, 0, bytes.Length);
-            }
-
-            using (var response = (HttpWebResponse)request.GetResponse())
-            using (var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-            {
-                var jsonResponse = reader.ReadToEnd();
-                var result = ParseLLMResponse(jsonResponse, isOllama);
-                if (string.IsNullOrEmpty(result))
+                try
                 {
-                    Logger.Warning($"Failed to parse LLM response. Response: {jsonResponse.Substring(0, Math.Min(500, jsonResponse.Length))}");
+                    var request = (HttpWebRequest)WebRequest.Create(url);
+                    request.Method = "POST";
+                    request.ContentType = "application/json";
+                    request.Timeout = 60000;
+
+                    if (!string.IsNullOrEmpty(apiKey))
+                    {
+                        request.Headers.Add($"Authorization: Bearer {apiKey}");
+                    }
+
+                    var isOllama = url.Contains("ollama") || url.Contains(":11434");
+                    var requestBody = isOllama
+                        ? $"{{\"model\":\"{model}\",\"prompt\":\"{EscapeJsonString(prompt)}\",\"stream\":false}}"
+                        : $"{{\"model\":\"{model}\",\"messages\":[{{\"role\":\"user\",\"content\":\"{EscapeJsonString(prompt)}\"}}]}}";
+
+                    var bytes = Encoding.UTF8.GetBytes(requestBody);
+                    request.ContentLength = bytes.Length;
+
+                    using (var stream = request.GetRequestStream())
+                    {
+                        stream.Write(bytes, 0, bytes.Length);
+                    }
+
+                    using (var response = (HttpWebResponse)request.GetResponse())
+                    using (var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                    {
+                        var jsonResponse = reader.ReadToEnd();
+                        var result = ParseLLMResponse(jsonResponse, isOllama);
+                        if (string.IsNullOrEmpty(result))
+                        {
+                            Logger.Warning($"Failed to parse LLM response. Response: {jsonResponse.Substring(0, Math.Min(500, jsonResponse.Length))}");
+                        }
+                        return result;
+                    }
                 }
-                return result;
+                catch (WebException ex)
+                {
+                    var shouldRetry = ShouldRetry(ex);
+                    
+                    if (attempt >= MAX_RETRIES || !shouldRetry)
+                    {
+                        Logger.Error($"LLM API failed after {attempt} attempts: {ex.Message}");
+                        throw;
+                    }
+                    
+                    var delay = BASE_RETRY_DELAY_MS * attempt;
+                    Logger.Warning($"LLM API failed (attempt {attempt}), retrying in {delay}ms: {ex.Message}");
+                    System.Threading.Thread.Sleep(delay);
+                }
             }
+            
+            return null;
+        }
+        
+        private static bool ShouldRetry(WebException ex)
+        {
+            if (ex.Response is HttpWebResponse response)
+            {
+                var code = (int)response.StatusCode;
+                return code == 429 || code == 503 || code == 502 || code == 504;
+            }
+            return ex.Status == WebExceptionStatus.Timeout || 
+                   ex.Status == WebExceptionStatus.ConnectionClosed ||
+                   ex.Status == WebExceptionStatus.ConnectFailure;
         }
 
         private static string ParseLLMResponse(string json, bool isOllama)

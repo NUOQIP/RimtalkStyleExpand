@@ -50,7 +50,7 @@ A style expansion Mod based on vector retrieval, supporting custom styles.
 - OpenAI Embedding API
 - Other OpenAI-compatible APIs
 
-Recommended models: `bge-small-zh`, `text-embedding-3-small`
+Recommended models: `nomic-embed-text`, `text-embedding-3-small`
 
 ### Using RimTalk API Config
 
@@ -111,7 +111,26 @@ StyleExpand/
 
 ## Progress
 
-### v1.4 (Current)
+### v1.4.1 (Current)
+
+- [x] API call optimization
+  - Add retry mechanism (max 3 retries + exponential backoff)
+  - Fix Ollama API compatibility (prompt field)
+  - Fix embedding parsing failure on Chinese systems (CultureInfo)
+- [x] Cache optimization
+  - Add LRU cache eviction (max 1000 entries)
+  - Prevent embedding cache memory overflow
+- [x] LLM Prompt redesign
+  - New prompt design: no pre-set analysis dimensions, let LLM decide
+  - Segment sampling: beginning/middle/end sections, ~10% total
+  - Output ~500 words style profile
+- [x] Code refactoring
+  - Centralize RimTalk API integration in `RimTalkAPIIntegration.cs`
+  - Remove redundant UI elements
+- [x] Recommended model update
+  - Ollama: `nomic-embed-text`
+
+### v1.4
 
 - [x] UI redesign
   - Reorganized module order for better UX

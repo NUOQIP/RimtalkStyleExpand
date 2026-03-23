@@ -50,7 +50,7 @@
 - OpenAI Embedding API
 - 其他 OpenAI 兼容 API
 
-推荐模型：`bge-small-zh`、`text-embedding-3-small`
+推荐模型：`nomic-embed-text`、`text-embedding-3-small`
 
 ### 使用 RimTalk API 配置
 
@@ -111,7 +111,26 @@ StyleExpand/
 
 ## 项目进度
 
-### v1.4（当前版本）
+### v1.4.1（当前版本）
+
+- [x] API 调用优化
+  - 添加重试机制（最多3次 + 指数退避）
+  - 修复 Ollama API 兼容性（prompt 字段）
+  - 修复中文系统下 embedding 解析失败（CultureInfo）
+- [x] 缓存优化
+  - 添加 LRU 缓存淘汰机制（最大1000条）
+  - 避免 embedding 缓存内存溢出
+- [x] LLM Prompt 重构
+  - 新 prompt 设计：不预设分析维度，让 LLM 自行判断
+  - 分段采样：开头/中间/结尾各取一部分，共10%
+  - 输出约500字的风格描述
+- [x] 代码重构
+  - RimTalk API 集成集中到 `RimTalkAPIIntegration.cs`
+  - 移除冗余 UI 元素
+- [x] 推荐模型更新
+  - Ollama: `nomic-embed-text`
+
+### v1.4
 
 - [x] UI 重构
   - 重新设计模块顺序，优化用户体验

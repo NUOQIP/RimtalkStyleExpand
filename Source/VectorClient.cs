@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,13 +11,6 @@ using Verse;
 
 namespace RimTalkStyleExpand
 {
-    /// <summary>
-    /// 向量客户端 - 单例模式
-    /// 支持：
-    /// - 异步 API（不阻塞主线程）
-    /// - 内容哈希缓存（检测变更）
-    /// - 批量 embedding 获取
-    /// </summary>
     public class VectorClient
     {
         private static VectorClient _instance;
@@ -39,8 +34,15 @@ namespace RimTalkStyleExpand
             }
         }
         
+        private const int MAX_CACHE_SIZE = 1000;
+        private const int CLEANUP_THRESHOLD = 1200;
+        private const int MAX_RETRIES = 3;
+        private const int BASE_RETRY_DELAY_MS = 500;
+        
+        private readonly LinkedList<string> _lruList = new LinkedList<string>();
         private readonly Dictionary<string, float[]> _embeddingCache = new Dictionary<string, float[]>();
         private readonly Dictionary<string, string> _contentHashes = new Dictionary<string, string>();
+        private readonly object _cacheLock = new object();
         
         private VectorClient()
         {
@@ -68,10 +70,11 @@ namespace RimTalkStyleExpand
             
             var hash = ComputeHash(text);
             
-            lock (_embeddingCache)
+            lock (_cacheLock)
             {
                 if (_embeddingCache.TryGetValue(hash, out var cached))
                 {
+                    MoveToHead(hash);
                     return cached;
                 }
             }
@@ -87,10 +90,18 @@ namespace RimTalkStyleExpand
             
             if (embedding != null)
             {
-                lock (_embeddingCache)
+                lock (_cacheLock)
                 {
+                    if (_embeddingCache.Count >= CLEANUP_THRESHOLD)
+                    {
+                        EvictLRU(MAX_CACHE_SIZE / 2);
+                    }
+                    
                     _embeddingCache[hash] = embedding;
                     _contentHashes[hash] = hash;
+                    
+                    _lruList.Remove(hash);
+                    _lruList.AddFirst(hash);
                 }
             }
             
@@ -128,39 +139,72 @@ namespace RimTalkStyleExpand
         
         private float[] GetEmbeddingFromApi(string text, VectorApiConfig config)
         {
-            try
+            for (int attempt = 1; attempt <= MAX_RETRIES; attempt++)
             {
-                var request = (HttpWebRequest)WebRequest.Create(config.Url);
-                request.Method = "POST";
-                request.ContentType = "application/json";
-                request.Timeout = 30000;
-
-                if (!string.IsNullOrEmpty(config.ApiKey))
+                try
                 {
-                    request.Headers.Add("Authorization", "Bearer " + config.ApiKey);
+                    var request = (HttpWebRequest)WebRequest.Create(config.Url);
+                    request.Method = "POST";
+                    request.ContentType = "application/json";
+                    request.Timeout = 30000;
+
+                    if (!string.IsNullOrEmpty(config.ApiKey))
+                    {
+                        request.Headers.Add("Authorization", "Bearer " + config.ApiKey);
+                    }
+
+                    var isOllama = config.Url.Contains(":11434") || config.Url.Contains("ollama");
+                    var inputField = isOllama ? "prompt" : "input";
+                    var requestBody = $"{{\"model\":\"{config.Model}\",\"{inputField}\":\"{EscapeJson(text)}\"}}";
+                    var bytes = Encoding.UTF8.GetBytes(requestBody);
+                    request.ContentLength = bytes.Length;
+
+                    using (var stream = request.GetRequestStream())
+                    {
+                        stream.Write(bytes, 0, bytes.Length);
+                    }
+
+                    using (var response = (HttpWebResponse)request.GetResponse())
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        var responseJson = reader.ReadToEnd();
+                        return ParseEmbeddingResponse(responseJson);
+                    }
                 }
-
-                var requestBody = $"{{\"model\":\"{config.Model}\",\"input\":\"{EscapeJson(text)}\"}}";
-                var bytes = Encoding.UTF8.GetBytes(requestBody);
-                request.ContentLength = bytes.Length;
-
-                using (var stream = request.GetRequestStream())
+                catch (WebException ex)
                 {
-                    stream.Write(bytes, 0, bytes.Length);
+                    var shouldRetry = ShouldRetry(ex);
+                    
+                    if (attempt >= MAX_RETRIES || !shouldRetry)
+                    {
+                        Logger.Error($"Error getting embedding after {attempt} attempts: {ex.Message}");
+                        return null;
+                    }
+                    
+                    var delay = BASE_RETRY_DELAY_MS * attempt;
+                    Logger.Warning($"Embedding API failed (attempt {attempt}), retrying in {delay}ms: {ex.Message}");
+                    System.Threading.Thread.Sleep(delay);
                 }
-
-                using (var response = (HttpWebResponse)request.GetResponse())
-                using (var reader = new StreamReader(response.GetResponseStream()))
+                catch (Exception ex)
                 {
-                    var responseJson = reader.ReadToEnd();
-                    return ParseEmbeddingResponse(responseJson);
+                    Logger.Error($"Error getting embedding: {ex.Message}");
+                    return null;
                 }
             }
-            catch (Exception ex)
+            
+            return null;
+        }
+        
+        private static bool ShouldRetry(WebException ex)
+        {
+            if (ex.Response is HttpWebResponse response)
             {
-                Logger.Error($"Error getting embedding: {ex.Message}");
-                return null;
+                var code = (int)response.StatusCode;
+                return code == 429 || code == 503 || code == 502 || code == 504;
             }
+            return ex.Status == WebExceptionStatus.Timeout || 
+                   ex.Status == WebExceptionStatus.ConnectionClosed ||
+                   ex.Status == WebExceptionStatus.ConnectFailure;
         }
         
         #endregion
@@ -244,7 +288,7 @@ namespace RimTalkStyleExpand
             
             for (int i = 0; i < parts.Length; i++)
             {
-                if (float.TryParse(parts[i].Trim(), out var value))
+                if (float.TryParse(parts[i].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
                 {
                     result[i] = value;
                 }
@@ -279,18 +323,41 @@ namespace RimTalkStyleExpand
         
         #region 缓存管理
         
+        private void MoveToHead(string hash)
+        {
+            _lruList.Remove(hash);
+            _lruList.AddFirst(hash);
+        }
+        
+        private void EvictLRU(int count)
+        {
+            for (int i = 0; i < count && _lruList.Count > 0; i++)
+            {
+                var oldest = _lruList.Last.Value;
+                _lruList.RemoveLast();
+                _embeddingCache.Remove(oldest);
+                _contentHashes.Remove(oldest);
+            }
+            
+            if (Prefs.DevMode)
+            {
+                Logger.Message($"[VectorClient] Evicted {count} cache entries, remaining: {_embeddingCache.Count}");
+            }
+        }
+        
         public void ClearCache()
         {
-            lock (_embeddingCache)
+            lock (_cacheLock)
             {
                 _embeddingCache.Clear();
                 _contentHashes.Clear();
+                _lruList.Clear();
             }
         }
         
         public int GetCacheCount()
         {
-            lock (_embeddingCache)
+            lock (_cacheLock)
             {
                 return _embeddingCache.Count;
             }
@@ -299,7 +366,7 @@ namespace RimTalkStyleExpand
         public bool HasCached(string text)
         {
             var hash = ComputeHash(text);
-            lock (_embeddingCache)
+            lock (_cacheLock)
             {
                 return _embeddingCache.ContainsKey(hash);
             }
@@ -307,7 +374,7 @@ namespace RimTalkStyleExpand
         
         public void ExportCache(out List<string> hashes, out List<float[]> embeddings)
         {
-            lock (_embeddingCache)
+            lock (_cacheLock)
             {
                 hashes = new List<string>(_embeddingCache.Keys);
                 embeddings = new List<float[]>(_embeddingCache.Values);
@@ -318,14 +385,22 @@ namespace RimTalkStyleExpand
         {
             if (hashes == null || embeddings == null) return;
             
-            lock (_embeddingCache)
+            lock (_cacheLock)
             {
                 for (int i = 0; i < hashes.Count && i < embeddings.Count; i++)
                 {
                     if (embeddings[i] != null)
                     {
                         _embeddingCache[hashes[i]] = embeddings[i];
+                        
+                        _lruList.Remove(hashes[i]);
+                        _lruList.AddFirst(hashes[i]);
                     }
+                }
+                
+                if (_embeddingCache.Count > MAX_CACHE_SIZE)
+                {
+                    EvictLRU(_embeddingCache.Count - MAX_CACHE_SIZE);
                 }
             }
         }

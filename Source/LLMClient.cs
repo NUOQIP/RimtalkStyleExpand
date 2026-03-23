@@ -97,7 +97,7 @@ private static string BuildAnalysisPrompt(string styleName, string sampleText)
 Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
 
 【Output】
-- Produce a comprehensive style profile of approximately 500 words that captures the essence of this writing approach.
+- Produce a comprehensive style profile within 500 words that captures the essence of this writing approach.
 - Write in the same language as the input text.
 
 【Sample Text】

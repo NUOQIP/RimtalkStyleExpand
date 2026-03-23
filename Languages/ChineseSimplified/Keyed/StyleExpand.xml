@@ -111,6 +111,7 @@
   <StyleExpand_PromptTemplateDesc>自定义注入给 AI 的基础文风指令</StyleExpand_PromptTemplateDesc>
   <StyleExpand_BasePrompt>基础提示词模板（使用 {style_name} 作为占位符）：</StyleExpand_BasePrompt>
   <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
+  <StyleExpand_ResetBasePrompt>重置模板</StyleExpand_ResetBasePrompt>
   
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>切分参数</StyleExpand_ChunkingConfig>

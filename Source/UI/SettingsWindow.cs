@@ -512,7 +512,7 @@ namespace RimTalkStyleExpand
             var promptRow = list.GetRect(30f);
             Widgets.Label(new Rect(promptRow.x, promptRow.y, promptRow.width - 120f, 30f), "StyleExpand_BasePrompt".Translate());
             
-            if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetToDefault".Translate()))
+            if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetBasePrompt".Translate()))
             {
                 settings.Retrieval.BasePromptTemplate = "Please imitate the following writing style ({style_name}) when generating dialogue:";
                 ShowStatus("StyleExpand_PromptReset".Translate());

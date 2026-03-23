@@ -111,6 +111,7 @@
   <StyleExpand_PromptTemplateDesc>Customize the base style instruction injected to AI</StyleExpand_PromptTemplateDesc>
   <StyleExpand_BasePrompt>Base Prompt Template (use {style_name}):</StyleExpand_BasePrompt>
   <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
+  <StyleExpand_ResetBasePrompt>Reset Template</StyleExpand_ResetBasePrompt>
   
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>Chunking Parameters</StyleExpand_ChunkingConfig>

@@ -108,10 +108,12 @@ Do not quote passages, discuss characters, describe scenes, summarize plot point
             
             var totalLength = text.Length;
             var sampleLength = (int)(totalLength * ratio);
+            const int maxSampleLength = 5000;
             
-            if (sampleLength >= totalLength) return text;
+            if (sampleLength >= totalLength) return text.Length <= maxSampleLength ? text : text.Substring(0, maxSampleLength);
             if (sampleLength < 1000) return text.Length <= 1500 ? text : text.Substring(0, Math.Min(1500, totalLength));
             
+            sampleLength = Math.Min(sampleLength, maxSampleLength);
             var segmentLength = sampleLength / 3;
             
             var startSegment = text.Substring(0, segmentLength);

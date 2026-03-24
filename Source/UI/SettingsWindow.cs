@@ -183,15 +183,6 @@ namespace RimTalkStyleExpand
                 settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
             }
             
-            var maxTokensRow = list.GetRect(30f);
-            Widgets.Label(new Rect(maxTokensRow.x, maxTokensRow.y, maxTokensRow.width - 80f, 30f), "StyleExpand_MaxTokens".Translate());
-            var maxTokensStr = settings.LlmApi.MaxTokens.ToString();
-            maxTokensStr = Widgets.TextField(new Rect(maxTokensRow.xMax - 75f, maxTokensRow.y, 75f, 30f), maxTokensStr);
-            if (int.TryParse(maxTokensStr, out var maxTokens) && maxTokens > 0)
-            {
-                settings.LlmApi.MaxTokens = maxTokens;
-            }
-            
             list.Gap();
             
             if (list.ButtonText("StyleExpand_TestLlmConnection".Translate()))
@@ -412,6 +403,14 @@ namespace RimTalkStyleExpand
             if (Widgets.ButtonText(new Rect(generateBtnRow.x, generateBtnRow.y, generateBtnRow.width / 2f - 5f, 30f), "StyleExpand_GeneratePrompt".Translate()))
             {
                 GenerateStylePromptAsync(selectedStyle.Name);
+            }
+            
+            Widgets.Label(new Rect(generateBtnRow.x + generateBtnRow.width / 2f + 10f, generateBtnRow.y + 5f, 80f, 20f), "StyleExpand_MaxTokens".Translate());
+            var maxTokensStr = settings.LlmApi.MaxTokens.ToString();
+            maxTokensStr = Widgets.TextField(new Rect(generateBtnRow.x + generateBtnRow.width / 2f + 95f, generateBtnRow.y, 60f, 30f), maxTokensStr);
+            if (int.TryParse(maxTokensStr, out var maxTokens) && maxTokens > 0)
+            {
+                settings.LlmApi.MaxTokens = maxTokens;
             }
             
             GUI.color = Color.white;

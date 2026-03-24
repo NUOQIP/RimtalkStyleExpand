@@ -83,25 +83,20 @@ private static string BuildAnalysisPrompt(string styleName, string sampleText)
         {
             var sampledText = SampleTextSegments(sampleText, 0.1f);
             
-            return $@"You are a writing style guide writer. Your task is to create a practical style guide that instructs others how to write in the style of ""{styleName}"".
-
-【Style Name】
-{styleName}
+            return $@"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{styleName}"" style.
 
 【Requirements】
-- Write in imperative, instructional tone (e.g., ""Use short sentences"" not ""The style uses short sentences"")
 - Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
-- Focus only on HOW to write, not WHAT to write about. Extract only transferable stylistic elements that could be applied to any content.
+- Focus exclusively on HOW the writing works, not WHAT it contains. Extract only transferable stylistic elements that could be applied to any content.
 - Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
-- Provide concrete, actionable instructions
 
 【Forbidden】
-Do not quote passages, discuss characters, scenes, plot, or settings
+Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
 
 【Output】
-- A practical style guide within 500 words
-- Use Markdown formatting if helpful
-- Write in the same language as the sample text
+- Produce a style guide within 500 words that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+- Write in the same language as the input text.
+- Use imperative tone.
 
 【Sample Text】
 {sampledText}";

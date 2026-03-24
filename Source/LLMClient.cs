@@ -18,7 +18,7 @@ namespace RimTalkStyleExpand
                 throw new Exception("Sample text is empty");
             }
 
-            var prompt = BuildAnalysisPrompt(styleName, sampleText);
+            var prompt = BuildAnalysisPrompt(styleName, sampleText, config.MaxTokens);
             
             string url;
             string apiKey;
@@ -79,7 +79,7 @@ namespace RimTalkStyleExpand
             return !string.IsNullOrEmpty(result);
         }
 
-private static string BuildAnalysisPrompt(string styleName, string sampleText)
+private static string BuildAnalysisPrompt(string styleName, string sampleText, int maxTokens)
         {
             var sampledText = SampleTextSegments(sampleText, 0.1f);
             
@@ -94,7 +94,7 @@ private static string BuildAnalysisPrompt(string styleName, string sampleText)
 Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
 
 【Output】
-- Produce a style guide within 500 words that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+- Produce a style guide within {maxTokens} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
 - Write in the same language as the input text.
 - Use imperative tone.
 

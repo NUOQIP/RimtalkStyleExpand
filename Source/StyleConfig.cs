@@ -102,7 +102,7 @@ namespace RimTalkStyleExpand
         public string Url = "http://localhost:11434/api/generate";
         public string ApiKey = "";
         public string Model = "llama3";
-        public string StylePromptTemplate = "Analyze the writing style and describe its key characteristics in 2-4 sentences.";
+        public int MaxTokens = 800;
 
         public void ExposeData()
         {
@@ -110,7 +110,7 @@ namespace RimTalkStyleExpand
             Scribe_Values.Look(ref Url, "url", "http://localhost:11434/api/generate");
             Scribe_Values.Look(ref ApiKey, "apiKey", "");
             Scribe_Values.Look(ref Model, "model", "llama3");
-            Scribe_Values.Look(ref StylePromptTemplate, "stylePromptTemplate", "Analyze the writing style and describe its key characteristics in 2-4 sentences.");
+            Scribe_Values.Look(ref MaxTokens, "maxTokens", 800);
         }
     }
 }

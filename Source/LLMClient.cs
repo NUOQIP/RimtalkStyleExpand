@@ -90,8 +90,9 @@ private static string BuildAnalysisPrompt(string styleName, string sampleText)
 
 【Requirements】
 - Write in imperative, instructional tone (e.g., ""Use short sentences"" not ""The style uses short sentences"")
-- Focus only on HOW to write, not WHAT to write about
-- Identify the most distinctive style dimensions from the sample
+- Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
+- Focus only on HOW to write, not WHAT to write about. Extract only transferable stylistic elements that could be applied to any content.
+- Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
 - Provide concrete, actionable instructions
 
 【Forbidden】

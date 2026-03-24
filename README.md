@@ -64,7 +64,6 @@ StyleExpand 自动注册以下变量到 RimTalk，在高级模式中直接使用
 
 | 变量 | 说明 |
 |------|------|
-| `{{style_base_prompt}}` | 基础文风提示词 |
 | `{{style_name}}` | 当前文风名称 |
 | `{{style_prompt}}` | 文风描述 |
 | `{{style_chunks}}` | 检索到的示例片段 |
@@ -74,11 +73,44 @@ StyleExpand 自动注册以下变量到 RimTalk，在高级模式中直接使用
 
 ```
 [Style Instruction]
-{{style_base_prompt}}
+Please imitate the following writing style ({{style_name}}) when generating dialogue:
 
 {{style_prompt}}
 
 {{style_chunks}}
+```
+
+## 注入机制
+
+### 注入方式
+
+StyleExpand 使用 RimTalk 官方 API 注入：
+
+1. **注册变量**：自动注册 `{{style_xxx}}` 变量
+2. **添加 PromptEntry**：在 RimTalk 预设中添加 "Style Context" 条目
+3. **注入位置**：在 System Prompt 之后
+
+### 简单模式 vs 高级模式
+
+| 特性 | 简单模式 | 高级模式 |
+|------|----------|----------|
+| 注入位置 | System Prompt 后 | System Prompt 后 |
+| PromptEntry 可见 | ❌ 界面隐藏 | ✅ 可见可编辑 |
+| 文风生效 | ✅ | ✅ |
+
+两种模式文风都会生效，区别仅在于用户能否看到/编辑 PromptEntry。
+
+### RimTalk Prompt 结构
+
+```
+System Prompt           ← RimTalk 默认
+     ↓
+Style Context           ← 我们注入的
+{{style_full}}
+     ↓
+Memory Context          ← ExpandMemory（如果安装）
+     ↓
+User Message
 ```
 
 ## 文件结构
@@ -118,6 +150,10 @@ StyleExpand/
   - 用户可在 RimTalk 界面中看到/编辑 "Style Context" PromptEntry
   - 支持开关、调整位置、自定义内容
   - 保留 Harmony Patch 作为后备方案
+- [x] 简单模式支持
+  - 添加 context 缓存机制
+  - 简单模式下使用文风名称作为检索 query 回退
+  - 确保两种模式都能正常注入文风
 - [x] Scriban 变量
   - `{{style_name}}` - 当前文风名称
   - `{{style_prompt}}` - 文风描述

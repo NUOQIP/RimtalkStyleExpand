@@ -83,22 +83,24 @@ private static string BuildAnalysisPrompt(string styleName, string sampleText)
         {
             var sampledText = SampleTextSegments(sampleText, 0.1f);
             
-            return $@"You are a writing style analyst. Your task is to examine the provided text sample and extract the distinctive stylistic patterns that define how this author writes, independent of what they write about.
+            return $@"You are a writing style guide writer. Your task is to create a practical style guide that instructs others how to write in the style of ""{styleName}"".
 
 【Style Name】
 {styleName}
 
 【Requirements】
-- Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
-- Focus exclusively on HOW the writing works, not WHAT it contains. Extract only transferable stylistic elements that could be applied to any content.
-- Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
+- Write in imperative, instructional tone (e.g., ""Use short sentences"" not ""The style uses short sentences"")
+- Focus only on HOW to write, not WHAT to write about
+- Identify the most distinctive style dimensions from the sample
+- Provide concrete, actionable instructions
 
 【Forbidden】
-Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
+Do not quote passages, discuss characters, scenes, plot, or settings
 
 【Output】
-- Produce a comprehensive style profile within 500 words that captures the essence of this writing approach.
-- Write in the same language as the input text.
+- A practical style guide within 500 words
+- Use Markdown formatting if helpful
+- Write in the same language as the sample text
 
 【Sample Text】
 {sampledText}";

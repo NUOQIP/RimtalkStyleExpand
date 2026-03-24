@@ -113,7 +113,7 @@
   <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
   <StyleExpand_ResetBasePrompt>Reset Template</StyleExpand_ResetBasePrompt>
   <StyleExpand_StylePromptTemplate>Style Analysis Prompt Template</StyleExpand_StylePromptTemplate>
-  <StyleExpand_StylePromptTemplateDesc>LLM prompt for auto-generating style descriptions. Placeholders: {style_name}, {max_tokens}, {sample_text}</StyleExpand_StylePromptTemplateDesc>
+  <StyleExpand_StylePromptTemplateDesc>LLM prompt for auto-generating style descriptions</StyleExpand_StylePromptTemplateDesc>
   <StyleExpand_ResetStylePrompt>Reset Template</StyleExpand_ResetStylePrompt>
   <StyleExpand_StylePromptVars>Placeholders: {style_name} {max_tokens} {sample_text}</StyleExpand_StylePromptVars>
   

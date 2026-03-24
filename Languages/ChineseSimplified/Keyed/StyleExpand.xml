@@ -113,7 +113,7 @@
   <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
   <StyleExpand_ResetBasePrompt>重置模板</StyleExpand_ResetBasePrompt>
   <StyleExpand_StylePromptTemplate>文风分析提示词模板</StyleExpand_StylePromptTemplate>
-  <StyleExpand_StylePromptTemplateDesc>用于自动生成文风描述的 LLM 提示词。可用占位符：{style_name}、{max_tokens}、{sample_text}</StyleExpand_StylePromptTemplateDesc>
+  <StyleExpand_StylePromptTemplateDesc>用于自动生成文风描述的 LLM 提示词</StyleExpand_StylePromptTemplateDesc>
   <StyleExpand_ResetStylePrompt>重置模板</StyleExpand_ResetStylePrompt>
   <StyleExpand_StylePromptVars>可用占位符: {style_name} {max_tokens} {sample_text}</StyleExpand_StylePromptVars>
   

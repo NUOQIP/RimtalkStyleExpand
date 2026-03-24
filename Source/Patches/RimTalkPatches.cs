@@ -15,6 +15,8 @@ namespace RimTalkStyleExpand
         private static Type _talkRequestType;
         private static Type _promptManagerType;
         private static PropertyInfo _initiatorProperty;
+        private static PropertyInfo _contextProperty;
+        private static PropertyInfo _promptProperty;
 
         static RimTalkPatches()
         {
@@ -24,6 +26,8 @@ namespace RimTalkStyleExpand
             if (_talkRequestType != null)
             {
                 _initiatorProperty = _talkRequestType.GetProperty("Initiator");
+                _contextProperty = _talkRequestType.GetProperty("Context");
+                _promptProperty = _talkRequestType.GetProperty("Prompt");
             }
         }
 
@@ -36,17 +40,34 @@ namespace RimTalkStyleExpand
         [HarmonyPrefix]
         public static bool BuildMessagesPrefix(object __instance, object talkRequest, List<Pawn> pawns, string status)
         {
-            if (RimTalkAPIIntegration.IsApiAvailable)
-            {
-                return true;
-            }
-            
             if (!StyleExpandSettings.Instance?.IsEnabled ?? true) return true;
             
             if (talkRequest == null || _initiatorProperty == null) return true;
             
             var initiator = _initiatorProperty?.GetValue(talkRequest) as Pawn;
             if (initiator == null) return true;
+            
+            string context = "";
+            try
+            {
+                if (_contextProperty != null)
+                {
+                    context = _contextProperty.GetValue(talkRequest) as string ?? "";
+                }
+                
+                if (string.IsNullOrEmpty(context) && _promptProperty != null)
+                {
+                    context = _promptProperty.GetValue(talkRequest) as string ?? "";
+                }
+            }
+            catch { }
+            
+            StyleVariableProvider.CacheContext(initiator, context);
+
+            if (RimTalkAPIIntegration.IsApiAvailable)
+            {
+                return true;
+            }
 
             var stylePrompt = PromptBuilder.BuildStylePrompt(initiator);
             if (string.IsNullOrEmpty(stylePrompt)) return true;

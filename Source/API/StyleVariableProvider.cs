@@ -2,19 +2,37 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Verse;
+using RimWorld;
 
 namespace RimTalkStyleExpand
 {
-    /// <summary>
-    /// 文风变量提供器
-    /// 为 RimTalk API 提供 {{style_xxx}} 变量的值
-    /// </summary>
     public static class StyleVariableProvider
     {
         private static string _cachedQuery;
         private static List<StyleRetriever.StyleChunk> _cachedChunks;
         private static int _cacheTick;
         private static readonly int CacheDuration = 60;
+        
+        private static string _lastContext;
+        private static Pawn _lastPawn;
+        private static int _contextTick;
+        
+        public static void CacheContext(Pawn pawn, string context)
+        {
+            _lastPawn = pawn;
+            _lastContext = context ?? "";
+            _contextTick = Find.TickManager?.TicksGame ?? 0;
+        }
+        
+        public static string GetCachedContext()
+        {
+            int currentTick = Find.TickManager?.TicksGame ?? 0;
+            if (currentTick - _contextTick > 60)
+            {
+                return null;
+            }
+            return _lastContext;
+        }
         
         public static string GetStyleName(object context)
         {
@@ -23,17 +41,6 @@ namespace RimTalkStyleExpand
             
             var style = settings.GetSelectedStyle();
             return style?.Name ?? "";
-        }
-        
-        public static string GetBasePrompt(object context)
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null || !settings.IsEnabled) return "";
-            
-            var style = settings.GetSelectedStyle();
-            if (style == null) return "";
-            
-            return settings.Retrieval.BasePromptTemplate?.Replace("{style_name}", style.Name) ?? "";
         }
         
         public static string GetStylePrompt(object context)
@@ -57,8 +64,17 @@ namespace RimTalkStyleExpand
             
             try
             {
-                var query = ExtractQueryFromContext(context);
-                if (string.IsNullOrEmpty(query)) return "";
+                string query = GetCachedContext();
+                
+                if (string.IsNullOrEmpty(query))
+                {
+                    query = ExtractQueryFromContext(context);
+                }
+                
+                if (string.IsNullOrEmpty(query))
+                {
+                    query = style.Name;
+                }
                 
                 var chunks = GetCachedChunks(query, settings);
                 if (chunks == null || chunks.Count == 0) return "";
@@ -174,6 +190,9 @@ namespace RimTalkStyleExpand
             _cachedQuery = null;
             _cachedChunks = null;
             _cacheTick = 0;
+            _lastContext = null;
+            _lastPawn = null;
+            _contextTick = 0;
         }
     }
 }

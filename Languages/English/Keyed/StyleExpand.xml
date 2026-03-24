@@ -23,7 +23,7 @@
   <StyleExpand_PromptReset>Base prompt reset to default</StyleExpand_PromptReset>
   <StyleExpand_StylePromptCleared>Style prompt cleared</StyleExpand_StylePromptCleared>
   <StyleExpand_FileTooLarge>Warning: File '{0}' is large ({1} chars). Processing may take a while.</StyleExpand_FileTooLarge>
-  <StyleExpand_RecommendedSize>Recommended: Chinese 5,000-50,000 chars | English 3,000-30,000 words</StyleExpand_RecommendedSize>
+  <StyleExpand_RecommendedSize>Recommended: Chinese 5,000-20,000 chars | English 3,000-15,000 words</StyleExpand_RecommendedSize>
   <StyleExpand_PartialProgress>Partial chunking progress detected: {0}</StyleExpand_PartialProgress>
   <StyleExpand_ResumeHint>Click 'Resume' to continue from where it stopped</StyleExpand_ResumeHint>
   <StyleExpand_ChunkingCancelled>Chunking cancelled for '{0}', progress saved.</StyleExpand_ChunkingCancelled>
@@ -104,7 +104,6 @@
   <StyleExpand_PreviewSuccess>Preview success, retrieved {0} chunks</StyleExpand_PreviewSuccess>
   <StyleExpand_PreviewResult>Preview result:</StyleExpand_PreviewResult>
   <StyleExpand_TopK>Top K: {0}</StyleExpand_TopK>
-  <StyleExpand_MaxChunk>Max Chunk Length: {0}</StyleExpand_MaxChunk>
   <StyleExpand_Threshold>Similarity Threshold: {0}</StyleExpand_Threshold>
   
   <!-- Prompt Section -->
@@ -113,10 +112,15 @@
   <StyleExpand_BasePrompt>Base Prompt Template (use {style_name}):</StyleExpand_BasePrompt>
   <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
   <StyleExpand_ResetBasePrompt>Reset Template</StyleExpand_ResetBasePrompt>
+  <StyleExpand_StylePromptTemplate>Style Analysis Prompt Template</StyleExpand_StylePromptTemplate>
+  <StyleExpand_StylePromptTemplateDesc>LLM prompt for auto-generating style descriptions. Placeholders: {style_name}, {max_tokens}, {sample_text}</StyleExpand_StylePromptTemplateDesc>
+  <StyleExpand_ResetStylePrompt>Reset Template</StyleExpand_ResetStylePrompt>
+  <StyleExpand_StylePromptVars>Placeholders: {style_name} {max_tokens} {sample_text}</StyleExpand_StylePromptVars>
   
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>Chunking Parameters</StyleExpand_ChunkingConfig>
-  <StyleExpand_ChunkingConfigDesc>Large file sampling and batch processing settings, usually no need to adjust</StyleExpand_ChunkingConfigDesc>
+  <StyleExpand_ChunkingConfigDesc>Text chunking settings, controls the length of each chunk</StyleExpand_ChunkingConfigDesc>
+  <StyleExpand_TargetChunkLength>Target Chunk Length: {0} chars</StyleExpand_TargetChunkLength>
   <StyleExpand_EnableSampling>Enable Large File Sampling</StyleExpand_EnableSampling>
   <StyleExpand_EnableSamplingDesc>Automatically sample representative chunks when exceeding threshold</StyleExpand_EnableSamplingDesc>
   <StyleExpand_SampleTarget>Target Chunks: {0}</StyleExpand_SampleTarget>
@@ -155,7 +159,7 @@
   <StyleExpand_HelpStyleOne>- One .txt file = one style</StyleExpand_HelpStyleOne>
   <StyleExpand_HelpStyleName>- Filename becomes the style name</StyleExpand_HelpStyleName>
   <StyleExpand_HelpStyleContent>- File content is used for style examples</StyleExpand_HelpStyleContent>
-  <StyleExpand_HelpStyleSize>- Recommended size: Chinese 5,000-50,000 chars | English 3,000-30,000 words</StyleExpand_HelpStyleSize>
+  <StyleExpand_HelpStyleSize>- Recommended size: Chinese 5,000-20,000 chars | English 3,000-15,000 words</StyleExpand_HelpStyleSize>
   <StyleExpand_HelpStyleSizeNote>- Larger files will work but take longer to process</StyleExpand_HelpStyleSizeNote>
   <StyleExpand_HelpChunking>== Chunking ==</StyleExpand_HelpChunking>
   <StyleExpand_HelpChunkWhat>- Chunks text into smaller pieces</StyleExpand_HelpChunkWhat>

@@ -23,7 +23,7 @@
   <StyleExpand_PromptReset>基础提示词已重置</StyleExpand_PromptReset>
   <StyleExpand_StylePromptCleared>文风提示词已清除</StyleExpand_StylePromptCleared>
   <StyleExpand_FileTooLarge>警告：文件 '{0}' 较大（{1} 字符），处理可能需要较长时间。</StyleExpand_FileTooLarge>
-  <StyleExpand_RecommendedSize>推荐范围：中文 5,000-50,000 字 | 英文 3,000-30,000 词</StyleExpand_RecommendedSize>
+  <StyleExpand_RecommendedSize>推荐范围：中文 5,000-20,000 字 | 英文 3,000-15,000 词</StyleExpand_RecommendedSize>
   <StyleExpand_PartialProgress>检测到未完成的切分进度：{0}</StyleExpand_PartialProgress>
   <StyleExpand_ResumeHint>可以点击"继续"按钮从中断处继续</StyleExpand_ResumeHint>
   <StyleExpand_ChunkingCancelled>文风 '{0}' 切分已取消，进度已保存。</StyleExpand_ChunkingCancelled>
@@ -104,7 +104,6 @@
   <StyleExpand_PreviewSuccess>预览成功，检索到 {0} 个片段</StyleExpand_PreviewSuccess>
   <StyleExpand_PreviewResult>预览结果：</StyleExpand_PreviewResult>
   <StyleExpand_TopK>检索数量：{0}</StyleExpand_TopK>
-  <StyleExpand_MaxChunk>片段最大长度：{0}</StyleExpand_MaxChunk>
   <StyleExpand_Threshold>相似度阈值：{0}</StyleExpand_Threshold>
   
   <!-- Prompt Section -->
@@ -113,10 +112,15 @@
   <StyleExpand_BasePrompt>基础提示词模板（使用 {style_name} 作为占位符）：</StyleExpand_BasePrompt>
   <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
   <StyleExpand_ResetBasePrompt>重置模板</StyleExpand_ResetBasePrompt>
+  <StyleExpand_StylePromptTemplate>文风分析提示词模板</StyleExpand_StylePromptTemplate>
+  <StyleExpand_StylePromptTemplateDesc>用于自动生成文风描述的 LLM 提示词。可用占位符：{style_name}、{max_tokens}、{sample_text}</StyleExpand_StylePromptTemplateDesc>
+  <StyleExpand_ResetStylePrompt>重置模板</StyleExpand_ResetStylePrompt>
+  <StyleExpand_StylePromptVars>可用占位符: {style_name} {max_tokens} {sample_text}</StyleExpand_StylePromptVars>
   
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>切分参数</StyleExpand_ChunkingConfig>
-  <StyleExpand_ChunkingConfigDesc>大文件采样和批处理设置，通常无需调整</StyleExpand_ChunkingConfigDesc>
+  <StyleExpand_ChunkingConfigDesc>文本分块设置，控制每个片段的长度</StyleExpand_ChunkingConfigDesc>
+  <StyleExpand_TargetChunkLength>目标片段长度：{0} 字符</StyleExpand_TargetChunkLength>
   <StyleExpand_EnableSampling>启用大文件采样</StyleExpand_EnableSampling>
   <StyleExpand_EnableSamplingDesc>超过阈值时自动采样代表性片段</StyleExpand_EnableSamplingDesc>
   <StyleExpand_SampleTarget>目标片段数：{0}</StyleExpand_SampleTarget>
@@ -155,7 +159,7 @@
   <StyleExpand_HelpStyleOne>- 一个 .txt 文件 = 一种文风</StyleExpand_HelpStyleOne>
   <StyleExpand_HelpStyleName>- 文件名即文风名</StyleExpand_HelpStyleName>
   <StyleExpand_HelpStyleContent>- 文件内容用作文风示例</StyleExpand_HelpStyleContent>
-  <StyleExpand_HelpStyleSize>- 推荐字数：中文 5,000-50,000 字 | 英文 3,000-30,000 词</StyleExpand_HelpStyleSize>
+  <StyleExpand_HelpStyleSize>- 推荐字数：中文 5,000-20,000 字 | 英文 3,000-15,000 词</StyleExpand_HelpStyleSize>
   <StyleExpand_HelpStyleSizeNote>- 更大的文件可用但处理时间更长</StyleExpand_HelpStyleSizeNote>
   <StyleExpand_HelpChunking>== 切分 ==</StyleExpand_HelpChunking>
   <StyleExpand_HelpChunkWhat>- 将文本切分成较小的片段</StyleExpand_HelpChunkWhat>

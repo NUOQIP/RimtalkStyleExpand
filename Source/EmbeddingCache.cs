@@ -131,7 +131,7 @@ namespace RimTalkStyleExpand
             Logger.Message($"Saved cache for '{styleName}': {chunks.Count} chunks");
         }
 
-        public static CachedStyle Load(string styleName)
+        public static CachedStyle Load(string styleName, bool skipEmbeddings = false)
         {
             try
             {
@@ -142,13 +142,59 @@ namespace RimTalkStyleExpand
                 if (!File.Exists(filePath)) return null;
 
                 var json = File.ReadAllText(filePath, Encoding.UTF8);
-                return ParseCache(json);
+                return ParseCache(json, skipEmbeddings);
             }
             catch (Exception ex)
             {
                 Logger.Warning($"Failed to load embedding cache: {ex.Message}");
                 return null;
             }
+        }
+        
+        public static int GetChunkCount(string styleName)
+        {
+            try
+            {
+                var mod = LoadedModManager.GetMod<StyleExpandMod>();
+                if (mod == null) return 0;
+
+                var filePath = Path.Combine(mod.Content.RootDir, CacheDir, SanitizeFileName(styleName) + ".json");
+                if (!File.Exists(filePath)) return 0;
+
+                var json = File.ReadAllText(filePath, Encoding.UTF8);
+                return ParseChunkCountOnly(json);
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+        
+        public static CacheMetadata GetMetadata(string styleName)
+        {
+            try
+            {
+                var mod = LoadedModManager.GetMod<StyleExpandMod>();
+                if (mod == null) return null;
+
+                var filePath = Path.Combine(mod.Content.RootDir, CacheDir, SanitizeFileName(styleName) + ".json");
+                if (!File.Exists(filePath)) return null;
+
+                var json = File.ReadAllText(filePath, Encoding.UTF8);
+                return ParseMetadataOnly(json);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        
+        public class CacheMetadata
+        {
+            public int ChunkCount;
+            public int ProcessedIndex;
+            public string FileHash;
+            public bool IsComplete => ProcessedIndex > 0 && ProcessedIndex >= ChunkCount;
         }
 
         public static bool HasCache(string styleName)
@@ -169,27 +215,27 @@ namespace RimTalkStyleExpand
 
         public static bool HasPartialCache(string styleName)
         {
-            var cached = Load(styleName);
-            return cached != null && cached.ProcessedIndex > 0 && cached.ProcessedIndex < cached.Chunks.Count;
+            var meta = GetMetadata(styleName);
+            return meta != null && meta.ProcessedIndex > 0 && meta.ProcessedIndex < meta.ChunkCount;
         }
 
         public static bool IsCacheValid(string styleName, string currentFileHash)
         {
-            var cached = Load(styleName);
-            if (cached == null) return false;
+            var meta = GetMetadata(styleName);
+            if (meta == null) return false;
             
-            if (!string.IsNullOrEmpty(cached.FileHash) && !string.IsNullOrEmpty(currentFileHash))
+            if (!string.IsNullOrEmpty(meta.FileHash) && !string.IsNullOrEmpty(currentFileHash))
             {
-                return cached.FileHash == currentFileHash;
+                return meta.FileHash == currentFileHash;
             }
             
-            return cached.ProcessedIndex >= cached.Chunks.Count;
+            return meta.IsComplete;
         }
 
         public static int GetProcessedIndex(string styleName)
         {
-            var cached = Load(styleName);
-            return cached?.ProcessedIndex ?? 0;
+            var meta = GetMetadata(styleName);
+            return meta?.ProcessedIndex ?? 0;
         }
 
         public static void Clear(string styleName)
@@ -254,7 +300,7 @@ namespace RimTalkStyleExpand
             return sb.ToString();
         }
 
-        private static CachedStyle ParseCache(string json)
+        private static CachedStyle ParseCache(string json, bool skipEmbeddings = false)
         {
             var result = new CachedStyle();
             
@@ -274,13 +320,16 @@ namespace RimTalkStyleExpand
                     result.Chunks = ParseStringArray(arrayContent);
                 }
 
-                var embeddingsStart = json.IndexOf("\"embeddings\"");
-                if (embeddingsStart >= 0)
+                if (!skipEmbeddings)
                 {
-                    var arrayStart = json.IndexOf("[", embeddingsStart);
-                    var arrayEnd = FindMatchingBracket(json, arrayStart);
-                    var arrayContent = json.Substring(arrayStart + 1, arrayEnd - arrayStart - 1);
-                    result.Embeddings = ParseEmbeddingArray(arrayContent);
+                    var embeddingsStart = json.IndexOf("\"embeddings\"");
+                    if (embeddingsStart >= 0)
+                    {
+                        var arrayStart = json.IndexOf("[", embeddingsStart);
+                        var arrayEnd = FindMatchingBracket(json, arrayStart);
+                        var arrayContent = json.Substring(arrayStart + 1, arrayEnd - arrayStart - 1);
+                        result.Embeddings = ParseEmbeddingArray(arrayContent);
+                    }
                 }
             }
             catch (Exception ex)
@@ -289,6 +338,46 @@ namespace RimTalkStyleExpand
             }
 
             return result;
+        }
+        
+        private static int ParseChunkCountOnly(string json)
+        {
+            var chunksStart = json.IndexOf("\"chunks\"");
+            if (chunksStart < 0) return 0;
+            
+            var arrayStart = json.IndexOf("[", chunksStart);
+            if (arrayStart < 0) return 0;
+            
+            int count = 0;
+            bool inString = false;
+            
+            for (int i = arrayStart + 1; i < json.Length; i++)
+            {
+                var c = json[i];
+                if (c == '"' && (i == 0 || json[i - 1] != '\\'))
+                {
+                    inString = !inString;
+                }
+                else if (!inString && c == ']')
+                {
+                    break;
+                }
+                else if (!inString && c == ',')
+                {
+                    count++;
+                }
+            }
+            
+            return count + 1;
+        }
+        
+        private static CacheMetadata ParseMetadataOnly(string json)
+        {
+            var meta = new CacheMetadata();
+            meta.FileHash = ParseStringValue(json, "fileHash");
+            meta.ProcessedIndex = ParseIntValue(json, "processedIndex");
+            meta.ChunkCount = ParseChunkCountOnly(json);
+            return meta;
         }
 
         private static string ParseStringValue(string json, string key)

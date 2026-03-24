@@ -55,7 +55,6 @@ namespace RimTalkStyleExpand
         public string BasePromptTemplate = "Please imitate the following writing style ({style_name}) when generating dialogue:";
         public string QueryTemplate = "{{ pawn.personality }} {{ pawn.job }}";
         public int TopK = 3;
-        public int MaxChunkLength = 200;
         public float SimilarityThreshold = 0.5f;
 
         public void ExposeData()
@@ -63,7 +62,6 @@ namespace RimTalkStyleExpand
             Scribe_Values.Look(ref BasePromptTemplate, "basePromptTemplate", "Please imitate the following writing style ({style_name}) when generating dialogue:");
             Scribe_Values.Look(ref QueryTemplate, "queryTemplate", "{{ pawn.personality }} {{ pawn.job }}");
             Scribe_Values.Look(ref TopK, "topK", 3);
-            Scribe_Values.Look(ref MaxChunkLength, "maxChunkLength", 200);
             Scribe_Values.Look(ref SimilarityThreshold, "similarityThreshold", 0.5f);
         }
     }
@@ -82,15 +80,17 @@ namespace RimTalkStyleExpand
 
     public class ChunkingConfig : IExposable
     {
+        public int TargetChunkLength = 400;
         public int BatchSize = 10;
-        public int LargeFileThreshold = 50000;
+        public int LargeFileThreshold = 20000;
         public int SampleTargetChunks = 500;
         public bool EnableSampling = true;
 
         public void ExposeData()
         {
+            Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 400);
             Scribe_Values.Look(ref BatchSize, "batchSize", 10);
-            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 50000);
+            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 20000);
             Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 500);
             Scribe_Values.Look(ref EnableSampling, "enableSampling", true);
         }
@@ -103,6 +103,23 @@ namespace RimTalkStyleExpand
         public string ApiKey = "";
         public string Model = "llama3";
         public int MaxTokens = 800;
+        public string StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{style_name}"" style.
+
+【Requirements】
+- Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
+- Focus exclusively on HOW the writing works, not WHAT it contains. Extract only transferable stylistic elements that could be applied to any content.
+- Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
+
+【Forbidden】
+Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
+
+【Output】
+- Produce a style guide within {max_tokens} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+- Write in the same language as the input text.
+- Use imperative tone.
+
+【Sample Text】
+{sample_text}";
 
         public void ExposeData()
         {
@@ -111,6 +128,7 @@ namespace RimTalkStyleExpand
             Scribe_Values.Look(ref ApiKey, "apiKey", "");
             Scribe_Values.Look(ref Model, "model", "llama3");
             Scribe_Values.Look(ref MaxTokens, "maxTokens", 800);
+            Scribe_Values.Look(ref StylePromptTemplate, "stylePromptTemplate", StylePromptTemplate);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawSettings(Rect inRect, StyleExpandSettings settings)
         {
-            float contentHeight = 2600f;
+            float contentHeight = 3000f;
             Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
             
             Widgets.BeginScrollView(inRect, ref _scrollPosition, viewRect);
@@ -468,9 +468,6 @@ namespace RimTalkStyleExpand
             list.Label("StyleExpand_TopK".Translate(settings.Retrieval.TopK));
             settings.Retrieval.TopK = (int)list.Slider(settings.Retrieval.TopK, 1, 10);
             
-            list.Label("StyleExpand_MaxChunk".Translate(settings.Retrieval.MaxChunkLength));
-            settings.Retrieval.MaxChunkLength = (int)list.Slider(settings.Retrieval.MaxChunkLength, 50, 500);
-            
             list.Label("StyleExpand_Threshold".Translate(settings.Retrieval.SimilarityThreshold.ToString("F2")));
             settings.Retrieval.SimilarityThreshold = list.Slider(settings.Retrieval.SimilarityThreshold, 0f, 1f);
         }
@@ -479,19 +476,23 @@ namespace RimTalkStyleExpand
         {
             DrawSectionHeader(list, "StyleExpand_ChunkingConfig".Translate(), "StyleExpand_ChunkingConfigDesc".Translate());
             
+            list.Label("StyleExpand_TargetChunkLength".Translate(settings.Chunking.TargetChunkLength));
+            settings.Chunking.TargetChunkLength = (int)list.Slider(settings.Chunking.TargetChunkLength, 100, 800);
+            
+            list.Label("StyleExpand_BatchSize".Translate(settings.Chunking.BatchSize));
+            settings.Chunking.BatchSize = (int)list.Slider(settings.Chunking.BatchSize, 1, 50);
+            
+            list.Gap();
             list.CheckboxLabeled("StyleExpand_EnableSampling".Translate(), ref settings.Chunking.EnableSampling, "StyleExpand_EnableSamplingDesc".Translate());
             
             if (settings.Chunking.EnableSampling)
             {
                 list.Label("StyleExpand_SampleTarget".Translate(settings.Chunking.SampleTargetChunks));
                 settings.Chunking.SampleTargetChunks = (int)list.Slider(settings.Chunking.SampleTargetChunks, 100, 1000);
+                
+                list.Label("StyleExpand_LargeFileThreshold".Translate(settings.Chunking.LargeFileThreshold));
+                settings.Chunking.LargeFileThreshold = (int)list.Slider(settings.Chunking.LargeFileThreshold, 10000, 200000);
             }
-            
-            list.Label("StyleExpand_BatchSize".Translate(settings.Chunking.BatchSize));
-            settings.Chunking.BatchSize = (int)list.Slider(settings.Chunking.BatchSize, 1, 50);
-            
-            list.Label("StyleExpand_LargeFileThreshold".Translate(settings.Chunking.LargeFileThreshold));
-            settings.Chunking.LargeFileThreshold = (int)list.Slider(settings.Chunking.LargeFileThreshold, 10000, 200000);
         }
 
         private static void DrawScribanSection(Listing_Standard list, StyleExpandSettings settings)
@@ -528,6 +529,40 @@ namespace RimTalkStyleExpand
             
             var baseRect = list.GetRect(50f);
             settings.Retrieval.BasePromptTemplate = Widgets.TextArea(baseRect, settings.Retrieval.BasePromptTemplate);
+            list.Gap();
+            
+            DrawSectionHeader(list, "StyleExpand_StylePromptTemplate".Translate(), "StyleExpand_StylePromptTemplateDesc".Translate());
+            
+            var stylePromptRect = list.GetRect(200f);
+            settings.LlmApi.StylePromptTemplate = Widgets.TextArea(stylePromptRect, settings.LlmApi.StylePromptTemplate);
+            
+            var stylePromptFooter = list.GetRect(30f);
+            GUI.color = new Color(0.6f, 0.6f, 0.6f);
+            Widgets.Label(new Rect(stylePromptFooter.x, stylePromptFooter.y, stylePromptFooter.width - 130f, 30f), "StyleExpand_StylePromptVars".Translate());
+            GUI.color = Color.white;
+            
+            if (Widgets.ButtonText(new Rect(stylePromptFooter.xMax - 120f, stylePromptFooter.y, 120f, 28f), "StyleExpand_ResetStylePrompt".Translate()))
+            {
+                settings.LlmApi.StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{style_name}"" style.
+
+【Requirements】
+- Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
+- Focus exclusively on HOW the writing works, not WHAT it contains. Extract only transferable stylistic elements that could be applied to any content.
+- Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
+
+【Forbidden】
+Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
+
+【Output】
+- Produce a style guide within {max_tokens} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+- Write in the same language as the input text.
+- Use imperative tone.
+
+【Sample Text】
+{sample_text}";
+                ShowStatus("StyleExpand_PromptReset".Translate());
+            }
+            
             list.Gap();
         }
 

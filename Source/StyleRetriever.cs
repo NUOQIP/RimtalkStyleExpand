@@ -163,11 +163,11 @@ namespace RimTalkStyleExpand
 
             foreach (var style in settings.Styles)
             {
-                var cached = EmbeddingCache.Load(style.Name);
-                if (cached != null && cached.Chunks.Count > 0 && cached.ProcessedIndex >= cached.Chunks.Count - 1)
+                var meta = EmbeddingCache.GetMetadata(style.Name);
+                if (meta != null && meta.ChunkCount > 0 && meta.IsComplete)
                 {
                     style.IsChunked = true;
-                    style.ChunkCount = cached.Chunks.Count;
+                    style.ChunkCount = meta.ChunkCount;
                 }
                 else
                 {
@@ -326,12 +326,12 @@ namespace RimTalkStyleExpand
 
         private static List<string> PrepareChunks(string text, StyleExpandSettings settings)
         {
-            var chunks = SplitIntoChunks(text, settings.Retrieval.MaxChunkLength);
+            var chunks = SplitIntoChunks(text, settings.Chunking.TargetChunkLength);
             
             if (settings.Chunking.EnableSampling && chunks.Count > settings.Chunking.SampleTargetChunks)
             {
                 chunks = SampleChunks(chunks, settings.Chunking.SampleTargetChunks);
-                Logger.Message($"Sampled {chunks.Count} chunks from {SplitIntoChunks(text, settings.Retrieval.MaxChunkLength).Count} total");
+                Logger.Message($"Sampled {chunks.Count} chunks from {SplitIntoChunks(text, settings.Chunking.TargetChunkLength).Count} total");
             }
             
             return chunks;
@@ -475,38 +475,266 @@ namespace RimTalkStyleExpand
             Logger.Message($"Loaded {cached.Chunks.Count} cached chunks for '{styleName}'");
         }
 
-        private static List<string> SplitIntoChunks(string text, int maxLength)
+        private static List<string> SplitIntoChunks(string text, int targetLength)
         {
-            var chunks = new List<string>();
+            const int MIN_CHUNK_SIZE = 100;
+            const int OVERLAP = 50;
             
-            var paragraphs = text.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var chunks = new List<string>();
+            var paragraphs = SplitByParagraphs(text);
+            
+            var currentChunk = new StringBuilder();
             
             foreach (var paragraph in paragraphs)
             {
-                var sentences = SplitIntoSentences(paragraph);
-                var currentChunk = new StringBuilder();
+                var trimmedPara = paragraph.Trim();
+                if (string.IsNullOrEmpty(trimmedPara)) continue;
                 
-                foreach (var sentence in sentences)
+                if (currentChunk.Length + trimmedPara.Length + 1 <= targetLength)
                 {
-                    var trimmed = sentence.Trim();
-                    if (string.IsNullOrEmpty(trimmed)) continue;
-                    
-                    if (currentChunk.Length + trimmed.Length + 1 > maxLength && currentChunk.Length > 0)
+                    if (currentChunk.Length > 0) currentChunk.Append("\n\n");
+                    currentChunk.Append(trimmedPara);
+                }
+                else
+                {
+                    if (currentChunk.Length >= MIN_CHUNK_SIZE)
                     {
                         chunks.Add(currentChunk.ToString().Trim());
+                        var lastPart = GetLastPart(currentChunk.ToString(), OVERLAP);
                         currentChunk.Clear();
+                        if (!string.IsNullOrEmpty(lastPart))
+                        {
+                            currentChunk.Append(lastPart);
+                        }
                     }
                     
-                    currentChunk.Append(trimmed);
-                }
-                
-                if (currentChunk.Length > 0)
-                {
-                    chunks.Add(currentChunk.ToString().Trim());
+                    if (trimmedPara.Length > targetLength)
+                    {
+                        var subChunks = SplitLargeParagraph(trimmedPara, targetLength, MIN_CHUNK_SIZE, OVERLAP);
+                        foreach (var sub in subChunks)
+                        {
+                            if (currentChunk.Length + sub.Length + 1 <= targetLength && currentChunk.Length > 0)
+                            {
+                                currentChunk.Append("\n").Append(sub);
+                            }
+                            else
+                            {
+                                if (currentChunk.Length >= MIN_CHUNK_SIZE)
+                                {
+                                    chunks.Add(currentChunk.ToString().Trim());
+                                }
+                                currentChunk.Clear();
+                                currentChunk.Append(sub);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (currentChunk.Length > 0) currentChunk.Append("\n\n");
+                        currentChunk.Append(trimmedPara);
+                    }
                 }
             }
             
-            return chunks;
+            if (currentChunk.Length >= MIN_CHUNK_SIZE / 2)
+            {
+                chunks.Add(currentChunk.ToString().Trim());
+            }
+            
+            return MergeSmallChunks(chunks, MIN_CHUNK_SIZE);
+        }
+        
+        private static List<string> SplitByParagraphs(string text)
+        {
+            return text.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
+                       .Where(p => !string.IsNullOrWhiteSpace(p))
+                       .Select(p => p.Trim())
+                       .ToList();
+        }
+        
+        private static List<string> SplitLargeParagraph(string paragraph, int targetLength, int minSize, int overlap)
+        {
+            var result = new List<string>();
+            var sentences = SplitIntoSentences(paragraph);
+            
+            var current = new StringBuilder();
+            
+            foreach (var sentence in sentences)
+            {
+                var trimmed = sentence.Trim();
+                if (string.IsNullOrEmpty(trimmed)) continue;
+                
+                if (current.Length + trimmed.Length + 1 <= targetLength)
+                {
+                    if (current.Length > 0) current.Append("");
+                    current.Append(trimmed);
+                }
+                else
+                {
+                    if (current.Length >= minSize)
+                    {
+                        result.Add(current.ToString().Trim());
+                        var lastPart = GetLastPart(current.ToString(), overlap);
+                        current.Clear();
+                        if (!string.IsNullOrEmpty(lastPart))
+                        {
+                            current.Append(lastPart).Append("");
+                        }
+                    }
+                    
+                    if (trimmed.Length > targetLength)
+                    {
+                        var subParts = SplitLongSentence(trimmed, targetLength);
+                        foreach (var part in subParts)
+                        {
+                            if (current.Length + part.Length <= targetLength && current.Length > 0)
+                            {
+                                current.Append(part);
+                            }
+                            else
+                            {
+                                if (current.Length >= minSize / 2)
+                                {
+                                    result.Add(current.ToString().Trim());
+                                }
+                                current.Clear();
+                                current.Append(part);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        current.Append(trimmed);
+                    }
+                }
+            }
+            
+            if (current.Length > 0)
+            {
+                result.Add(current.ToString().Trim());
+            }
+            
+            return result;
+        }
+        
+        private static List<string> SplitLongSentence(string sentence, int maxLength)
+        {
+            var result = new List<string>();
+            var clauses = SplitIntoClauses(sentence);
+            
+            var current = new StringBuilder();
+            
+            foreach (var clause in clauses)
+            {
+                var trimmed = clause.Trim();
+                if (string.IsNullOrEmpty(trimmed)) continue;
+                
+                if (current.Length + trimmed.Length <= maxLength)
+                {
+                    current.Append(trimmed);
+                }
+                else
+                {
+                    if (current.Length > 0)
+                    {
+                        result.Add(current.ToString().Trim());
+                        current.Clear();
+                    }
+                    
+                    if (trimmed.Length > maxLength)
+                    {
+                        for (int i = 0; i < trimmed.Length; i += maxLength)
+                        {
+                            var len = Math.Min(maxLength, trimmed.Length - i);
+                            result.Add(trimmed.Substring(i, len));
+                        }
+                    }
+                    else
+                    {
+                        current.Append(trimmed);
+                    }
+                }
+            }
+            
+            if (current.Length > 0)
+            {
+                result.Add(current.ToString().Trim());
+            }
+            
+            return result;
+        }
+        
+        private static List<string> SplitIntoClauses(string text)
+        {
+            var result = new List<string>();
+            var current = new StringBuilder();
+            
+            for (int i = 0; i < text.Length; i++)
+            {
+                var c = text[i];
+                current.Append(c);
+                
+                if (IsClauseEnd(c) && i + 1 < text.Length)
+                {
+                    var next = text[i + 1];
+                    if (!IsClauseEnd(next) && next != '"' && next != '"' && next != '”')
+                    {
+                        result.Add(current.ToString());
+                        current.Clear();
+                    }
+                }
+            }
+            
+            if (current.Length > 0)
+            {
+                result.Add(current.ToString());
+            }
+            
+            return result;
+        }
+        
+        private static bool IsClauseEnd(char c)
+        {
+            return c == '，' || c == '、' || c == '；' || c == '：' || 
+                   c == ',' || c == ';' || c == ':';
+        }
+        
+        private static string GetLastPart(string text, int length)
+        {
+            if (string.IsNullOrEmpty(text) || text.Length <= length) return text;
+            
+            int start = text.Length - length;
+            int sentenceStart = text.LastIndexOf('。', start + length - 1);
+            if (sentenceStart > start - 50 && sentenceStart < start + length)
+            {
+                start = sentenceStart + 1;
+            }
+            
+            return text.Substring(start).TrimStart();
+        }
+        
+        private static List<string> MergeSmallChunks(List<string> chunks, int minSize)
+        {
+            if (chunks.Count <= 1) return chunks;
+            
+            var result = new List<string>();
+            var i = 0;
+            
+            while (i < chunks.Count)
+            {
+                var current = chunks[i];
+                
+                while (i + 1 < chunks.Count && current.Length < minSize)
+                {
+                    i++;
+                    current = current + "\n\n" + chunks[i];
+                }
+                
+                result.Add(current);
+                i++;
+            }
+            
+            return result;
         }
 
         private static List<string> SplitIntoSentences(string text)

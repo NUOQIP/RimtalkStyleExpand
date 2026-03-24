@@ -18,7 +18,7 @@ namespace RimTalkStyleExpand
                 throw new Exception("Sample text is empty");
             }
 
-            var prompt = BuildAnalysisPrompt(styleName, sampleText, config.MaxTokens);
+            var prompt = BuildAnalysisPrompt(styleName, sampleText, config.MaxTokens, config.StylePromptTemplate);
             
             string url;
             string apiKey;
@@ -79,11 +79,13 @@ namespace RimTalkStyleExpand
             return !string.IsNullOrEmpty(result);
         }
 
-private static string BuildAnalysisPrompt(string styleName, string sampleText, int maxTokens)
+private static string BuildAnalysisPrompt(string styleName, string sampleText, int maxTokens, string template = null)
         {
             var sampledText = SampleTextSegments(sampleText, 0.1f);
             
-            return $@"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{styleName}"" style.
+            if (string.IsNullOrEmpty(template))
+            {
+                template = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{style_name}"" style.
 
 【Requirements】
 - Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
@@ -94,12 +96,18 @@ private static string BuildAnalysisPrompt(string styleName, string sampleText, i
 Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
 
 【Output】
-- Produce a style guide within {maxTokens} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+- Produce a style guide within {max_tokens} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
 - Write in the same language as the input text.
 - Use imperative tone.
 
 【Sample Text】
-{sampledText}";
+{sample_text}";
+            }
+            
+            return template
+                .Replace("{style_name}", styleName)
+                .Replace("{max_tokens}", maxTokens.ToString())
+                .Replace("{sample_text}", sampledText);
         }
         
         private static string SampleTextSegments(string text, float ratio)

@@ -34,29 +34,41 @@ namespace RimTalkStyleExpand
 
         [HarmonyPatch("RimTalk.Prompt.PromptManager", "BuildMessages")]
         [HarmonyPrefix]
-        public static void BuildMessagesPrefix(object __instance, object talkRequest, List<Pawn> pawns, string status)
+        public static bool BuildMessagesPrefix(object __instance, object talkRequest, List<Pawn> pawns, string status)
         {
-            if (!StyleExpandSettings.Instance?.IsEnabled ?? true) return;
+            if (RimTalkAPIIntegration.IsApiAvailable)
+            {
+                return true;
+            }
             
-            if (talkRequest == null || _initiatorProperty == null) return;
+            if (!StyleExpandSettings.Instance?.IsEnabled ?? true) return true;
+            
+            if (talkRequest == null || _initiatorProperty == null) return true;
             
             var initiator = _initiatorProperty?.GetValue(talkRequest) as Pawn;
-            if (initiator == null) return;
+            if (initiator == null) return true;
 
             var stylePrompt = PromptBuilder.BuildStylePrompt(initiator);
-            if (string.IsNullOrEmpty(stylePrompt)) return;
+            if (string.IsNullOrEmpty(stylePrompt)) return true;
 
             var stylePromptField = _talkRequestType?.GetField("StylePrompt");
             if (stylePromptField != null)
             {
                 stylePromptField.SetValue(talkRequest, stylePrompt);
             }
+            
+            return true;
         }
 
         [HarmonyPatch("RimTalk.Prompt.PromptManager", "BuildMessages")]
         [HarmonyPostfix]
         public static void BuildMessagesPostfix(ref object __result, object talkRequest)
         {
+            if (RimTalkAPIIntegration.IsApiAvailable)
+            {
+                return;
+            }
+            
             if (!StyleExpandSettings.Instance?.IsEnabled ?? true) return;
             
             var stylePromptField = _talkRequestType?.GetField("StylePrompt");

@@ -9,6 +9,7 @@ namespace RimTalkStyleExpand
     public static class RimTalkAPIIntegration
     {
         private const string MOD_ID = "RimTalk.StyleExpand";
+        private const string ENTRY_NAME = "Style Context";
         
         private static bool _initialized = false;
         private static bool _apiAvailable = false;
@@ -16,6 +17,9 @@ namespace RimTalkStyleExpand
         
         private static Assembly _rimTalkAssembly;
         private static Type _promptAPIType;
+        private static Type _promptEntryType;
+        private static Type _promptRoleType;
+        private static Type _promptPositionType;
         private static Type _settingsType;
         private static MethodInfo _getSettingsMethod;
         
@@ -41,14 +45,16 @@ namespace RimTalkStyleExpand
                 }
                 
                 _apiAvailable = true;
-                RegisterVariables();
                 
-                Log.Message("[StyleExpand] Integrated via RimTalk API");
-                Log.Message("[StyleExpand]   - Registered {{style_base_prompt}} variable");
+                RegisterVariables();
+                RegisterPromptEntry();
+                
+                Log.Message("[StyleExpand] ✓ Integrated via RimTalk API");
                 Log.Message("[StyleExpand]   - Registered {{style_name}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_prompt}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_chunks}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_full}} variable");
+                Log.Message("[StyleExpand]   - Added PromptEntry: " + ENTRY_NAME);
             }
             catch (Exception ex)
             {
@@ -67,6 +73,10 @@ namespace RimTalkStyleExpand
             }
             
             _promptAPIType = _rimTalkAssembly.GetType("RimTalk.API.RimTalkPromptAPI");
+            _promptEntryType = _rimTalkAssembly.GetType("RimTalk.Prompt.PromptEntry");
+            _promptRoleType = _rimTalkAssembly.GetType("RimTalk.Prompt.PromptRole");
+            _promptPositionType = _rimTalkAssembly.GetType("RimTalk.Prompt.PromptPosition");
+            
             if (_promptAPIType == null)
             {
                 Log.Message("[StyleExpand] RimTalkPromptAPI not found - old RimTalk version");
@@ -74,13 +84,15 @@ namespace RimTalkStyleExpand
             }
             
             var registerCtxVar = _promptAPIType.GetMethod("RegisterContextVariable");
-            if (registerCtxVar == null)
+            var addEntry = _promptAPIType.GetMethod("AddPromptEntry");
+            
+            if (registerCtxVar == null || addEntry == null)
             {
-                Log.Warning("[StyleExpand] RegisterContextVariable method not found");
+                Log.Warning("[StyleExpand] RimTalk API methods not found");
                 return false;
             }
             
-            Log.Message("[StyleExpand] Detected RimTalk API");
+            Log.Message("[StyleExpand] Detected RimTalk API with PromptEntry support");
             return true;
         }
         
@@ -100,10 +112,6 @@ namespace RimTalkStyleExpand
         {
             var registerCtxVar = _promptAPIType.GetMethod("RegisterContextVariable");
             if (registerCtxVar == null) return;
-            
-            RegisterContextVariable(registerCtxVar, "style_base_prompt",
-                new Func<object, string>(StyleVariableProvider.GetBasePrompt),
-                "Base style instruction prompt", 99);
             
             RegisterContextVariable(registerCtxVar, "style_name",
                 new Func<object, string>(StyleVariableProvider.GetStyleName),
@@ -130,7 +138,7 @@ namespace RimTalkStyleExpand
                 registerMethod.Invoke(null, new object[] { MOD_ID, name, provider, description, priority });
                 if (Prefs.DevMode)
                 {
-                    Log.Message($"[StyleExpand] Registered {{{{{name}}}}} variable");
+                    Log.Message($"[StyleExpand] ✓ Registered {{{{{name}}}}} variable");
                 }
             }
             catch (Exception ex)
@@ -139,17 +147,164 @@ namespace RimTalkStyleExpand
             }
         }
         
+        private static void RegisterPromptEntry()
+        {
+            try
+            {
+                string entryId = GetDeterministicId(MOD_ID, ENTRY_NAME);
+                
+                var getPresetMethod = _promptAPIType.GetMethod("GetActivePreset");
+                object preset = null;
+                if (getPresetMethod != null)
+                {
+                    preset = getPresetMethod.Invoke(null, null);
+                    if (preset != null)
+                    {
+                        var getEntryMethod = preset.GetType().GetMethod("GetEntry");
+                        if (getEntryMethod != null)
+                        {
+                            var existingEntry = getEntryMethod.Invoke(preset, new object[] { entryId });
+                            if (existingEntry != null)
+                            {
+                                SetProperty(existingEntry, "Content", GetStyleEntryContent());
+                                Log.Message($"[StyleExpand] ✓ Updated existing PromptEntry: {ENTRY_NAME}");
+                                return;
+                            }
+                        }
+                    }
+                }
+                
+                var entry = Activator.CreateInstance(_promptEntryType);
+                if (entry == null)
+                {
+                    Log.Warning("[StyleExpand] Failed to create PromptEntry instance");
+                    return;
+                }
+                
+                SetProperty(entry, "SourceModId", MOD_ID);
+                SetProperty(entry, "Name", ENTRY_NAME);
+                SetProperty(entry, "Content", GetStyleEntryContent());
+                SetProperty(entry, "Enabled", true);
+                
+                if (_promptRoleType != null)
+                {
+                    var systemRole = Enum.Parse(_promptRoleType, "System");
+                    SetProperty(entry, "Role", systemRole);
+                }
+                
+                if (_promptPositionType != null)
+                {
+                    var relativePos = Enum.Parse(_promptPositionType, "Relative");
+                    SetProperty(entry, "Position", relativePos);
+                }
+                
+                var insertAfterNameMethod = _promptAPIType.GetMethod("InsertPromptEntryAfterName");
+                if (insertAfterNameMethod != null)
+                {
+                    var result = insertAfterNameMethod.Invoke(null, new object[] { entry, "System Prompt" });
+                    if (result is bool success)
+                    {
+                        if (success)
+                        {
+                            Log.Message($"[StyleExpand] ✓ Inserted PromptEntry after 'System Prompt': {ENTRY_NAME}");
+                        }
+                        else
+                        {
+                            Log.Message($"[StyleExpand] ✓ Added PromptEntry at end: {ENTRY_NAME}");
+                        }
+                    }
+                }
+                else
+                {
+                    var addMethod = _promptAPIType.GetMethod("AddPromptEntry");
+                    if (addMethod != null)
+                    {
+                        var result = addMethod.Invoke(null, new[] { entry });
+                        if (result is bool success && success)
+                        {
+                            Log.Message($"[StyleExpand] ✓ Added PromptEntry: {ENTRY_NAME}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"[StyleExpand] Failed to register PromptEntry: {ex.Message}");
+            }
+        }
+        
+        private static string GetStyleEntryContent()
+        {
+            return @"---
+# Style Instruction
+
+{{style_full}}
+---";
+        }
+        
+        private static void SetProperty(object obj, string propertyName, object value)
+        {
+            var prop = obj.GetType().GetProperty(propertyName);
+            if (prop != null && prop.CanWrite)
+            {
+                prop.SetValue(obj, value);
+            }
+            else
+            {
+                var field = obj.GetType().GetField(propertyName);
+                if (field != null)
+                {
+                    field.SetValue(obj, value);
+                }
+            }
+        }
+        
+        private static string GetDeterministicId(string modId, string name)
+        {
+            if (_promptEntryType != null)
+            {
+                var generateMethod = _promptEntryType.GetMethod("GenerateDeterministicId",
+                    BindingFlags.Public | BindingFlags.Static);
+                if (generateMethod != null)
+                {
+                    try
+                    {
+                        var result = generateMethod.Invoke(null, new object[] { modId, name });
+                        if (result is string id)
+                        {
+                            return id;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            
+            string sanitizedModId = modId.Replace(".", "_").Replace("-", "_").Replace(" ", "_");
+            string sanitizedName = name.Replace(" ", "_").Replace("-", "_");
+            return $"mod_{sanitizedModId}_{sanitizedName}";
+        }
+        
         public static void Cleanup()
         {
             if (!_apiAvailable) return;
             
             try
             {
+                string entryId = GetDeterministicId(MOD_ID, ENTRY_NAME);
+                
+                var removeMethod = _promptAPIType?.GetMethod("RemovePromptEntry");
+                if (removeMethod != null)
+                {
+                    removeMethod.Invoke(null, new object[] { entryId });
+                    Log.Message($"[StyleExpand] Removed PromptEntry: {entryId}");
+                }
+                
                 var unregisterMethod = _promptAPIType?.GetMethod("UnregisterAllHooks");
                 if (unregisterMethod != null)
                 {
                     unregisterMethod.Invoke(null, new object[] { MOD_ID });
                 }
+                
                 Log.Message("[StyleExpand] Cleaned up RimTalk API registrations");
             }
             catch (Exception ex)

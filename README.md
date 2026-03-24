@@ -111,7 +111,20 @@ StyleExpand/
 
 ## 项目进度
 
-### v1.4.3（当前版本）
+### v1.4.4（当前版本）
+
+- [x] 注入方式重构（参考 ExpandMemory）
+  - 使用 RimTalk 官方 API 注册变量和 PromptEntry
+  - 用户可在 RimTalk 界面中看到/编辑 "Style Context" PromptEntry
+  - 支持开关、调整位置、自定义内容
+  - 保留 Harmony Patch 作为后备方案
+- [x] Scriban 变量
+  - `{{style_name}}` - 当前文风名称
+  - `{{style_prompt}}` - 文风描述
+  - `{{style_chunks}}` - 检索到的示例片段
+  - `{{style_full}}` - 完整文风 prompt
+
+### v1.4.3
 
 - [x] 设置界面优化
   - 修复大文件缓存导致设置界面卡顿（轻量级元数据读取）

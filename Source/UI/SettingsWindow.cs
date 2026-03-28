@@ -508,7 +508,6 @@ namespace RimTalkStyleExpand
             list.Gap();
             
             list.Label("  " + "StyleExpand_VarStyleName".Translate());
-            list.Label("  " + "StyleExpand_VarBasePrompt".Translate());
             list.Label("  " + "StyleExpand_VarStylePrompt".Translate());
             list.Label("  " + "StyleExpand_VarStyleChunks".Translate());
             list.Label("  " + "StyleExpand_VarStyleFull".Translate());
@@ -891,7 +890,6 @@ Do not quote passages, discuss characters, describe scenes, summarize plot point
             list.Label("StyleExpand_HelpAdvanced".Translate());
             list.Label("StyleExpand_HelpScriban".Translate());
             list.Label("  " + "StyleExpand_VarStyleName".Translate());
-            list.Label("  " + "StyleExpand_VarBasePrompt".Translate());
             list.Label("  " + "StyleExpand_VarStylePrompt".Translate());
             list.Label("  " + "StyleExpand_VarStyleChunks".Translate());
             list.Label("  " + "StyleExpand_VarStyleFull".Translate());

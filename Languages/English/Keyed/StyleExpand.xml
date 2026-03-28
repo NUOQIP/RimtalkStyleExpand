@@ -109,13 +109,13 @@
   <!-- Prompt Section -->
   <StyleExpand_PromptTemplate>Prompt Template</StyleExpand_PromptTemplate>
   <StyleExpand_PromptTemplateDesc>Customize the base style instruction injected to AI</StyleExpand_PromptTemplateDesc>
-  <StyleExpand_BasePrompt>Base Prompt Template (use {style_name}):</StyleExpand_BasePrompt>
+  <StyleExpand_BasePrompt>Base Prompt Template (use {{style_name}}):</StyleExpand_BasePrompt>
   <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
   <StyleExpand_ResetBasePrompt>Reset Template</StyleExpand_ResetBasePrompt>
   <StyleExpand_StylePromptTemplate>Style Analysis Prompt Template</StyleExpand_StylePromptTemplate>
   <StyleExpand_StylePromptTemplateDesc>LLM prompt for auto-generating style descriptions</StyleExpand_StylePromptTemplateDesc>
   <StyleExpand_ResetStylePrompt>Reset Template</StyleExpand_ResetStylePrompt>
-  <StyleExpand_StylePromptVars>Placeholders: {style_name} {max_tokens} {sample_text}</StyleExpand_StylePromptVars>
+  <StyleExpand_StylePromptVars>Placeholders: {{style_name}} {{max_tokens}} {{sample_text}}</StyleExpand_StylePromptVars>
   
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>Chunking Parameters</StyleExpand_ChunkingConfig>
@@ -192,10 +192,9 @@
   <StyleExpand_Preview_EnterManualInput>Please enter manual query text first</StyleExpand_Preview_EnterManualInput>
   <StyleExpand_Preview_OpenPreview>Open Preview</StyleExpand_Preview_OpenPreview>
   
-  <!-- Variables -->
+<!-- Variables -->
   <StyleExpand_VarStyleName>{{style_name}} - Current style name</StyleExpand_VarStyleName>
-  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - Base instruction prompt</StyleExpand_VarBasePrompt>
-  <StyleExpand_VarStylePrompt>{{style_prompt}} - Style description section</StyleExpand_VarStylePrompt>
+  <StyleExpand_VarStylePrompt>{{style_prompt}} - Style description</StyleExpand_VarStylePrompt>
   <StyleExpand_VarStyleChunks>{{style_chunks}} - Retrieved example chunks</StyleExpand_VarStyleChunks>
   <StyleExpand_VarStyleFull>{{style_full}} - Complete style prompt (all above combined)</StyleExpand_VarStyleFull>
   <StyleExpand_ExampleUsage>Example usage in RimTalk preset:</StyleExpand_ExampleUsage>

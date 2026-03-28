@@ -109,13 +109,13 @@
   <!-- Prompt Section -->
   <StyleExpand_PromptTemplate>提示词模板</StyleExpand_PromptTemplate>
   <StyleExpand_PromptTemplateDesc>自定义注入给 AI 的基础文风指令</StyleExpand_PromptTemplateDesc>
-  <StyleExpand_BasePrompt>基础提示词模板（使用 {style_name} 作为占位符）：</StyleExpand_BasePrompt>
+  <StyleExpand_BasePrompt>基础提示词模板（使用 {{style_name}} 作为占位符）：</StyleExpand_BasePrompt>
   <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
   <StyleExpand_ResetBasePrompt>重置模板</StyleExpand_ResetBasePrompt>
   <StyleExpand_StylePromptTemplate>文风分析提示词模板</StyleExpand_StylePromptTemplate>
   <StyleExpand_StylePromptTemplateDesc>用于自动生成文风描述的 LLM 提示词</StyleExpand_StylePromptTemplateDesc>
   <StyleExpand_ResetStylePrompt>重置模板</StyleExpand_ResetStylePrompt>
-  <StyleExpand_StylePromptVars>可用占位符: {style_name} {max_tokens} {sample_text}</StyleExpand_StylePromptVars>
+  <StyleExpand_StylePromptVars>可用占位符: {{style_name}} {{max_tokens}} {{sample_text}}</StyleExpand_StylePromptVars>
   
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>切分参数</StyleExpand_ChunkingConfig>
@@ -194,7 +194,6 @@
   
   <!-- Variables -->
   <StyleExpand_VarStyleName>{{style_name}} - 当前文风名称</StyleExpand_VarStyleName>
-  <StyleExpand_VarBasePrompt>{{style_base_prompt}} - 基础指令提示词</StyleExpand_VarBasePrompt>
   <StyleExpand_VarStylePrompt>{{style_prompt}} - 文风描述</StyleExpand_VarStylePrompt>
   <StyleExpand_VarStyleChunks>{{style_chunks}} - 检索到的示例片段</StyleExpand_VarStyleChunks>
   <StyleExpand_VarStyleFull>{{style_full}} - 完整文风提示词（以上组合）</StyleExpand_VarStyleFull>

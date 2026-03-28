@@ -182,14 +182,12 @@
   <StyleExpand_Preview_Parse>Parse</StyleExpand_Preview_Parse>
   <StyleExpand_Preview_Retrieve>Retrieve</StyleExpand_Preview_Retrieve>
   <StyleExpand_Preview_Clear>Clear</StyleExpand_Preview_Clear>
-  <StyleExpand_Preview_ManualRetrieve>Manual Retrieve</StyleExpand_Preview_ManualRetrieve>
   <StyleExpand_Preview_NoStyleSelected>Please select and chunk a style first</StyleExpand_Preview_NoStyleSelected>
   <StyleExpand_Preview_ParsedQuery>Parsed Query:</StyleExpand_Preview_ParsedQuery>
   <StyleExpand_Preview_ClickParse>Click 'Parse' to preview query</StyleExpand_Preview_ClickParse>
   <StyleExpand_Preview_RetrievedChunks>Retrieved Results ({0} chunks)</StyleExpand_Preview_RetrievedChunks>
   <StyleExpand_Preview_NoChunks>Click 'Retrieve' to get similar chunks</StyleExpand_Preview_NoChunks>
   <StyleExpand_Preview_Score>Similarity: {0}</StyleExpand_Preview_Score>
-  <StyleExpand_Preview_EnterManualInput>Please enter manual query text first</StyleExpand_Preview_EnterManualInput>
   <StyleExpand_Preview_OpenPreview>Open Preview</StyleExpand_Preview_OpenPreview>
   
 <!-- Variables -->

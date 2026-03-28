@@ -18,7 +18,6 @@ namespace RimTalkStyleExpand
         private HashSet<string> _selectedVariables = new HashSet<string>();
         
         private string _queryTemplate = "";
-        private string _manualInput = "";
         private string _parsedQuery = "";
         
         private List<(StyleRetriever.StyleChunk chunk, float similarity)> _retrievedChunks = new List<(StyleRetriever.StyleChunk, float)>();
@@ -221,7 +220,7 @@ namespace RimTalkStyleExpand
             yPos += 65f;
 
             Rect btnRow = new Rect(rect.x + 10f, yPos, contentWidth, 30f);
-            float btnWidth = btnRow.width / 4f - 5f;
+            float btnWidth = btnRow.width / 3f - 5f;
 
             if (Widgets.ButtonText(new Rect(btnRow.x, btnRow.y, btnWidth, 30f), "StyleExpand_Preview_Parse".Translate()))
             {
@@ -237,14 +236,6 @@ namespace RimTalkStyleExpand
             {
                 ClearAll();
             }
-
-            bool canRetrieve = !_isLoading && !string.IsNullOrEmpty(_parsedQuery) && HasSelectedStyle();
-            if (!canRetrieve) GUI.color = Color.gray;
-            if (Widgets.ButtonText(new Rect(btnRow.x + 3f * (btnWidth + 5f), btnRow.y, btnWidth, 30f), "StyleExpand_Preview_ManualRetrieve".Translate()) && canRetrieve)
-            {
-                RetrieveFromManual();
-            }
-            GUI.color = Color.white;
 
             yPos += 35f;
 
@@ -438,29 +429,16 @@ namespace RimTalkStyleExpand
             {
                 Logger.Error($"Failed to retrieve chunks: {ex.Message}");
             }
-            finally
+finally
             {
                 _isLoading = false;
             }
-        }
-
-        private void RetrieveFromManual()
-        {
-            if (string.IsNullOrEmpty(_manualInput))
-            {
-                Find.WindowStack.Add(new Dialog_MessageBox("StyleExpand_Preview_EnterManualInput".Translate()));
-                return;
-            }
-            
-            _parsedQuery = _manualInput;
-            RetrieveChunks();
         }
 
         private void ClearAll()
         {
             _queryTemplate = "";
             _parsedQuery = "";
-            _manualInput = "";
             _selectedVariables.Clear();
             _retrievedChunks.Clear();
         }

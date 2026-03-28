@@ -82,16 +82,16 @@ namespace RimTalkStyleExpand
     {
         public int TargetChunkLength = 400;
         public int BatchSize = 10;
-        public int LargeFileThreshold = 20000;
-        public int SampleTargetChunks = 500;
+        public int LargeFileThreshold = 50000;
+        public int SampleTargetChunks = 300;
         public bool EnableSampling = true;
 
         public void ExposeData()
         {
             Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 400);
             Scribe_Values.Look(ref BatchSize, "batchSize", 10);
-            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 20000);
-            Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 500);
+            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 50000);
+            Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 300);
             Scribe_Values.Look(ref EnableSampling, "enableSampling", true);
         }
     }

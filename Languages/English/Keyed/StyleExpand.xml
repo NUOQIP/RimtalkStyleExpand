@@ -9,6 +9,10 @@
   <StyleExpand_EnableDesc>Enable style functionality</StyleExpand_EnableDesc>
   <StyleExpand_Help>Help</StyleExpand_Help>
   
+  <!-- API Status Warning -->
+  <StyleExpand_ApiWarningTitle>⚠️ Please configure Embedding API first</StyleExpand_ApiWarningTitle>
+  <StyleExpand_ApiWarningDesc>Click 'Help' button below for setup guide, or check if API URL is correct</StyleExpand_ApiWarningDesc>
+  
   <!-- Status Messages -->
   <StyleExpand_Processing>[Processing] {0}</StyleExpand_Processing>
   <StyleExpand_Scanning>Scanning style files...</StyleExpand_Scanning>

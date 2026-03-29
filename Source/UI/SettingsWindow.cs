@@ -83,6 +83,9 @@ namespace RimTalkStyleExpand
             list.Gap();
             
             list.CheckboxLabeled("StyleExpand_Enable".Translate(), ref settings.IsEnabled, "StyleExpand_EnableDesc".Translate());
+            
+            DrawApiStatusWarning(list, settings);
+            
             list.GapLine();
 
             DrawStatusMessage(list, settings);
@@ -102,6 +105,59 @@ namespace RimTalkStyleExpand
 
             list.End();
             Widgets.EndScrollView();
+        }
+
+        private static bool _apiChecked = false;
+        private static bool _apiAvailable = false;
+        private static int _lastApiCheckTick = 0;
+        
+        private static void DrawApiStatusWarning(Listing_Standard list, StyleExpandSettings settings)
+        {
+            if (settings == null || !settings.IsEnabled) return;
+            
+            int currentTick = GetCurrentTick();
+            if (!_apiChecked || currentTick - _lastApiCheckTick > 600)
+            {
+                _apiChecked = true;
+                _lastApiCheckTick = currentTick;
+                _apiAvailable = CheckApiQuickly(settings);
+            }
+            
+            if (!_apiAvailable)
+            {
+                var rect = list.GetRect(50f);
+                GUI.color = new Color(1f, 0.7f, 0.2f);
+                Widgets.DrawBoxSolid(rect, new Color(0.2f, 0.15f, 0.05f, 0.8f));
+                
+                var innerRect = new Rect(rect.x + 10f, rect.y + 5f, rect.width - 20f, rect.height - 10f);
+                
+                Text.Anchor = TextAnchor.UpperLeft;
+                Widgets.Label(new Rect(innerRect.x, innerRect.y, innerRect.width, 20f), 
+                    "StyleExpand_ApiWarningTitle".Translate());
+                GUI.color = Color.white;
+                Widgets.Label(new Rect(innerRect.x, innerRect.y + 22f, innerRect.width, 20f), 
+                    "StyleExpand_ApiWarningDesc".Translate());
+                
+                Text.Anchor = TextAnchor.UpperLeft;
+                list.Gap();
+            }
+        }
+        
+        private static bool CheckApiQuickly(StyleExpandSettings settings)
+        {
+            if (settings?.VectorApi == null) return false;
+            if (string.IsNullOrEmpty(settings.VectorApi.Url)) return false;
+            if (string.IsNullOrEmpty(settings.VectorApi.Model)) return false;
+            
+            try
+            {
+                var embedding = VectorClient.GetEmbeddingSync("test", settings.VectorApi);
+                return embedding != null && embedding.Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static void DrawStatusMessage(Listing_Standard list, StyleExpandSettings settings)

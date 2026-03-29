@@ -9,6 +9,10 @@
   <StyleExpand_EnableDesc>启用文风功能</StyleExpand_EnableDesc>
   <StyleExpand_Help>帮助</StyleExpand_Help>
   
+  <!-- API Status Warning -->
+  <StyleExpand_ApiWarningTitle>⚠️ 请先配置 Embedding API</StyleExpand_ApiWarningTitle>
+  <StyleExpand_ApiWarningDesc>点击下方「帮助」按钮查看配置教程，或检查 API 地址是否正确</StyleExpand_ApiWarningDesc>
+  
   <!-- Status Messages -->
   <StyleExpand_Processing>[处理中] {0}</StyleExpand_Processing>
   <StyleExpand_Scanning>正在扫描文风文件...</StyleExpand_Scanning>

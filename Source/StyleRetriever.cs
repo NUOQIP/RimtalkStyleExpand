@@ -97,6 +97,28 @@ namespace RimTalkStyleExpand
                 {
                     LoadFromCache(style.Name);
                 }
+                
+                // Auto-select first chunked style if none selected
+                if (string.IsNullOrEmpty(settings.SelectedStyleName) && settings.Styles.Count > 0)
+                {
+                    var chunkedStyle = settings.Styles.FirstOrDefault(s => 
+                        EmbeddingCache.HasCache(s.Name) || 
+                        (_chunksByStyle.ContainsKey(s.Name) && _chunksByStyle[s.Name].Count > 0));
+                    
+                    if (chunkedStyle != null)
+                    {
+                        settings.SelectStyle(chunkedStyle.Name);
+                        settings.Write();
+                        Logger.Message($"Auto-selected style: {chunkedStyle.Name}");
+                    }
+                    else if (settings.Styles.Count > 0)
+                    {
+                        // If no chunked style, select first one
+                        settings.SelectStyle(settings.Styles[0].Name);
+                        settings.Write();
+                        Logger.Message($"Auto-selected first style: {settings.Styles[0].Name}");
+                    }
+                }
             }
             
             _initialized = true;

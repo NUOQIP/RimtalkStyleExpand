@@ -139,6 +139,8 @@ namespace RimTalkStyleExpand
         
         private float[] GetEmbeddingFromApi(string text, VectorApiConfig config)
         {
+            var truncatedText = text.Length > 1000 ? text.Substring(0, 1000) : text;
+            
             for (int attempt = 1; attempt <= MAX_RETRIES; attempt++)
             {
                 try
@@ -155,7 +157,7 @@ namespace RimTalkStyleExpand
 
                     var isOllama = config.Url.Contains(":11434") || config.Url.Contains("ollama");
                     var inputField = isOllama ? "prompt" : "input";
-                    var requestBody = $"{{\"model\":\"{config.Model}\",\"{inputField}\":\"{EscapeJson(text)}\"}}";
+                    var requestBody = $"{{\"model\":\"{config.Model}\",\"{inputField}\":\"{EscapeJson(truncatedText)}\"}}";
                     var bytes = Encoding.UTF8.GetBytes(requestBody);
                     request.ContentLength = bytes.Length;
 

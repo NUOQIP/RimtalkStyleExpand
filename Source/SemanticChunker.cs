@@ -9,8 +9,7 @@ namespace RimTalkStyleExpand
     public enum ChunkingStrategy
     {
         Recursive = 0,
-        Semantic = 1,
-        Hybrid = 2
+        Semantic = 1
     }
 
     public class SemanticChunker
@@ -32,8 +31,6 @@ namespace RimTalkStyleExpand
             switch (_config.Strategy)
             {
                 case ChunkingStrategy.Semantic:
-                    return ChunkSemantic(text);
-                case ChunkingStrategy.Hybrid:
                     return ChunkHybrid(text);
                 case ChunkingStrategy.Recursive:
                 default:

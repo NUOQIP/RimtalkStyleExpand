@@ -328,12 +328,11 @@ namespace RimTalkStyleExpand
         {
             List<string> chunks;
             
-            if (settings.Chunking.Strategy == ChunkingStrategy.Semantic || 
-                settings.Chunking.Strategy == ChunkingStrategy.Hybrid)
+            if (settings.Chunking.Strategy == ChunkingStrategy.Semantic)
             {
                 var chunker = new SemanticChunker(settings.Chunking, settings.VectorApi);
                 chunks = chunker.Chunk(text);
-                Logger.Message($"Used {settings.Chunking.Strategy} chunking: {chunks.Count} chunks");
+                Logger.Message($"Used semantic chunking: {chunks.Count} chunks");
             }
             else
             {

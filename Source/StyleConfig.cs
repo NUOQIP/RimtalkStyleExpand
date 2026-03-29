@@ -80,31 +80,31 @@ namespace RimTalkStyleExpand
 
     public class ChunkingConfig : IExposable
     {
-        public ChunkingStrategy Strategy = ChunkingStrategy.Semantic;
+        public ChunkingStrategy Strategy = ChunkingStrategy.Recursive;
         
-        public int MinChunkLength = 120;
-        public int TargetChunkLength = 450;
-        public int MaxChunkLength = 900;
-        public int Overlap = 0;
+        public int MinChunkLength = 100;
+        public int TargetChunkLength = 400;
+        public int MaxChunkLength = 800;
+        public int Overlap = 50;
         
-        public float BreakpointPercentileThreshold = 95f;
+        public float BreakpointPercentileThreshold = 80f;
         
-        public int BatchSize = 8;
-        public int LargeFileThreshold = 15000;
-        public int SampleTargetChunks = 250;
+        public int BatchSize = 10;
+        public int LargeFileThreshold = 20000;
+        public int SampleTargetChunks = 300;
         public bool EnableSampling = true;
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref Strategy, "strategy", ChunkingStrategy.Semantic);
-            Scribe_Values.Look(ref MinChunkLength, "minChunkLength", 120);
-            Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 450);
-            Scribe_Values.Look(ref MaxChunkLength, "maxChunkLength", 900);
-            Scribe_Values.Look(ref Overlap, "overlap", 0);
-            Scribe_Values.Look(ref BreakpointPercentileThreshold, "breakpointPercentileThreshold", 95f);
-            Scribe_Values.Look(ref BatchSize, "batchSize", 8);
-            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 15000);
-            Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 250);
+            Scribe_Values.Look(ref Strategy, "strategy", ChunkingStrategy.Recursive);
+            Scribe_Values.Look(ref MinChunkLength, "minChunkLength", 100);
+            Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 400);
+            Scribe_Values.Look(ref MaxChunkLength, "maxChunkLength", 800);
+            Scribe_Values.Look(ref Overlap, "overlap", 50);
+            Scribe_Values.Look(ref BreakpointPercentileThreshold, "breakpointPercentileThreshold", 80f);
+            Scribe_Values.Look(ref BatchSize, "batchSize", 10);
+            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 20000);
+            Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 300);
             Scribe_Values.Look(ref EnableSampling, "enableSampling", true);
         }
     }

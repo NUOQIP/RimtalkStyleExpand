@@ -478,14 +478,12 @@ namespace RimTalkStyleExpand
             
             list.Label("StyleExpand_ChunkingStrategy".Translate());
             var strategyLabels = new[] { 
-                "StyleExpand_StrategySemantic".Translate(), 
                 "StyleExpand_StrategyRecursive".Translate(), 
-                "StyleExpand_StrategyHybrid".Translate() 
+                "StyleExpand_StrategySemantic".Translate()
             };
             var strategyMapping = new[] { 
-                ChunkingStrategy.Semantic, 
                 ChunkingStrategy.Recursive, 
-                ChunkingStrategy.Hybrid 
+                ChunkingStrategy.Semantic
             };
             var currentStrategyIndex = System.Array.IndexOf(strategyMapping, settings.Chunking.Strategy);
             if (currentStrategyIndex < 0) currentStrategyIndex = 0;
@@ -493,7 +491,7 @@ namespace RimTalkStyleExpand
             var strategyRow = list.GetRect(30f);
             for (int i = 0; i < strategyLabels.Length; i++)
             {
-                var btnRect = new Rect(strategyRow.x + i * (strategyRow.width / 3f), strategyRow.y, strategyRow.width / 3f - 2f, 28f);
+                var btnRect = new Rect(strategyRow.x + i * (strategyRow.width / 2f), strategyRow.y, strategyRow.width / 2f - 2f, 28f);
                 var isSelected = i == currentStrategyIndex;
                 
                 if (isSelected)
@@ -520,18 +518,14 @@ namespace RimTalkStyleExpand
                 case ChunkingStrategy.Semantic:
                     list.Label("StyleExpand_SemanticChunkingInfo".Translate());
                     break;
-                case ChunkingStrategy.Hybrid:
-                    list.Label("StyleExpand_HybridChunkingInfo".Translate());
-                    break;
             }
             GUI.color = Color.white;
             list.Gap();
             
-            if (settings.Chunking.Strategy == ChunkingStrategy.Semantic || 
-                settings.Chunking.Strategy == ChunkingStrategy.Hybrid)
+            if (settings.Chunking.Strategy == ChunkingStrategy.Semantic)
             {
                 list.Label("StyleExpand_BreakpointThreshold".Translate(settings.Chunking.BreakpointPercentileThreshold.ToString("F0")));
-                settings.Chunking.BreakpointPercentileThreshold = list.Slider(settings.Chunking.BreakpointPercentileThreshold, 70f, 99f);
+                settings.Chunking.BreakpointPercentileThreshold = list.Slider(settings.Chunking.BreakpointPercentileThreshold, 50f, 95f);
             }
             
             list.Gap();

@@ -206,7 +206,7 @@ namespace RimTalkStyleExpand
                 
                 if (i < sentences.Count - 1)
                 {
-                    System.Threading.Thread.Sleep(500);
+                    System.Threading.Thread.Sleep(100);
                 }
             }
 

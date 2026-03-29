@@ -604,6 +604,11 @@ namespace RimTalkStyleExpand
                     }
                     else
                     {
+                        if (current.Length >= minSize)
+                        {
+                            result.Add(current.ToString().Trim());
+                            current.Clear();
+                        }
                         current.Append(trimmed);
                     }
                 }

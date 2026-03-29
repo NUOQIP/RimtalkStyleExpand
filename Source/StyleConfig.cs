@@ -80,7 +80,7 @@ namespace RimTalkStyleExpand
 
     public class ChunkingConfig : IExposable
     {
-        public int TargetChunkLength = 400;
+        public int TargetChunkLength = 200;
         public int BatchSize = 10;
         public int LargeFileThreshold = 50000;
         public int SampleTargetChunks = 300;
@@ -88,7 +88,7 @@ namespace RimTalkStyleExpand
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 400);
+            Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 200);
             Scribe_Values.Look(ref BatchSize, "batchSize", 10);
             Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 50000);
             Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 300);

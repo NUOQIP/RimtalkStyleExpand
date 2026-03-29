@@ -326,12 +326,25 @@ namespace RimTalkStyleExpand
 
         private static List<string> PrepareChunks(string text, StyleExpandSettings settings)
         {
-            var chunks = SplitIntoChunks(text, settings.Chunking.TargetChunkLength);
+            List<string> chunks;
+            
+            if (settings.Chunking.Strategy == ChunkingStrategy.Semantic || 
+                settings.Chunking.Strategy == ChunkingStrategy.Hybrid)
+            {
+                var chunker = new SemanticChunker(settings.Chunking, settings.VectorApi);
+                chunks = chunker.Chunk(text);
+                Logger.Message($"Used {settings.Chunking.Strategy} chunking: {chunks.Count} chunks");
+            }
+            else
+            {
+                chunks = SplitIntoChunks(text, settings.Chunking.TargetChunkLength);
+                Logger.Message($"Used recursive chunking: {chunks.Count} chunks");
+            }
             
             if (settings.Chunking.EnableSampling && chunks.Count > settings.Chunking.SampleTargetChunks)
             {
                 chunks = SampleChunks(chunks, settings.Chunking.SampleTargetChunks);
-                Logger.Message($"Sampled {chunks.Count} chunks from {SplitIntoChunks(text, settings.Chunking.TargetChunkLength).Count} total");
+                Logger.Message($"Sampled to {chunks.Count} chunks");
             }
             
             return chunks;

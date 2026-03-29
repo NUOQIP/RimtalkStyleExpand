@@ -55,14 +55,14 @@ namespace RimTalkStyleExpand
         public string BasePromptTemplate = "Please imitate the following writing style ({style_name}) when generating dialogue:";
         public string QueryTemplate = "{{ pawn.personality }} {{ pawn.job }}";
         public int TopK = 3;
-        public float SimilarityThreshold = 0.5f;
+        public float SimilarityThreshold = 0.55f;
 
         public void ExposeData()
         {
             Scribe_Values.Look(ref BasePromptTemplate, "basePromptTemplate", "Please imitate the following writing style ({style_name}) when generating dialogue:");
             Scribe_Values.Look(ref QueryTemplate, "queryTemplate", "{{ pawn.personality }} {{ pawn.job }}");
             Scribe_Values.Look(ref TopK, "topK", 3);
-            Scribe_Values.Look(ref SimilarityThreshold, "similarityThreshold", 0.5f);
+            Scribe_Values.Look(ref SimilarityThreshold, "similarityThreshold", 0.55f);
         }
     }
 
@@ -80,18 +80,31 @@ namespace RimTalkStyleExpand
 
     public class ChunkingConfig : IExposable
     {
-        public int TargetChunkLength = 200;
-        public int BatchSize = 10;
-        public int LargeFileThreshold = 50000;
-        public int SampleTargetChunks = 300;
+        public ChunkingStrategy Strategy = ChunkingStrategy.Semantic;
+        
+        public int MinChunkLength = 120;
+        public int TargetChunkLength = 450;
+        public int MaxChunkLength = 900;
+        public int Overlap = 0;
+        
+        public float BreakpointPercentileThreshold = 95f;
+        
+        public int BatchSize = 8;
+        public int LargeFileThreshold = 15000;
+        public int SampleTargetChunks = 250;
         public bool EnableSampling = true;
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 200);
-            Scribe_Values.Look(ref BatchSize, "batchSize", 10);
-            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 50000);
-            Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 300);
+            Scribe_Values.Look(ref Strategy, "strategy", ChunkingStrategy.Semantic);
+            Scribe_Values.Look(ref MinChunkLength, "minChunkLength", 120);
+            Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 450);
+            Scribe_Values.Look(ref MaxChunkLength, "maxChunkLength", 900);
+            Scribe_Values.Look(ref Overlap, "overlap", 0);
+            Scribe_Values.Look(ref BreakpointPercentileThreshold, "breakpointPercentileThreshold", 95f);
+            Scribe_Values.Look(ref BatchSize, "batchSize", 8);
+            Scribe_Values.Look(ref LargeFileThreshold, "largeFileThreshold", 15000);
+            Scribe_Values.Look(ref SampleTargetChunks, "sampleTargetChunks", 250);
             Scribe_Values.Look(ref EnableSampling, "enableSampling", true);
         }
     }

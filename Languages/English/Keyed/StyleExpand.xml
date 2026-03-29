@@ -2,7 +2,7 @@
 <LanguageData>
   <!-- Mod Name -->
   <StyleExpand_ModName>RimTalk StyleExpand</StyleExpand_ModName>
-  <StyleExpand_Version>v1.4</StyleExpand_Version>
+  <StyleExpand_Version>v1.5</StyleExpand_Version>
   
   <!-- General -->
   <StyleExpand_Enable>Enable Style Expand</StyleExpand_Enable>
@@ -120,6 +120,16 @@
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>Chunking Parameters</StyleExpand_ChunkingConfig>
   <StyleExpand_ChunkingConfigDesc>Text chunking settings, controls the length of each chunk</StyleExpand_ChunkingConfigDesc>
+  <StyleExpand_ChunkingStrategy>Chunking Strategy</StyleExpand_ChunkingStrategy>
+  <StyleExpand_StrategyRecursive>Recursive</StyleExpand_StrategyRecursive>
+  <StyleExpand_StrategySemantic>Semantic</StyleExpand_StrategySemantic>
+  <StyleExpand_StrategyHybrid>Hybrid</StyleExpand_StrategyHybrid>
+  <StyleExpand_SemanticChunkingInfo>Semantic chunking: Dynamically determines breakpoints based on sentence similarity, ensuring each chunk is semantically coherent</StyleExpand_SemanticChunkingInfo>
+  <StyleExpand_BreakpointThreshold>Breakpoint Threshold: {0}%</StyleExpand_BreakpointThreshold>
+  <StyleExpand_ChunkLengthParams>Chunk Length Parameters</StyleExpand_ChunkLengthParams>
+  <StyleExpand_MinChunkLength>Min Chunk Length: {0} chars</StyleExpand_MinChunkLength>
+  <StyleExpand_MaxChunkLength>Max Chunk Length: {0} chars</StyleExpand_MaxChunkLength>
+  <StyleExpand_Overlap>Chunk Overlap: {0} chars</StyleExpand_Overlap>
   <StyleExpand_TargetChunkLength>Target Chunk Length: {0} chars</StyleExpand_TargetChunkLength>
   <StyleExpand_EnableSampling>Enable Large File Sampling</StyleExpand_EnableSampling>
   <StyleExpand_EnableSamplingDesc>Automatically sample representative chunks when exceeding threshold</StyleExpand_EnableSamplingDesc>

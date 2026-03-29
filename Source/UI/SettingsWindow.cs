@@ -476,8 +476,67 @@ namespace RimTalkStyleExpand
         {
             DrawSectionHeader(list, "StyleExpand_ChunkingConfig".Translate(), "StyleExpand_ChunkingConfigDesc".Translate());
             
+            list.Label("StyleExpand_ChunkingStrategy".Translate());
+            var strategyLabels = new[] { 
+                "StyleExpand_StrategyRecursive".Translate(), 
+                "StyleExpand_StrategySemantic".Translate(), 
+                "StyleExpand_StrategyHybrid".Translate() 
+            };
+            var currentStrategyIndex = (int)settings.Chunking.Strategy;
+            
+            var strategyRow = list.GetRect(30f);
+            for (int i = 0; i < strategyLabels.Length; i++)
+            {
+                var btnRect = new Rect(strategyRow.x + i * (strategyRow.width / 3f), strategyRow.y, strategyRow.width / 3f - 2f, 28f);
+                var isSelected = i == currentStrategyIndex;
+                
+                if (isSelected)
+                {
+                    GUI.color = new Color(0.3f, 0.5f, 0.3f);
+                    Widgets.DrawBoxSolid(btnRect, GUI.color);
+                    GUI.color = Color.white;
+                }
+                
+                if (Widgets.ButtonText(btnRect, strategyLabels[i]))
+                {
+                    settings.Chunking.Strategy = (ChunkingStrategy)i;
+                }
+            }
+            
+            list.Gap();
+            
+            if (settings.Chunking.Strategy == ChunkingStrategy.Semantic || 
+                settings.Chunking.Strategy == ChunkingStrategy.Hybrid)
+            {
+                GUI.color = new Color(0.7f, 0.9f, 0.7f);
+                list.Label("StyleExpand_SemanticChunkingInfo".Translate());
+                GUI.color = Color.white;
+                list.Gap();
+                
+                list.Label("StyleExpand_BreakpointThreshold".Translate(settings.Chunking.BreakpointPercentileThreshold.ToString("F0")));
+                settings.Chunking.BreakpointPercentileThreshold = list.Slider(settings.Chunking.BreakpointPercentileThreshold, 70f, 99f);
+            }
+            
+            list.Gap();
+            
+            Text.Font = GameFont.Small;
+            GUI.color = new Color(0.8f, 0.8f, 0.8f);
+            list.Label("StyleExpand_ChunkLengthParams".Translate());
+            GUI.color = Color.white;
+            
+            list.Label("StyleExpand_MinChunkLength".Translate(settings.Chunking.MinChunkLength));
+            settings.Chunking.MinChunkLength = (int)list.Slider(settings.Chunking.MinChunkLength, 50, 300);
+            
             list.Label("StyleExpand_TargetChunkLength".Translate(settings.Chunking.TargetChunkLength));
-            settings.Chunking.TargetChunkLength = (int)list.Slider(settings.Chunking.TargetChunkLength, 100, 800);
+            settings.Chunking.TargetChunkLength = (int)list.Slider(settings.Chunking.TargetChunkLength, 200, 1000);
+            
+            list.Label("StyleExpand_MaxChunkLength".Translate(settings.Chunking.MaxChunkLength));
+            settings.Chunking.MaxChunkLength = (int)list.Slider(settings.Chunking.MaxChunkLength, 500, 2000);
+            
+            list.Label("StyleExpand_Overlap".Translate(settings.Chunking.Overlap));
+            settings.Chunking.Overlap = (int)list.Slider(settings.Chunking.Overlap, 0, 200);
+            
+            list.Gap();
             
             list.Label("StyleExpand_BatchSize".Translate(settings.Chunking.BatchSize));
             settings.Chunking.BatchSize = (int)list.Slider(settings.Chunking.BatchSize, 1, 50);
@@ -491,7 +550,7 @@ namespace RimTalkStyleExpand
                 settings.Chunking.SampleTargetChunks = (int)list.Slider(settings.Chunking.SampleTargetChunks, 100, 1000);
                 
                 list.Label("StyleExpand_LargeFileThreshold".Translate(settings.Chunking.LargeFileThreshold));
-                settings.Chunking.LargeFileThreshold = (int)list.Slider(settings.Chunking.LargeFileThreshold, 10000, 200000);
+                settings.Chunking.LargeFileThreshold = (int)list.Slider(settings.Chunking.LargeFileThreshold, 10000, 100000);
             }
         }
 

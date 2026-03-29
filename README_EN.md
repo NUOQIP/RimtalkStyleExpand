@@ -111,7 +111,39 @@ StyleExpand/
 
 ## Progress
 
-### v1.4.1 (Current)
+### v1.5 (Current)
+
+- [x] Semantic chunking algorithm (2026 latest RAG approach)
+  - Dynamic breakpoints based on sentence embedding similarity
+  - Three strategies: Recursive, Semantic, Hybrid
+  - Configurable breakpoint percentile threshold (default 95%)
+  - Ensures each chunk is semantically coherent
+- [x] Chunking parameter optimization
+  - Added: min/max chunk length, overlap
+  - Default parameters optimized for style replication
+- [x] Settings UI redesign
+  - Chunking strategy selection
+  - Semantic chunking parameters
+  - Parameter tooltips
+
+#### Recommended Parameters (Style Replication)
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| Strategy | Semantic | Ensures complete scene/dialogue chunks |
+| Breakpoint Threshold | 95% | Higher threshold = larger chunks = more complete scenes |
+| Min Chunk | 120 | Single sentence too short for style reference |
+| Target Chunk | 450 | One dialogue scene ≈ 300-500 characters |
+| Max Chunk | 900 | Complex scenes preserved intact |
+| Overlap | 0 | Semantic chunking already ensures coherence |
+| Top K | 3 | 3 complete chunks ≈ 1200 chars style material |
+| Similarity Threshold | 0.55 | Filter irrelevant, ensure quality |
+| Sample Target | 250 | Cover style variations throughout text |
+| Large File Threshold | 15000 | ~4000 Chinese chars, start sampling |
+
+**Core Goal: Each returned chunk is a complete, learnable style unit.**
+
+### v1.4.1
 
 - [x] API call optimization
   - Add retry mechanism (max 3 retries + exponential backoff)

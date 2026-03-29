@@ -2,7 +2,7 @@
 <LanguageData>
   <!-- Mod Name -->
   <StyleExpand_ModName>RimTalk 文风扩展</StyleExpand_ModName>
-  <StyleExpand_Version>v1.4</StyleExpand_Version>
+  <StyleExpand_Version>v1.5</StyleExpand_Version>
   
   <!-- General -->
   <StyleExpand_Enable>启用文风扩展</StyleExpand_Enable>
@@ -120,6 +120,16 @@
   <!-- Chunking Section -->
   <StyleExpand_ChunkingConfig>切分参数</StyleExpand_ChunkingConfig>
   <StyleExpand_ChunkingConfigDesc>文本分块设置，控制每个片段的长度</StyleExpand_ChunkingConfigDesc>
+  <StyleExpand_ChunkingStrategy>切分策略</StyleExpand_ChunkingStrategy>
+  <StyleExpand_StrategyRecursive>递归切分</StyleExpand_StrategyRecursive>
+  <StyleExpand_StrategySemantic>语义切分</StyleExpand_StrategySemantic>
+  <StyleExpand_StrategyHybrid>混合切分</StyleExpand_StrategyHybrid>
+  <StyleExpand_SemanticChunkingInfo>语义切分：基于句子间的语义相似度动态确定切分点，确保每个片段语义完整连贯</StyleExpand_SemanticChunkingInfo>
+  <StyleExpand_BreakpointThreshold>语义断点阈值：{0}%</StyleExpand_BreakpointThreshold>
+  <StyleExpand_ChunkLengthParams>片段长度参数</StyleExpand_ChunkLengthParams>
+  <StyleExpand_MinChunkLength>最小片段长度：{0} 字符</StyleExpand_MinChunkLength>
+  <StyleExpand_MaxChunkLength>最大片段长度：{0} 字符</StyleExpand_MaxChunkLength>
+  <StyleExpand_Overlap>片段重叠：{0} 字符</StyleExpand_Overlap>
   <StyleExpand_TargetChunkLength>目标片段长度：{0} 字符</StyleExpand_TargetChunkLength>
   <StyleExpand_EnableSampling>启用大文件采样</StyleExpand_EnableSampling>
   <StyleExpand_EnableSamplingDesc>超过阈值时自动采样代表性片段</StyleExpand_EnableSamplingDesc>

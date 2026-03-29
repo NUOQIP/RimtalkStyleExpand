@@ -80,7 +80,7 @@ namespace RimTalkStyleExpand
 
     public class ChunkingConfig : IExposable
     {
-        public ChunkingStrategy Strategy = ChunkingStrategy.Recursive;
+        public ChunkingStrategy Strategy = ChunkingStrategy.Semantic;
         
         public int MinChunkLength = 100;
         public int TargetChunkLength = 400;
@@ -96,7 +96,7 @@ namespace RimTalkStyleExpand
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref Strategy, "strategy", ChunkingStrategy.Recursive);
+            Scribe_Values.Look(ref Strategy, "strategy", ChunkingStrategy.Semantic);
             Scribe_Values.Look(ref MinChunkLength, "minChunkLength", 100);
             Scribe_Values.Look(ref TargetChunkLength, "targetChunkLength", 400);
             Scribe_Values.Look(ref MaxChunkLength, "maxChunkLength", 800);

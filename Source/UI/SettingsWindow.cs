@@ -478,12 +478,12 @@ namespace RimTalkStyleExpand
             
             list.Label("StyleExpand_ChunkingStrategy".Translate());
             var strategyLabels = new[] { 
-                "StyleExpand_StrategyRecursive".Translate(), 
-                "StyleExpand_StrategySemantic".Translate()
+                "StyleExpand_StrategySemantic".Translate(), 
+                "StyleExpand_StrategyRecursive".Translate()
             };
             var strategyMapping = new[] { 
-                ChunkingStrategy.Recursive, 
-                ChunkingStrategy.Semantic
+                ChunkingStrategy.Semantic, 
+                ChunkingStrategy.Recursive
             };
             var currentStrategyIndex = System.Array.IndexOf(strategyMapping, settings.Chunking.Strategy);
             if (currentStrategyIndex < 0) currentStrategyIndex = 0;

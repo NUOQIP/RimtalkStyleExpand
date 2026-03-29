@@ -478,11 +478,17 @@ namespace RimTalkStyleExpand
             
             list.Label("StyleExpand_ChunkingStrategy".Translate());
             var strategyLabels = new[] { 
-                "StyleExpand_StrategyRecursive".Translate(), 
                 "StyleExpand_StrategySemantic".Translate(), 
+                "StyleExpand_StrategyRecursive".Translate(), 
                 "StyleExpand_StrategyHybrid".Translate() 
             };
-            var currentStrategyIndex = (int)settings.Chunking.Strategy;
+            var strategyMapping = new[] { 
+                ChunkingStrategy.Semantic, 
+                ChunkingStrategy.Recursive, 
+                ChunkingStrategy.Hybrid 
+            };
+            var currentStrategyIndex = System.Array.IndexOf(strategyMapping, settings.Chunking.Strategy);
+            if (currentStrategyIndex < 0) currentStrategyIndex = 0;
             
             var strategyRow = list.GetRect(30f);
             for (int i = 0; i < strategyLabels.Length; i++)
@@ -499,7 +505,7 @@ namespace RimTalkStyleExpand
                 
                 if (Widgets.ButtonText(btnRect, strategyLabels[i]))
                 {
-                    settings.Chunking.Strategy = (ChunkingStrategy)i;
+                    settings.Chunking.Strategy = strategyMapping[i];
                 }
             }
             

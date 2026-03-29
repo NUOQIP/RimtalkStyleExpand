@@ -200,7 +200,7 @@ namespace RimTalkStyleExpand
             if (ex.Response is HttpWebResponse response)
             {
                 var code = (int)response.StatusCode;
-                return code == 429 || code == 503 || code == 502 || code == 504;
+                return code == 429 || code == 500 || code == 502 || code == 503 || code == 504;
             }
             return ex.Status == WebExceptionStatus.Timeout || 
                    ex.Status == WebExceptionStatus.ConnectionClosed ||

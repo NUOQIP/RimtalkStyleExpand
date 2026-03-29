@@ -193,6 +193,11 @@ namespace RimTalkStyleExpand
                 {
                     embeddings.Add(embedding);
                 }
+                
+                if (i < sentences.Count - 1)
+                {
+                    System.Threading.Thread.Sleep(50);
+                }
             }
 
             var validCount = embeddings.Count(e => e != null);

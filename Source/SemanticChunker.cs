@@ -9,7 +9,8 @@ namespace RimTalkStyleExpand
     public enum ChunkingStrategy
     {
         Recursive = 0,
-        Semantic = 1
+        Semantic = 1,
+        Hybrid = 1
     }
 
     public class SemanticChunker

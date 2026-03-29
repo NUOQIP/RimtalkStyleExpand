@@ -139,7 +139,7 @@ namespace RimTalkStyleExpand
         
         private float[] GetEmbeddingFromApi(string text, VectorApiConfig config)
         {
-            var truncatedText = text.Length > 1000 ? text.Substring(0, 1000) : text;
+            var truncatedText = text.Length > 400 ? text.Substring(0, 400) : text;
             
             for (int attempt = 1; attempt <= MAX_RETRIES; attempt++)
             {

@@ -8,7 +8,18 @@
     <li>1.5</li>
     <li>1.6</li>
   </supportedVersions>
-  <description>RimTalk文风扩展模块。用户提供文风素材，基于向量检索自动注入风格特征到对话生成中。</description>
+  <description>RimTalk文风扩展模块 — 让对话呈现任意写作风格。
+
+【功能】
+用户提供文风素材（小说片段等），MOD自动分析并在对话生成时注入风格特征。支持语义切分、向量检索、LLM文风分析。
+
+【使用】
+将文风素材(.txt)放入Styles文件夹，配置Embedding API（推荐Ollama），在设置中扫描并切分文风即可。
+
+【依赖与排序】
+需要RimTalk和Harmony，加载顺序置于RimTalk之后。
+
+交流群：1076958977</description>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>

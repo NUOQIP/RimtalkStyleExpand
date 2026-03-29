@@ -171,20 +171,21 @@ namespace RimTalkStyleExpand
                         return ParseEmbeddingResponse(responseJson);
                     }
                 }
-                catch (WebException ex)
-                {
-                    var shouldRetry = ShouldRetry(ex);
-                    
-                    if (attempt >= MAX_RETRIES || !shouldRetry)
+catch (WebException ex)
                     {
-                        Logger.Error($"Error getting embedding after {attempt} attempts: {ex.Message}");
-                        return null;
+                        var shouldRetry = ShouldRetry(ex);
+                        
+                        if (attempt >= MAX_RETRIES || !shouldRetry)
+                        {
+                            var preview = text.Length > 100 ? text.Substring(0, 100) + "..." : text;
+                            Logger.Error($"Error getting embedding after {attempt} attempts: {ex.Message}. Text preview: {preview}");
+                            return null;
+                        }
+                        
+                        var delay = BASE_RETRY_DELAY_MS * attempt * 2;
+                        Logger.Warning($"Embedding API failed (attempt {attempt}), retrying in {delay}ms: {ex.Message}");
+                        System.Threading.Thread.Sleep(delay);
                     }
-                    
-                    var delay = BASE_RETRY_DELAY_MS * attempt;
-                    Logger.Warning($"Embedding API failed (attempt {attempt}), retrying in {delay}ms: {ex.Message}");
-                    System.Threading.Thread.Sleep(delay);
-                }
                 catch (Exception ex)
                 {
                     Logger.Error($"Error getting embedding: {ex.Message}");

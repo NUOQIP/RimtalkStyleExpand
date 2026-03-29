@@ -180,6 +180,8 @@ namespace RimTalkStyleExpand
         private List<float[]> GetSentenceEmbeddings(List<string> sentences)
         {
             var embeddings = new List<float[]>();
+            int consecutiveFailures = 0;
+            const int maxConsecutiveFailures = 3;
 
             for (int i = 0; i < sentences.Count; i++)
             {
@@ -188,15 +190,23 @@ namespace RimTalkStyleExpand
                 {
                     Logger.Warning($"SemanticChunker: Failed to get embedding for sentence {i}");
                     embeddings.Add(null);
+                    consecutiveFailures++;
+                    
+                    if (consecutiveFailures >= maxConsecutiveFailures)
+                    {
+                        Logger.Error($"SemanticChunker: {maxConsecutiveFailures} consecutive failures, aborting semantic chunking");
+                        return null;
+                    }
                 }
                 else
                 {
                     embeddings.Add(embedding);
+                    consecutiveFailures = 0;
                 }
                 
                 if (i < sentences.Count - 1)
                 {
-                    System.Threading.Thread.Sleep(200);
+                    System.Threading.Thread.Sleep(500);
                 }
             }
 

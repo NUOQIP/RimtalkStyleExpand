@@ -1001,6 +1001,7 @@ Do not include perspective or formatting rules—these are context-dependent, no
             SettingsWindow.AddLabel(list,"StyleExpand_HelpStep3".Translate());
             SettingsWindow.AddLabel(list,"StyleExpand_HelpStep4".Translate());
             SettingsWindow.AddLabel(list,"StyleExpand_HelpStep5".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep6".Translate());
             list.Gap();
             
             SettingsWindow.AddLabel(list,"StyleExpand_HelpApiSection".Translate());

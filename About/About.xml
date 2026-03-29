@@ -14,7 +14,7 @@
 用户提供文风素材（小说片段等），MOD自动分析并在对话生成时注入风格特征。支持语义切分、向量检索、LLM文风分析。
 
 【使用】
-将文风素材(.txt)放入Styles文件夹，配置Embedding API（推荐Ollama），在设置中扫描并切分文风即可。
+将文风素材(.txt)放入Styles文件夹，配置Embedding API（推荐Ollama），在设置中扫描并切分文风即可。推荐使用「生成文风描述」功能以获得最佳效果。
 
 【依赖与排序】
 需要RimTalk和Harmony，加载顺序置于RimTalk之后。

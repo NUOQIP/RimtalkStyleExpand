@@ -166,6 +166,7 @@
   <StyleExpand_HelpStep3>3. 选择一个文风，点击「切分文风」处理</StyleExpand_HelpStep3>
   <StyleExpand_HelpStep4>4. 等待切分完成（首次需要调用 API 计算向量）</StyleExpand_HelpStep4>
   <StyleExpand_HelpStep5>5. 完成！RimTalk 生成的对话将呈现该文风</StyleExpand_HelpStep5>
+  <StyleExpand_HelpStep6>6. 推荐：配置 LLM API 后点击「生成描述」，效果更佳</StyleExpand_HelpStep6>
   <StyleExpand_HelpApiSection>【API 配置】</StyleExpand_HelpApiSection>
   <StyleExpand_HelpApiEmbedding>Embedding API 用于将文本转换为向量，是切分和检索的核心。必须配置才能使用本 MOD。</StyleExpand_HelpApiEmbedding>
   <StyleExpand_HelpApiOllama>推荐使用 Ollama 本地运行：安装 Ollama 后运行 ollama pull nomic-embed-text，API 地址填 http://localhost:11434/api/embeddings，模型填 nomic-embed-text</StyleExpand_HelpApiOllama>

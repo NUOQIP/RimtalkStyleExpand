@@ -59,7 +59,10 @@ User Message
 3. Configure Embedding API (for chunking and retrieval)
 4. Click "Scan Styles" → Select style → "Chunk Style"
 5. Done — RimTalk dialogues will now reflect the style
+6. Recommended: Configure LLM API and click "Generate Description" for better results
 ```
+
+> 💡 **Recommended: Use "Generate Style Description" feature**: The MOD includes LLM analysis to automatically analyze style samples and generate style descriptions, producing better results than using retrieved chunks alone.
 
 ### Style Material Recommendations
 

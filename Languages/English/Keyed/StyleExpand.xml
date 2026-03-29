@@ -166,6 +166,7 @@
   <StyleExpand_HelpStep3>3. Select a style, click 'Chunk Style' to process</StyleExpand_HelpStep3>
   <StyleExpand_HelpStep4>4. Wait for chunking to complete (first time requires API calls)</StyleExpand_HelpStep4>
   <StyleExpand_HelpStep5>5. Done! RimTalk dialogues will now reflect this style</StyleExpand_HelpStep5>
+  <StyleExpand_HelpStep6>6. Recommended: Configure LLM API and click 'Generate Description' for better results</StyleExpand_HelpStep6>
   <StyleExpand_HelpApiSection>【API Configuration】</StyleExpand_HelpApiSection>
   <StyleExpand_HelpApiEmbedding>Embedding API converts text to vectors, essential for chunking and retrieval. Must be configured to use this MOD.</StyleExpand_HelpApiEmbedding>
   <StyleExpand_HelpApiOllama>Recommended: Use Ollama locally. After installing Ollama, run: ollama pull nomic-embed-text. Set API URL to http://localhost:11434/api/embeddings, model to nomic-embed-text</StyleExpand_HelpApiOllama>

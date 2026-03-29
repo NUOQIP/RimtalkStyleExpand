@@ -125,6 +125,8 @@
   <StyleExpand_StrategySemantic>语义切分</StyleExpand_StrategySemantic>
   <StyleExpand_StrategyHybrid>混合切分</StyleExpand_StrategyHybrid>
   <StyleExpand_SemanticChunkingInfo>语义切分：基于句子间的语义相似度动态确定切分点，确保每个片段语义完整连贯</StyleExpand_SemanticChunkingInfo>
+  <StyleExpand_RecursiveChunkingInfo>递归切分：按段落→句子→分句层级递归分割，适合API不稳定时使用</StyleExpand_RecursiveChunkingInfo>
+  <StyleExpand_HybridChunkingInfo>混合切分：先按段落分割，再对每个段落使用语义切分，兼顾结构和语义</StyleExpand_HybridChunkingInfo>
   <StyleExpand_BreakpointThreshold>语义断点阈值：{0}%</StyleExpand_BreakpointThreshold>
   <StyleExpand_ChunkLengthParams>片段长度参数</StyleExpand_ChunkLengthParams>
   <StyleExpand_MinChunkLength>最小片段长度：{0} 字符</StyleExpand_MinChunkLength>

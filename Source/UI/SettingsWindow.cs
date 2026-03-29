@@ -505,14 +505,25 @@ namespace RimTalkStyleExpand
             
             list.Gap();
             
+            GUI.color = new Color(0.7f, 0.9f, 0.7f);
+            switch (settings.Chunking.Strategy)
+            {
+                case ChunkingStrategy.Recursive:
+                    list.Label("StyleExpand_RecursiveChunkingInfo".Translate());
+                    break;
+                case ChunkingStrategy.Semantic:
+                    list.Label("StyleExpand_SemanticChunkingInfo".Translate());
+                    break;
+                case ChunkingStrategy.Hybrid:
+                    list.Label("StyleExpand_HybridChunkingInfo".Translate());
+                    break;
+            }
+            GUI.color = Color.white;
+            list.Gap();
+            
             if (settings.Chunking.Strategy == ChunkingStrategy.Semantic || 
                 settings.Chunking.Strategy == ChunkingStrategy.Hybrid)
             {
-                GUI.color = new Color(0.7f, 0.9f, 0.7f);
-                list.Label("StyleExpand_SemanticChunkingInfo".Translate());
-                GUI.color = Color.white;
-                list.Gap();
-                
                 list.Label("StyleExpand_BreakpointThreshold".Translate(settings.Chunking.BreakpointPercentileThreshold.ToString("F0")));
                 settings.Chunking.BreakpointPercentileThreshold = list.Slider(settings.Chunking.BreakpointPercentileThreshold, 70f, 99f);
             }

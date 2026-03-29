@@ -125,6 +125,8 @@
   <StyleExpand_StrategySemantic>Semantic</StyleExpand_StrategySemantic>
   <StyleExpand_StrategyHybrid>Hybrid</StyleExpand_StrategyHybrid>
   <StyleExpand_SemanticChunkingInfo>Semantic chunking: Dynamically determines breakpoints based on sentence similarity, ensuring each chunk is semantically coherent</StyleExpand_SemanticChunkingInfo>
+  <StyleExpand_RecursiveChunkingInfo>Recursive chunking: Hierarchical splitting by paragraph→sentence→clause, suitable when API is unstable</StyleExpand_RecursiveChunkingInfo>
+  <StyleExpand_HybridChunkingInfo>Hybrid chunking: First split by paragraph, then apply semantic chunking within each, balancing structure and semantics</StyleExpand_HybridChunkingInfo>
   <StyleExpand_BreakpointThreshold>Breakpoint Threshold: {0}%</StyleExpand_BreakpointThreshold>
   <StyleExpand_ChunkLengthParams>Chunk Length Parameters</StyleExpand_ChunkLengthParams>
   <StyleExpand_MinChunkLength>Min Chunk Length: {0} chars</StyleExpand_MinChunkLength>

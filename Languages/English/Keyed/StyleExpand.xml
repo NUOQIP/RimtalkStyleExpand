@@ -2,7 +2,7 @@
 <LanguageData>
   <!-- Mod Name -->
   <StyleExpand_ModName>RimTalk StyleExpand</StyleExpand_ModName>
-  <StyleExpand_Version>v1.5</StyleExpand_Version>
+  <StyleExpand_Version>v1.0</StyleExpand_Version>
   
   <!-- General -->
   <StyleExpand_Enable>Enable Style Expand</StyleExpand_Enable>
@@ -153,30 +153,39 @@
   <StyleExpand_ResetAllSettings>Reset All Settings</StyleExpand_ResetAllSettings>
   <StyleExpand_ClearAllCache>Clear All Cache</StyleExpand_ClearAllCache>
   
-  <!-- Help Window -->
+<!-- Help Window -->
   <StyleExpand_HelpTitle>RimTalk StyleExpand - Help</StyleExpand_HelpTitle>
-  <StyleExpand_HelpQuickStart>== Quick Start ==</StyleExpand_HelpQuickStart>
-  <StyleExpand_HelpStep1>1. Place .txt files in the Styles folder (click 'Open Folder')</StyleExpand_HelpStep1>
-  <StyleExpand_HelpStep2>2. Click 'Scan Styles' to detect new files</StyleExpand_HelpStep2>
-  <StyleExpand_HelpStep3>3. Select a style from the list</StyleExpand_HelpStep3>
-  <StyleExpand_HelpStep4>4. Click 'Chunk Style' to process the style</StyleExpand_HelpStep4>
-  <StyleExpand_HelpStep5>5. Done! The style will be used in RimTalk conversations</StyleExpand_HelpStep5>
-  <StyleExpand_HelpApiConfig>== API Configuration ==</StyleExpand_HelpApiConfig>
-  <StyleExpand_HelpApiUrl>- Vector API URL: Your embedding API endpoint</StyleExpand_HelpApiUrl>
-  <StyleExpand_HelpApiSupport>- Supports OpenAI-compatible APIs (Ollama, OpenAI, etc.)</StyleExpand_HelpApiSupport>
-  <StyleExpand_HelpApiModel>- Model: The embedding model name (e.g., bge-small-zh)</StyleExpand_HelpApiModel>
-  <StyleExpand_HelpStyleFiles>== Style Files ==</StyleExpand_HelpStyleFiles>
-  <StyleExpand_HelpStyleOne>- One .txt file = one style</StyleExpand_HelpStyleOne>
-  <StyleExpand_HelpStyleName>- Filename becomes the style name</StyleExpand_HelpStyleName>
-  <StyleExpand_HelpStyleContent>- File content is used for style examples</StyleExpand_HelpStyleContent>
-  <StyleExpand_HelpStyleSize>- Recommended size: Chinese 5,000-20,000 chars | English 3,000-15,000 words</StyleExpand_HelpStyleSize>
-  <StyleExpand_HelpStyleSizeNote>- Larger files will work but take longer to process</StyleExpand_HelpStyleSizeNote>
-  <StyleExpand_HelpChunking>== Chunking ==</StyleExpand_HelpChunking>
-  <StyleExpand_HelpChunkWhat>- Chunks text into smaller pieces</StyleExpand_HelpChunkWhat>
-  <StyleExpand_HelpChunkEmbed>- Computes embeddings for each chunk</StyleExpand_HelpChunkEmbed>
-  <StyleExpand_HelpChunkCache>- Results are cached for faster loading</StyleExpand_HelpChunkCache>
-  <StyleExpand_HelpAdvanced>== Advanced Mode ==</StyleExpand_HelpAdvanced>
-  <StyleExpand_HelpScriban>Use Scriban variables in RimTalk's preset:</StyleExpand_HelpScriban>
+  <StyleExpand_HelpIntro>This MOD makes RimTalk dialogues reflect any writing style you want. Provide style materials (novel excerpts, etc.), and the MOD will analyze and inject style features into conversations.</StyleExpand_HelpIntro>
+  <StyleExpand_HelpQuickStart>【Quick Start】</StyleExpand_HelpQuickStart>
+  <StyleExpand_HelpStep1>1. Place style materials (.txt files) in the Styles folder</StyleExpand_HelpStep1>
+  <StyleExpand_HelpStep2>2. Click 'Scan Styles' to detect files</StyleExpand_HelpStep2>
+  <StyleExpand_HelpStep3>3. Select a style, click 'Chunk Style' to process</StyleExpand_HelpStep3>
+  <StyleExpand_HelpStep4>4. Wait for chunking to complete (first time requires API calls)</StyleExpand_HelpStep4>
+  <StyleExpand_HelpStep5>5. Done! RimTalk dialogues will now reflect this style</StyleExpand_HelpStep5>
+  <StyleExpand_HelpApiSection>【API Configuration】</StyleExpand_HelpApiSection>
+  <StyleExpand_HelpApiEmbedding>Embedding API converts text to vectors, essential for chunking and retrieval. Must be configured to use this MOD.</StyleExpand_HelpApiEmbedding>
+  <StyleExpand_HelpApiOllama>Recommended: Use Ollama locally. After installing Ollama, run: ollama pull nomic-embed-text. Set API URL to http://localhost:11434/api/embeddings, model to nomic-embed-text</StyleExpand_HelpApiOllama>
+  <StyleExpand_HelpApiOther>Also supports OpenAI, DeepSeek and other compatible APIs. Ensure the model supports embedding.</StyleExpand_HelpApiOther>
+  <StyleExpand_HelpStyleSection>【Style Materials】</StyleExpand_HelpStyleSection>
+  <StyleExpand_HelpStyleOne>- One .txt file = one style. Filename becomes the style name.</StyleExpand_HelpStyleOne>
+  <StyleExpand_HelpStyleSize>- Recommended: Chinese 5,000-20,000 chars, English 3,000-15,000 words</StyleExpand_HelpStyleSize>
+  <StyleExpand_HelpStyleTips>- Materials should contain lots of dialogue and descriptions, with consistent style throughout.</StyleExpand_HelpStyleTips>
+  <StyleExpand_HelpChunkSection>【Chunking Parameters】</StyleExpand_HelpChunkSection>
+  <StyleExpand_HelpChunkStrategy>Chunking Strategy: Semantic chunking (recommended) dynamically determines breakpoints based on sentence similarity, ensuring coherent chunks.</StyleExpand_HelpChunkStrategy>
+  <StyleExpand_HelpChunkSemantic>Breakpoint Threshold: Higher = longer chunks. 80% is balanced. For dialogue-heavy materials, try 85-90%.</StyleExpand_HelpChunkSemantic>
+  <StyleExpand_HelpChunkRecursive>Min/Target/Max Chunk Length: Controls chunk size range. Defaults are optimized for style replication, rarely need adjustment.</StyleExpand_HelpChunkRecursive>
+  <StyleExpand_HelpChunkParams>Large File Sampling: Files exceeding threshold will be sampled to representative chunks, avoiding long processing times.</StyleExpand_HelpChunkParams>
+  <StyleExpand_HelpRetrievalSection>【Retrieval Configuration】</StyleExpand_HelpRetrievalSection>
+  <StyleExpand_HelpRetrievalTopK>Top K: How many similar chunks to retrieve per conversation. Default 3 chunks × ~400 chars = ~1200 chars of style material.</StyleExpand_HelpRetrievalTopK>
+  <StyleExpand_HelpRetrievalThreshold>Similarity Threshold: Chunks below this are filtered out. Default 0.55. Lower to get more material.</StyleExpand_HelpRetrievalThreshold>
+  <StyleExpand_HelpRecommendSection>【Recommended Configuration】</StyleExpand_HelpRecommendSection>
+  <StyleExpand_HelpRecommendModels>Recommended Embedding Models: nomic-embed-text (Ollama), mxbai-embed-large (Ollama), text-embedding-3-small (OpenAI)</StyleExpand_HelpRecommendModels>
+  <StyleExpand_HelpRecommendParams>Recommended Parameters: Semantic chunking, breakpoint 80%, Top K 3, threshold 0.55</StyleExpand_HelpRecommendParams>
+  <StyleExpand_HelpFaqSection>【FAQ】</StyleExpand_HelpFaqSection>
+  <StyleExpand_HelpFaq1>Q: Chunking failed? A: Check API URL and model name. Use 'Test Connection' to verify.</StyleExpand_HelpFaq1>
+  <StyleExpand_HelpFaq2>Q: Style effect not obvious? A: Try increasing Top K (5-7), lowering threshold (0.4-0.5), or check if materials have consistent style.</StyleExpand_HelpFaq2>
+  <StyleExpand_HelpFaq3>Q: Chunking takes too long? A: Large files take time on first run. Progress is saved, can resume. Keep materials under 20,000 chars.</StyleExpand_HelpFaq3>
+  <StyleExpand_HelpFaq4>Q: How to disable style? A: Uncheck 'Enable Style Expand', or deselect in the style list.</StyleExpand_HelpFaq4>
   
   <!-- Dependency Check -->
   <StyleExpand_MissingDependency>StyleExpand requires: {0}</StyleExpand_MissingDependency>

@@ -27,12 +27,48 @@ namespace RimTalkStyleExpand
             ChunkCount = 0;
         }
 
+        public StyleConfig(string name, string prompt)
+        {
+            Name = name;
+            Prompt = prompt;
+            IsChunked = false;
+            ChunkCount = 0;
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look(ref Name, "name", "");
             Scribe_Values.Look(ref Prompt, "prompt", "");
             Scribe_Values.Look(ref IsChunked, "isChunked", false);
             Scribe_Values.Look(ref ChunkCount, "chunkCount", 0);
+        }
+        
+        public static string GetDefaultPrompt(string styleName)
+        {
+            if (styleName == "古风仙侠")
+            {
+                return @"[叙事节奏]
+以简短、克制的句子推进叙事。关键时刻使用单句成段，制造停顿感。对话简洁，少用修饰，叙述点到即止。
+
+[意象营造]
+开篇设景：残阳、山峦、云海、星斗。常用古典意象词汇。时间跨度作为叙事重量，营造历史纵深。
+
+[语言质地]
+文言与白话混合。对话穿插文言虚词。动作用古典动词。善用四字格但不堆砌。
+
+[情感表达]
+克制含蓄。用副词弱化情绪。重要时刻用沉默、叹息、苦笑承载。通过时间停顿让情感在留白中发酵。
+
+[哲思对话]
+涉及道、本心、守护等命题，表达简洁不长篇说教。关键哲理以简短金句形式呈现。
+
+[转场收束]
+用时间或自然变化标记转换。结尾景物呼应开篇，用总结句升华。
+
+[禁忌]
+避免过度修饰、现代网络用语、冗长心理描写。保持克制与留白。";
+            }
+            return "";
         }
     }
 
@@ -52,15 +88,15 @@ namespace RimTalkStyleExpand
 
     public class RetrievalConfig : IExposable
     {
-        public string BasePromptTemplate = "Please imitate the following writing style ({style_name}) when generating dialogue:";
-        public string QueryTemplate = "{{ pawn.personality }} {{ pawn.job }}";
+        public string BasePromptTemplate = @"Write in the **{{style_name}}** style. Refer to the style guide below to grasp its tone, rhythm, and atmosphere. Let it permeate your entire output—not surface imitation, but deep embodiment.";
+        public string QueryTemplate = "";
         public int TopK = 3;
         public float SimilarityThreshold = 0.55f;
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref BasePromptTemplate, "basePromptTemplate", "Please imitate the following writing style ({style_name}) when generating dialogue:");
-            Scribe_Values.Look(ref QueryTemplate, "queryTemplate", "{{ pawn.personality }} {{ pawn.job }}");
+            Scribe_Values.Look(ref BasePromptTemplate, "basePromptTemplate", @"Write in the **{{style_name}}** style. Refer to the style guide below to grasp its tone, rhythm, and atmosphere. Let it permeate your entire output—not surface imitation, but deep embodiment.");
+            Scribe_Values.Look(ref QueryTemplate, "queryTemplate", "");
             Scribe_Values.Look(ref TopK, "topK", 3);
             Scribe_Values.Look(ref SimilarityThreshold, "similarityThreshold", 0.55f);
         }
@@ -116,7 +152,7 @@ namespace RimTalkStyleExpand
         public string ApiKey = "";
         public string Model = "llama3";
         public int MaxTokens = 800;
-        public string StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{style_name}"" style.
+        public string StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{{style_name}}"" style.
 
 【Requirements】
 - Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
@@ -124,15 +160,16 @@ namespace RimTalkStyleExpand
 - Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
 
 【Forbidden】
-Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
+Do not analyze content-specific elements that only exist in this particular text (characters, settings, plot events, unique terminology, etc.).
+Do not include perspective or formatting rules—these are context-dependent, not style-inherent.
 
 【Output】
-- Produce a style guide within {max_tokens} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+- Produce a style guide within {{max_tokens}} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
 - Write in the same language as the input text.
 - Use imperative tone.
 
 【Sample Text】
-{sample_text}";
+{{sample_text}}";
 
         public void ExposeData()
         {

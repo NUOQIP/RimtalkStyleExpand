@@ -112,7 +112,7 @@ namespace RimTalkStyleExpand
             var basePrompt = settings.Retrieval.BasePromptTemplate;
             if (!string.IsNullOrEmpty(basePrompt))
             {
-                basePrompt = basePrompt.Replace("{style_name}", style.Name);
+                basePrompt = basePrompt.Replace("{{style_name}}", style.Name);
                 sb.AppendLine(basePrompt);
             }
             

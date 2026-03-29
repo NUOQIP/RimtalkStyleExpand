@@ -9,7 +9,6 @@ namespace RimTalkStyleExpand
 {
     public static class VariableHelper
     {
-        private static Dictionary<string, List<(string name, string description)>> _cachedVariables;
         private static Assembly _rimTalkAssembly;
 
         private static Assembly GetRimTalkAssembly()
@@ -24,13 +23,10 @@ namespace RimTalkStyleExpand
 
         public static Dictionary<string, List<(string name, string description)>> GetBuiltinVariables()
         {
-            if (_cachedVariables != null) return _cachedVariables;
-            
             var assembly = GetRimTalkAssembly();
             if (assembly == null)
             {
-                _cachedVariables = GetFallbackVariables();
-                return _cachedVariables;
+                return GetFallbackVariables();
             }
             
             try
@@ -41,8 +37,8 @@ namespace RimTalkStyleExpand
                 if (getMethod != null)
                 {
                     var result = getMethod.Invoke(null, null);
-                    _cachedVariables = ConvertDictionaryResult(result);
-                    if (_cachedVariables.Count > 0) return _cachedVariables;
+                    var variables = ConvertDictionaryResult(result);
+                    if (variables.Count > 0) return variables;
                 }
             }
             catch (Exception ex)
@@ -50,8 +46,7 @@ namespace RimTalkStyleExpand
                 Logger.Warning($"Failed to get builtin variables: {ex.Message}");
             }
             
-            _cachedVariables = GetFallbackVariables();
-            return _cachedVariables;
+            return GetFallbackVariables();
         }
 
         public static List<(string name, string description, string category)> GetFlattenedVariables()
@@ -139,7 +134,6 @@ namespace RimTalkStyleExpand
 
         public static void ClearCache()
         {
-            _cachedVariables = null;
             _rimTalkAssembly = null;
         }
 

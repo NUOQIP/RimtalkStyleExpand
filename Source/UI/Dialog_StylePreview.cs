@@ -42,9 +42,37 @@ namespace RimTalkStyleExpand
             ResolveRimTalkTypes();
             
             var settings = StyleExpandSettings.Instance;
-            if (settings != null)
+            if (settings != null && !string.IsNullOrEmpty(settings.Retrieval.QueryTemplate))
             {
                 _queryTemplate = settings.Retrieval.QueryTemplate;
+                ParseSelectedVariablesFromTemplate();
+            }
+            else
+            {
+                _selectedVariables.Add("pawn.personality");
+                _selectedVariables.Add("pawn.job");
+                _queryTemplate = "{{ pawn.personality }} {{ pawn.job }}";
+            }
+        }
+        
+        public override void PostClose()
+        {
+            var settings = StyleExpandSettings.Instance;
+            if (settings != null)
+            {
+                settings.Retrieval.QueryTemplate = _queryTemplate;
+                settings.Write();
+            }
+        }
+        
+        private void ParseSelectedVariablesFromTemplate()
+        {
+            _selectedVariables.Clear();
+            var pattern = @"\{\{\s*(pawn\.[a-zA-Z_]+)\s*\}\}";
+            var matches = System.Text.RegularExpressions.Regex.Matches(_queryTemplate, pattern);
+            foreach (System.Text.RegularExpressions.Match match in matches)
+            {
+                _selectedVariables.Add(match.Groups[1].Value);
             }
         }
 

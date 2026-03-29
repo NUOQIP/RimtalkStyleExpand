@@ -22,6 +22,12 @@ namespace RimTalkStyleExpand
         
         private static bool _showAdvanced = false;
 
+        public static void AddLabel(Listing_Standard list, string text)
+        {
+            var rect = list.GetRect(Text.CalcHeight(text, list.ColumnWidth));
+            Widgets.Label(rect, text);
+        }
+
         public static void DoSettingsContents(Rect inRect, StyleExpandSettings settings)
         {
             var font = Text.Font;
@@ -103,13 +109,13 @@ namespace RimTalkStyleExpand
             if (StyleRetriever.CanResumeChunking(settings?.SelectedStyleName ?? ""))
             {
                 GUI.color = Color.yellow;
-                list.Label("StyleExpand_PartialProgress".Translate(settings?.SelectedStyleName ?? ""));
+                SettingsWindow.AddLabel(list,"StyleExpand_PartialProgress".Translate(settings?.SelectedStyleName ?? ""));
                 GUI.color = Color.white;
             }
             else if (!string.IsNullOrEmpty(_statusMessage))
             {
                 GUI.color = Color.green;
-                list.Label(_statusMessage);
+                SettingsWindow.AddLabel(list,_statusMessage);
                 GUI.color = Color.white;
             }
         }
@@ -120,7 +126,7 @@ namespace RimTalkStyleExpand
             {
                 list.Gap();
                 GUI.color = Color.yellow;
-                list.Label(_warningMessage);
+                SettingsWindow.AddLabel(list,_warningMessage);
                 GUI.color = Color.white;
             }
         }
@@ -128,11 +134,11 @@ namespace RimTalkStyleExpand
         private static void DrawSectionHeader(Listing_Standard list, string title, string description)
         {
             Text.Font = GameFont.Medium;
-            list.Label(title);
+            SettingsWindow.AddLabel(list,title);
             Text.Font = GameFont.Small;
             
             GUI.color = new Color(0.7f, 0.7f, 0.7f);
-            list.Label(description);
+            SettingsWindow.AddLabel(list,description);
             GUI.color = Color.white;
             list.Gap();
         }
@@ -141,13 +147,13 @@ namespace RimTalkStyleExpand
         {
             DrawSectionHeader(list, "StyleExpand_EmbeddingApiConfig".Translate(), "StyleExpand_EmbeddingApiDesc".Translate());
             
-            list.Label("StyleExpand_ApiUrl".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_ApiUrl".Translate());
             settings.VectorApi.Url = list.TextEntry(settings.VectorApi.Url);
             
-            list.Label("StyleExpand_ApiKey".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_ApiKey".Translate());
             settings.VectorApi.ApiKey = list.TextEntry(settings.VectorApi.ApiKey);
             
-            list.Label("StyleExpand_ApiModel".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_ApiModel".Translate());
             settings.VectorApi.Model = list.TextEntry(settings.VectorApi.Model);
             list.Gap();
 
@@ -160,7 +166,7 @@ namespace RimTalkStyleExpand
             {
                 var color = GUI.color;
                 GUI.color = _testResult.Contains("StyleExpand_ConnectionSuccessShort".Translate()) ? Color.green : Color.red;
-                list.Label(_testResult);
+                SettingsWindow.AddLabel(list,_testResult);
                 GUI.color = color;
             }
         }
@@ -173,13 +179,13 @@ namespace RimTalkStyleExpand
             
             if (!settings.LlmApi.UseRimTalkApi)
             {
-                list.Label("StyleExpand_LlmApiUrl".Translate());
+                SettingsWindow.AddLabel(list,"StyleExpand_LlmApiUrl".Translate());
                 settings.LlmApi.Url = list.TextEntry(settings.LlmApi.Url);
                 
-                list.Label("StyleExpand_LlmApiKey".Translate());
+                SettingsWindow.AddLabel(list,"StyleExpand_LlmApiKey".Translate());
                 settings.LlmApi.ApiKey = list.TextEntry(settings.LlmApi.ApiKey);
                 
-                list.Label("StyleExpand_LlmModel".Translate());
+                SettingsWindow.AddLabel(list,"StyleExpand_LlmModel".Translate());
                 settings.LlmApi.Model = list.TextEntry(settings.LlmApi.Model);
             }
             
@@ -194,7 +200,7 @@ namespace RimTalkStyleExpand
             {
                 var color = GUI.color;
                 GUI.color = _llmTestResult.Contains("StyleExpand_ConnectionSuccessShort".Translate()) ? Color.green : Color.red;
-                list.Label(_llmTestResult);
+                SettingsWindow.AddLabel(list,_llmTestResult);
                 GUI.color = color;
             }
         }
@@ -227,7 +233,7 @@ namespace RimTalkStyleExpand
 
             if (settings.Styles.Count == 0)
             {
-                list.Label("StyleExpand_NoStyles".Translate());
+                SettingsWindow.AddLabel(list,"StyleExpand_NoStyles".Translate());
                 list.Gap();
             }
             else
@@ -238,12 +244,12 @@ namespace RimTalkStyleExpand
             var selectedStyle = settings.GetSelectedStyle();
             if (selectedStyle != null)
             {
-                list.Label("StyleExpand_Selected".Translate(selectedStyle.Name));
+                SettingsWindow.AddLabel(list,"StyleExpand_Selected".Translate(selectedStyle.Name));
                 
                 if (StyleRetriever.CanResumeChunking(selectedStyle.Name))
                 {
                     GUI.color = Color.yellow;
-                    list.Label("StyleExpand_ResumeHint".Translate());
+                    SettingsWindow.AddLabel(list,"StyleExpand_ResumeHint".Translate());
                     GUI.color = Color.white;
                 }
                 
@@ -255,7 +261,7 @@ namespace RimTalkStyleExpand
             }
             else
             {
-                list.Label("StyleExpand_NoStyleSelected".Translate());
+                SettingsWindow.AddLabel(list,"StyleExpand_NoStyleSelected".Translate());
             }
         }
 
@@ -380,7 +386,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawStylePromptEditor(Listing_Standard list, StyleConfig selectedStyle, StyleExpandSettings settings)
         {
-            list.Label("StyleExpand_StylePrompt".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_StylePrompt".Translate());
             
             var textRect = list.GetRect(150f);
             Widgets.DrawBoxSolid(textRect, new Color(0.1f, 0.1f, 0.1f, 0.9f));
@@ -465,10 +471,10 @@ namespace RimTalkStyleExpand
             }
             list.Gap();
 
-            list.Label("StyleExpand_TopK".Translate(settings.Retrieval.TopK));
+            SettingsWindow.AddLabel(list,"StyleExpand_TopK".Translate(settings.Retrieval.TopK));
             settings.Retrieval.TopK = (int)list.Slider(settings.Retrieval.TopK, 1, 10);
             
-            list.Label("StyleExpand_Threshold".Translate(settings.Retrieval.SimilarityThreshold.ToString("F2")));
+            SettingsWindow.AddLabel(list,"StyleExpand_Threshold".Translate(settings.Retrieval.SimilarityThreshold.ToString("F2")));
             settings.Retrieval.SimilarityThreshold = list.Slider(settings.Retrieval.SimilarityThreshold, 0f, 1f);
         }
 
@@ -476,7 +482,7 @@ namespace RimTalkStyleExpand
         {
             DrawSectionHeader(list, "StyleExpand_ChunkingConfig".Translate(), "StyleExpand_ChunkingConfigDesc".Translate());
             
-            list.Label("StyleExpand_ChunkingStrategy".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_ChunkingStrategy".Translate());
             var strategyLabels = new[] { 
                 "StyleExpand_StrategySemantic".Translate(), 
                 "StyleExpand_StrategyRecursive".Translate()
@@ -513,10 +519,10 @@ namespace RimTalkStyleExpand
             switch (settings.Chunking.Strategy)
             {
                 case ChunkingStrategy.Recursive:
-                    list.Label("StyleExpand_RecursiveChunkingInfo".Translate());
+                    SettingsWindow.AddLabel(list,"StyleExpand_RecursiveChunkingInfo".Translate());
                     break;
                 case ChunkingStrategy.Semantic:
-                    list.Label("StyleExpand_SemanticChunkingInfo".Translate());
+                    SettingsWindow.AddLabel(list,"StyleExpand_SemanticChunkingInfo".Translate());
                     break;
             }
             GUI.color = Color.white;
@@ -524,7 +530,7 @@ namespace RimTalkStyleExpand
             
             if (settings.Chunking.Strategy == ChunkingStrategy.Semantic)
             {
-                list.Label("StyleExpand_BreakpointThreshold".Translate(settings.Chunking.BreakpointPercentileThreshold.ToString("F0")));
+                SettingsWindow.AddLabel(list,"StyleExpand_BreakpointThreshold".Translate(settings.Chunking.BreakpointPercentileThreshold.ToString("F0")));
                 settings.Chunking.BreakpointPercentileThreshold = list.Slider(settings.Chunking.BreakpointPercentileThreshold, 50f, 95f);
             }
             
@@ -532,24 +538,24 @@ namespace RimTalkStyleExpand
             
             Text.Font = GameFont.Small;
             GUI.color = new Color(0.8f, 0.8f, 0.8f);
-            list.Label("StyleExpand_ChunkLengthParams".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_ChunkLengthParams".Translate());
             GUI.color = Color.white;
             
-            list.Label("StyleExpand_MinChunkLength".Translate(settings.Chunking.MinChunkLength));
+            SettingsWindow.AddLabel(list,"StyleExpand_MinChunkLength".Translate(settings.Chunking.MinChunkLength));
             settings.Chunking.MinChunkLength = (int)list.Slider(settings.Chunking.MinChunkLength, 50, 300);
             
-            list.Label("StyleExpand_TargetChunkLength".Translate(settings.Chunking.TargetChunkLength));
+            SettingsWindow.AddLabel(list,"StyleExpand_TargetChunkLength".Translate(settings.Chunking.TargetChunkLength));
             settings.Chunking.TargetChunkLength = (int)list.Slider(settings.Chunking.TargetChunkLength, 200, 1000);
             
-            list.Label("StyleExpand_MaxChunkLength".Translate(settings.Chunking.MaxChunkLength));
+            SettingsWindow.AddLabel(list,"StyleExpand_MaxChunkLength".Translate(settings.Chunking.MaxChunkLength));
             settings.Chunking.MaxChunkLength = (int)list.Slider(settings.Chunking.MaxChunkLength, 500, 2000);
             
-            list.Label("StyleExpand_Overlap".Translate(settings.Chunking.Overlap));
+            SettingsWindow.AddLabel(list,"StyleExpand_Overlap".Translate(settings.Chunking.Overlap));
             settings.Chunking.Overlap = (int)list.Slider(settings.Chunking.Overlap, 0, 200);
             
             list.Gap();
             
-            list.Label("StyleExpand_BatchSize".Translate(settings.Chunking.BatchSize));
+            SettingsWindow.AddLabel(list,"StyleExpand_BatchSize".Translate(settings.Chunking.BatchSize));
             settings.Chunking.BatchSize = (int)list.Slider(settings.Chunking.BatchSize, 1, 50);
             
             list.Gap();
@@ -557,10 +563,10 @@ namespace RimTalkStyleExpand
             
             if (settings.Chunking.EnableSampling)
             {
-                list.Label("StyleExpand_SampleTarget".Translate(settings.Chunking.SampleTargetChunks));
+                SettingsWindow.AddLabel(list,"StyleExpand_SampleTarget".Translate(settings.Chunking.SampleTargetChunks));
                 settings.Chunking.SampleTargetChunks = (int)list.Slider(settings.Chunking.SampleTargetChunks, 100, 1000);
                 
-                list.Label("StyleExpand_LargeFileThreshold".Translate(settings.Chunking.LargeFileThreshold));
+                SettingsWindow.AddLabel(list,"StyleExpand_LargeFileThreshold".Translate(settings.Chunking.LargeFileThreshold));
                 settings.Chunking.LargeFileThreshold = (int)list.Slider(settings.Chunking.LargeFileThreshold, 10000, 100000);
             }
         }
@@ -568,19 +574,19 @@ namespace RimTalkStyleExpand
         private static void DrawScribanSection(Listing_Standard list, StyleExpandSettings settings)
         {
             Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_ScribanVariables".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_ScribanVariables".Translate());
             Text.Font = GameFont.Small;
             list.Gap();
             
             GUI.color = new Color(0.7f, 0.7f, 0.7f);
-            list.Label("StyleExpand_ScribanDesc".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_ScribanDesc".Translate());
             GUI.color = Color.white;
             list.Gap();
             
-            list.Label("  " + "StyleExpand_VarStyleName".Translate());
-            list.Label("  " + "StyleExpand_VarStylePrompt".Translate());
-            list.Label("  " + "StyleExpand_VarStyleChunks".Translate());
-            list.Label("  " + "StyleExpand_VarStyleFull".Translate());
+            SettingsWindow.AddLabel(list,"  " + "StyleExpand_VarStyleName".Translate());
+            SettingsWindow.AddLabel(list,"  " + "StyleExpand_VarStylePrompt".Translate());
+            SettingsWindow.AddLabel(list,"  " + "StyleExpand_VarStyleChunks".Translate());
+            SettingsWindow.AddLabel(list,"  " + "StyleExpand_VarStyleFull".Translate());
         }
 
         private static void DrawPromptSection(Listing_Standard list, StyleExpandSettings settings)
@@ -592,7 +598,7 @@ namespace RimTalkStyleExpand
             
             if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetBasePrompt".Translate()))
             {
-                settings.Retrieval.BasePromptTemplate = "Please imitate the following writing style ({style_name}) when generating dialogue:";
+                settings.Retrieval.BasePromptTemplate = @"Write in the **{{style_name}}** style. Refer to the style guide below to grasp its tone, rhythm, and atmosphere. Let it permeate your entire output—not surface imitation, but deep embodiment.";
                 ShowStatus("StyleExpand_PromptReset".Translate());
             }
             
@@ -612,7 +618,7 @@ namespace RimTalkStyleExpand
             
             if (Widgets.ButtonText(new Rect(stylePromptFooter.xMax - 120f, stylePromptFooter.y, 120f, 28f), "StyleExpand_ResetStylePrompt".Translate()))
             {
-                settings.LlmApi.StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{style_name}"" style.
+                settings.LlmApi.StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{{style_name}}"" style.
 
 【Requirements】
 - Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
@@ -620,15 +626,16 @@ namespace RimTalkStyleExpand
 - Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
 
 【Forbidden】
-Do not quote passages, discuss characters, describe scenes, summarize plot points, or reference specific settings or subject matter.
+Do not analyze content-specific elements that only exist in this particular text (characters, settings, plot events, unique terminology, etc.).
+Do not include perspective or formatting rules—these are context-dependent, not style-inherent.
 
 【Output】
-- Produce a style guide within {max_tokens} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+- Produce a style guide within {{max_tokens}} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
 - Write in the same language as the input text.
 - Use imperative tone.
 
 【Sample Text】
-{sample_text}";
+{{sample_text}}";
                 ShowStatus("StyleExpand_PromptReset".Translate());
             }
             
@@ -638,7 +645,7 @@ Do not quote passages, discuss characters, describe scenes, summarize plot point
         private static void DrawDebugSection(Listing_Standard list, StyleExpandSettings settings)
         {
             Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_Debug".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_Debug".Translate());
             Text.Font = GameFont.Small;
             list.Gap();
             
@@ -649,7 +656,7 @@ Do not quote passages, discuss characters, describe scenes, summarize plot point
         private static void DrawResetSection(Listing_Standard list, StyleExpandSettings settings)
         {
             Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_Reset".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_Reset".Translate());
             Text.Font = GameFont.Small;
             list.Gap();
             
@@ -904,7 +911,7 @@ Do not quote passages, discuss characters, describe scenes, summarize plot point
     {
         private Vector2 _helpScrollPosition = Vector2.zero;
         
-        public override Vector2 InitialSize => new Vector2(600f, 550f);
+        public override Vector2 InitialSize => new Vector2(650f, 600f);
 
         public HelpWindow()
         {
@@ -917,52 +924,63 @@ Do not quote passages, discuss characters, describe scenes, summarize plot point
         {
             var list = new Listing_Standard();
             
-            float contentHeight = 900f;
+            float contentHeight = 2000f;
             var viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
             
             Widgets.BeginScrollView(inRect, ref _helpScrollPosition, viewRect);
             list.Begin(viewRect);
             
             Text.Font = GameFont.Medium;
-            list.Label("StyleExpand_HelpTitle".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpTitle".Translate());
             Text.Font = GameFont.Small;
             list.GapLine();
             list.Gap();
             
-            list.Label("StyleExpand_HelpQuickStart".Translate());
-            list.Label("StyleExpand_HelpStep1".Translate());
-            list.Label("StyleExpand_HelpStep2".Translate());
-            list.Label("StyleExpand_HelpStep3".Translate());
-            list.Label("StyleExpand_HelpStep4".Translate());
-            list.Label("StyleExpand_HelpStep5".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpIntro".Translate());
             list.Gap();
             
-            list.Label("StyleExpand_HelpApiConfig".Translate());
-            list.Label("StyleExpand_HelpApiUrl".Translate());
-            list.Label("StyleExpand_HelpApiSupport".Translate());
-            list.Label("StyleExpand_HelpApiModel".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpQuickStart".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep1".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep2".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep3".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep4".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep5".Translate());
             list.Gap();
             
-            list.Label("StyleExpand_HelpStyleFiles".Translate());
-            list.Label("StyleExpand_HelpStyleOne".Translate());
-            list.Label("StyleExpand_HelpStyleName".Translate());
-            list.Label("StyleExpand_HelpStyleContent".Translate());
-            list.Label("StyleExpand_HelpStyleSize".Translate());
-            list.Label("StyleExpand_HelpStyleSizeNote".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiSection".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiEmbedding".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiOllama".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiOther".Translate());
             list.Gap();
             
-            list.Label("StyleExpand_HelpChunking".Translate());
-            list.Label("StyleExpand_HelpChunkWhat".Translate());
-            list.Label("StyleExpand_HelpChunkEmbed".Translate());
-            list.Label("StyleExpand_HelpChunkCache".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleSection".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleOne".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleSize".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleTips".Translate());
             list.Gap();
             
-            list.Label("StyleExpand_HelpAdvanced".Translate());
-            list.Label("StyleExpand_HelpScriban".Translate());
-            list.Label("  " + "StyleExpand_VarStyleName".Translate());
-            list.Label("  " + "StyleExpand_VarStylePrompt".Translate());
-            list.Label("  " + "StyleExpand_VarStyleChunks".Translate());
-            list.Label("  " + "StyleExpand_VarStyleFull".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkSection".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkStrategy".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkSemantic".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkRecursive".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkParams".Translate());
+            list.Gap();
+            
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpRetrievalSection".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpRetrievalTopK".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpRetrievalThreshold".Translate());
+            list.Gap();
+            
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpRecommendSection".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpRecommendModels".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpRecommendParams".Translate());
+            list.Gap();
+            
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaqSection".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq1".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq2".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq3".Translate());
+            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq4".Translate());
             
             list.End();
             Widgets.EndScrollView();

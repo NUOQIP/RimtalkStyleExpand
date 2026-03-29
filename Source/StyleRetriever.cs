@@ -129,7 +129,8 @@ namespace RimTalkStyleExpand
                 var name = Path.GetFileNameWithoutExtension(file);
                 if (!existingNames.Contains(name))
                 {
-                    newStyles.Add(new StyleConfig(name));
+                    var defaultPrompt = StyleConfig.GetDefaultPrompt(name);
+                    newStyles.Add(new StyleConfig(name, defaultPrompt));
                     Logger.Message($"Found new style file: {name}");
                 }
             }

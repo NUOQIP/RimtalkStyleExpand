@@ -3,12 +3,12 @@
   <name>RimTalk StyleExpand</name>
   <author>NUOQI_P</author>
   <packageId>RimTalk.StyleExpand</packageId>
-  <modVersion>1.4.4</modVersion>
+  <modVersion>1.0</modVersion>
   <supportedVersions>
     <li>1.5</li>
     <li>1.6</li>
   </supportedVersions>
-  <description>让RimTalk生成的对话模仿指定文风（古风、傲娇、鲁迅风格等）。基于向量检索相似文风片段，注入到RimTalk的Prompt中。</description>
+  <description>RimTalk文风扩展模块。用户提供文风素材，基于向量检索自动注入风格特征到对话生成中。</description>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>

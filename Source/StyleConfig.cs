@@ -40,13 +40,13 @@ namespace RimTalkStyleExpand
     {
         public string Url = "http://localhost:11434/api/embeddings";
         public string ApiKey = "";
-        public string Model = "nomic-embed-text";
+        public string Model = "mxbai-embed-large";
 
         public void ExposeData()
         {
             Scribe_Values.Look(ref Url, "url", "http://localhost:11434/api/embeddings");
             Scribe_Values.Look(ref ApiKey, "apiKey", "");
-            Scribe_Values.Look(ref Model, "model", "nomic-embed-text");
+            Scribe_Values.Look(ref Model, "model", "mxbai-embed-large");
         }
     }
 

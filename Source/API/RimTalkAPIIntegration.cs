@@ -51,6 +51,7 @@ namespace RimTalkStyleExpand
                 
                 Log.Message("[StyleExpand] ✓ Integrated via RimTalk API");
                 Log.Message("[StyleExpand]   - Registered {{style_name}} variable");
+                Log.Message("[StyleExpand]   - Registered {{style_base_prompt}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_prompt}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_chunks}} variable");
                 Log.Message("[StyleExpand]   - Registered {{style_full}} variable");
@@ -117,17 +118,21 @@ namespace RimTalkStyleExpand
                 new Func<object, string>(StyleVariableProvider.GetStyleName),
                 "Current style name", 100);
             
+            RegisterContextVariable(registerCtxVar, "style_base_prompt",
+                new Func<object, string>(StyleVariableProvider.GetStyleBasePrompt),
+                "Base prompt template", 101);
+            
             RegisterContextVariable(registerCtxVar, "style_prompt",
                 new Func<object, string>(StyleVariableProvider.GetStylePrompt),
-                "Style description/prompt", 101);
+                "Style description/prompt", 102);
             
             RegisterContextVariable(registerCtxVar, "style_chunks",
                 new Func<object, string>(StyleVariableProvider.GetStyleChunks),
-                "Retrieved style example chunks", 102);
+                "Retrieved style example chunks", 103);
             
             RegisterContextVariable(registerCtxVar, "style_full",
                 new Func<object, string>(StyleVariableProvider.GetStyleFull),
-                "Complete style prompt with all components", 103);
+                "Complete style prompt with all components", 104);
         }
         
         private static void RegisterContextVariable(MethodInfo registerMethod, string name, 

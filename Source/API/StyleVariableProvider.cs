@@ -43,6 +43,18 @@ namespace RimTalkStyleExpand
             return style?.Name ?? "";
         }
         
+        public static string GetStyleBasePrompt(object context)
+        {
+            var settings = StyleExpandSettings.Instance;
+            if (settings == null || !settings.IsEnabled) return "";
+            
+            var style = settings.GetSelectedStyle();
+            if (style == null) return "";
+            
+            var basePrompt = settings.Retrieval.BasePromptTemplate ?? "";
+            return basePrompt.Replace("{{style_name}}", style.Name);
+        }
+        
         public static string GetStylePrompt(object context)
         {
             var settings = StyleExpandSettings.Instance;
@@ -80,8 +92,6 @@ namespace RimTalkStyleExpand
                 if (chunks == null || chunks.Count == 0) return "";
                 
                 var sb = new StringBuilder();
-                sb.AppendLine("[Style Examples]");
-                
                 for (int i = 0; i < chunks.Count; i++)
                 {
                     sb.AppendLine($"{i + 1}. {chunks[i].Text}");
@@ -109,23 +119,28 @@ namespace RimTalkStyleExpand
             
             var sb = new StringBuilder();
             
-            var basePrompt = settings.Retrieval.BasePromptTemplate;
+            // Base prompt
+            var basePrompt = GetStyleBasePrompt(context);
             if (!string.IsNullOrEmpty(basePrompt))
             {
-                basePrompt = basePrompt.Replace("{{style_name}}", style.Name);
                 sb.AppendLine(basePrompt);
             }
             
-            if (!string.IsNullOrEmpty(style.Prompt))
+            // Style Guide
+            var stylePrompt = GetStylePrompt(context);
+            if (!string.IsNullOrEmpty(stylePrompt))
             {
                 sb.AppendLine();
-                sb.AppendLine(style.Prompt);
+                sb.AppendLine("[Style Guide]");
+                sb.AppendLine(stylePrompt);
             }
             
+            // Style Examples
             var chunks = GetStyleChunks(context);
             if (!string.IsNullOrEmpty(chunks))
             {
                 sb.AppendLine();
+                sb.AppendLine("[Style Examples]");
                 sb.Append(chunks);
             }
             

@@ -88,14 +88,34 @@ namespace RimTalkStyleExpand
 
     public class RetrievalConfig : IExposable
     {
-        public string BasePromptTemplate = @"Write in the **{{style_name}}** style. Refer to the style guide below to grasp its tone, rhythm, and atmosphere. Let it permeate your entire output—not surface imitation, but deep embodiment.";
+        public string BasePromptTemplate = @"Write in the **{{style_name}}** style.
+
+Read the style guide below to understand its sentence patterns, vocabulary, and rhythm characteristics, then apply these style characteristics to all your outputs.
+
+## Style Guide
+{{style_prompt}}
+
+## Example Passages
+{{style_chunks}}
+
+Your output must reflect this style from start to finish.";
         public string QueryTemplate = "";
         public int TopK = 3;
         public float SimilarityThreshold = 0.55f;
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref BasePromptTemplate, "basePromptTemplate", @"Write in the **{{style_name}}** style. Refer to the style guide below to grasp its tone, rhythm, and atmosphere. Let it permeate your entire output—not surface imitation, but deep embodiment.");
+            Scribe_Values.Look(ref BasePromptTemplate, "basePromptTemplate", @"Write in the **{{style_name}}** style.
+
+Read the style guide below to understand its sentence patterns, vocabulary, and rhythm characteristics, then apply these style characteristics to all your outputs.
+
+## Style Guide
+{{style_prompt}}
+
+## Example Passages
+{{style_chunks}}
+
+Your output must reflect this style from start to finish.");
             Scribe_Values.Look(ref QueryTemplate, "queryTemplate", "");
             Scribe_Values.Look(ref TopK, "topK", 3);
             Scribe_Values.Look(ref SimilarityThreshold, "similarityThreshold", 0.55f);

@@ -731,7 +731,17 @@ namespace RimTalkStyleExpand
             
             if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetBasePrompt".Translate()))
             {
-                settings.Retrieval.BasePromptTemplate = @"Write in the **{{style_name}}** style. Refer to the style guide below to grasp its tone, rhythm, and atmosphere. Let it permeate your entire output—not surface imitation, but deep embodiment.";
+                settings.Retrieval.BasePromptTemplate = @"Write in the **{{style_name}}** style.
+
+Read the style guide below to understand its sentence patterns, vocabulary, and rhythm characteristics, then apply these style characteristics to all your outputs.
+
+## Style Guide
+{{style_prompt}}
+
+## Example Passages
+{{style_chunks}}
+
+Your output must reflect this style from start to finish.";
                 ShowStatus("StyleExpand_PromptReset".Translate());
             }
             

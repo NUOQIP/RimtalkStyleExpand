@@ -169,7 +169,7 @@
   <StyleExpand_HelpStep6>6. 推荐：配置 LLM API 后点击「生成描述」，效果更佳</StyleExpand_HelpStep6>
   <StyleExpand_HelpApiSection>【API 配置】</StyleExpand_HelpApiSection>
   <StyleExpand_HelpApiEmbedding>Embedding API 用于将文本转换为向量，是切分和检索的核心。必须配置才能使用本 MOD。</StyleExpand_HelpApiEmbedding>
-  <StyleExpand_HelpApiOllama>推荐使用 Ollama 本地运行：安装 Ollama 后运行 ollama pull nomic-embed-text，API 地址填 http://localhost:11434/api/embeddings，模型填 nomic-embed-text</StyleExpand_HelpApiOllama>
+  <StyleExpand_HelpApiOllama>推荐使用 Ollama 本地运行：1) 下载安装 Ollama；2) 运行 Ollama 应用程序（确保后台服务启动，任务栏应有图标）；3) 打开终端运行 ollama pull nomic-embed-text；4) API 地址填 http://localhost:11434/api/embeddings，模型填 nomic-embed-text</StyleExpand_HelpApiOllama>
   <StyleExpand_HelpApiOther>也支持 OpenAI、DeepSeek 等兼容 API，需确保模型支持 embedding 功能。</StyleExpand_HelpApiOther>
   <StyleExpand_HelpStyleSection>【文风素材】</StyleExpand_HelpStyleSection>
   <StyleExpand_HelpStyleOne>- 一个 .txt 文件 = 一种文风，文件名即文风名</StyleExpand_HelpStyleOne>

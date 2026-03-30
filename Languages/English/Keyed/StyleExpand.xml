@@ -169,7 +169,7 @@
   <StyleExpand_HelpStep6>6. Recommended: Configure LLM API and click 'Generate Description' for better results</StyleExpand_HelpStep6>
   <StyleExpand_HelpApiSection>【API Configuration】</StyleExpand_HelpApiSection>
   <StyleExpand_HelpApiEmbedding>Embedding API converts text to vectors, essential for chunking and retrieval. Must be configured to use this MOD.</StyleExpand_HelpApiEmbedding>
-  <StyleExpand_HelpApiOllama>Recommended: Use Ollama locally. After installing Ollama, run: ollama pull nomic-embed-text. Set API URL to http://localhost:11434/api/embeddings, model to nomic-embed-text</StyleExpand_HelpApiOllama>
+  <StyleExpand_HelpApiOllama>Recommended: Use Ollama locally. 1) Download and install Ollama; 2) Run Ollama application (ensure background service is running, check taskbar); 3) Open terminal and run: ollama pull nomic-embed-text; 4) Set API URL to http://localhost:11434/api/embeddings, model to nomic-embed-text</StyleExpand_HelpApiOllama>
   <StyleExpand_HelpApiOther>Also supports OpenAI, DeepSeek and other compatible APIs. Ensure the model supports embedding.</StyleExpand_HelpApiOther>
   <StyleExpand_HelpStyleSection>【Style Materials】</StyleExpand_HelpStyleSection>
   <StyleExpand_HelpStyleOne>- One .txt file = one style. Filename becomes the style name.</StyleExpand_HelpStyleOne>

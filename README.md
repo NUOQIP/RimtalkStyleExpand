@@ -145,6 +145,14 @@ dotnet build -p:GameVersion=1.6 -c Release
 
 ## 版本历史
 
+### v1.0.1
+
+- 新增「获取模型列表」功能，一键获取 Ollama/OpenAI 可用模型
+- 修复 Ollama API 兼容性问题（新版 /api/embed 端点）
+- 修复配置文件共享违规问题
+- 改进新玩家体验：API 状态检测、自动选中已切分文风
+- 优化帮助文档，添加 Ollama 启动说明
+
 ### v1.0
 
 - 语义切分算法
@@ -162,3 +170,7 @@ dotnet build -p:GameVersion=1.6 -c Release
 ## 作者
 
 NUOQI_P
+
+## 反馈
+
+GitHub: https://github.com/NUOQIP/RimtalkStyleExpand

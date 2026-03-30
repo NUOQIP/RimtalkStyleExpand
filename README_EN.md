@@ -145,6 +145,14 @@ dotnet build -p:GameVersion=1.6 -c Release
 
 ## Version History
 
+### v1.0.1
+
+- Added "Get Models" feature to fetch available models from Ollama/OpenAI
+- Fixed Ollama API compatibility (new /api/embed endpoint)
+- Fixed config file sharing violation issue
+- Improved new player experience: API status detection, auto-select chunked style
+- Updated help documentation with Ollama startup instructions
+
 ### v1.0
 
 - Semantic chunking algorithm
@@ -162,3 +170,7 @@ Based on RimTalk, follows the same license.
 ## Author
 
 NUOQI_P
+
+## Feedback
+
+GitHub: https://github.com/NUOQIP/RimtalkStyleExpand

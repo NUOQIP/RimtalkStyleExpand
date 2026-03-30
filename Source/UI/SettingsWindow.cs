@@ -727,26 +727,26 @@ namespace RimTalkStyleExpand
             DrawSectionHeader(list, "StyleExpand_PromptTemplate".Translate(), "StyleExpand_PromptTemplateDesc".Translate());
             
             var promptRow = list.GetRect(30f);
-            Widgets.Label(new Rect(promptRow.x, promptRow.y, promptRow.width - 120f, 30f), "StyleExpand_BasePrompt".Translate());
+            Widgets.Label(new Rect(promptRow.x, promptRow.y, promptRow.width - 120f, 30f), "StyleExpand_FullPrompt".Translate());
             
-            if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetBasePrompt".Translate()))
+            if (Widgets.ButtonText(new Rect(promptRow.xMax - 110f, promptRow.y, 110f, 28f), "StyleExpand_ResetFullPrompt".Translate()))
             {
-                settings.Retrieval.BasePromptTemplate = @"Write in the **{{style_name}}** style.
+                settings.Retrieval.FullPromptTemplate = @"Write in the **{{style_name}}** style.
 
-Read the style guide below to understand its sentence patterns, vocabulary, and rhythm characteristics, then apply these style characteristics to all your outputs.
+Read the style guide below. You must apply these style characteristics in all your outputs.
 
-## Style Guide
+[Style Guide]
 {{style_prompt}}
 
-## Example Passages
+[Style Examples]
 {{style_chunks}}
 
-Your output must reflect this style from start to finish.";
+For reference only on language form; apply flexibly based on the current scene.";
                 ShowStatus("StyleExpand_PromptReset".Translate());
             }
             
-            var baseRect = list.GetRect(50f);
-            settings.Retrieval.BasePromptTemplate = Widgets.TextArea(baseRect, settings.Retrieval.BasePromptTemplate);
+            var baseRect = list.GetRect(120f);
+            settings.Retrieval.FullPromptTemplate = Widgets.TextArea(baseRect, settings.Retrieval.FullPromptTemplate);
             list.Gap();
             
             DrawSectionHeader(list, "StyleExpand_StylePromptTemplate".Translate(), "StyleExpand_StylePromptTemplateDesc".Translate());
@@ -761,21 +761,26 @@ Your output must reflect this style from start to finish.";
             
             if (Widgets.ButtonText(new Rect(stylePromptFooter.xMax - 120f, stylePromptFooter.y, 120f, 28f), "StyleExpand_ResetStylePrompt".Translate()))
             {
-                settings.LlmApi.StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{{style_name}}"" style.
+                settings.LlmApi.StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract its distinctive style patterns, and create a practical style guide to instruct other LLMs to replicate the ""{{style_name}}"" writing style for text output.
 
-【Requirements】
-- Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
-- Focus exclusively on HOW the writing works, not WHAT it contains. Extract only transferable stylistic elements that could be applied to any content.
-- Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
+【Important Note】
+This style guide will be used for RP dialogue generation in RimTalk, a RimWorld mod.
 
-【Forbidden】
-Do not analyze content-specific elements that only exist in this particular text (characters, settings, plot events, unique terminology, etc.).
-Do not include perspective or formatting rules—these are context-dependent, not style-inherent.
+【Core Requirements】
+- Examine the text holistically and determine which style dimensions are most defining and distinctive for this writing, rather than applying a predetermined analytical framework.
+- Focus only on ""how it is written,"" not ""what is written."" Extract style elements that can be transferred to any content.
+- Focus on: macro style, writing perspective, writing structure, writing philosophy/principles, word choice and sentence construction, rhetorical devices, description techniques (action, appearance, expression descriptions, etc.), and writing skills.
 
-【Output】
-- Produce a style guide within {{max_tokens}} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+【Prohibitions】
+- Ignore content-specific elements that only exist in this text (e.g., character settings).
+- Do not include formatting rules.
+- Avoid abstract theories unless they can be directly applied to dialogue generation.
+
+【Output Requirements】
+- Strictly limit to {{max_tokens}} tokens.
 - Write in the same language as the input text.
-- Use imperative tone.
+- Use imperative tone to guide practice, not analytical reports.
+- Output should enable other LLMs to directly execute style replication, not merely understand style characteristics.
 
 【Sample Text】
 {{sample_text}}";
@@ -1062,69 +1067,92 @@ Do not include perspective or formatting rules—these are context-dependent, no
             this.doCloseX = true;
             this.doWindowBackground = true;
         }
+        
+        private void AddSectionTitle(Listing_Standard list, string text)
+        {
+            list.Gap(8f);
+            Text.Font = GameFont.Medium;
+            GUI.color = new Color(0.9f, 0.85f, 0.6f);
+            var rect = list.GetRect(Text.CalcHeight(text, list.ColumnWidth));
+            Widgets.Label(rect, text);
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+            list.Gap(4f);
+        }
+        
+        private void AddBodyText(Listing_Standard list, string text)
+        {
+            var rect = list.GetRect(Text.CalcHeight(text, list.ColumnWidth));
+            Widgets.Label(rect, text);
+        }
+        
+        private void AddIndentedText(Listing_Standard list, string text, float indent = 20f)
+        {
+            var rect = list.GetRect(Text.CalcHeight(text, list.ColumnWidth - indent));
+            rect.x += indent;
+            rect.width -= indent;
+            GUI.color = new Color(0.85f, 0.85f, 0.85f);
+            Widgets.Label(rect, text);
+            GUI.color = Color.white;
+        }
 
         public override void DoWindowContents(Rect inRect)
         {
             var list = new Listing_Standard();
             
-            float contentHeight = 2000f;
+            float contentHeight = 2500f;
             var viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
             
             Widgets.BeginScrollView(inRect, ref _helpScrollPosition, viewRect);
             list.Begin(viewRect);
             
             Text.Font = GameFont.Medium;
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpTitle".Translate());
+            GUI.color = new Color(1f, 0.9f, 0.7f);
+            var titleRect = list.GetRect(35f);
+            Widgets.Label(titleRect, "StyleExpand_HelpTitle".Translate());
+            GUI.color = Color.white;
             Text.Font = GameFont.Small;
             list.GapLine();
-            list.Gap();
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpIntro".Translate());
-            list.Gap();
+            AddBodyText(list, "StyleExpand_HelpIntro".Translate());
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpQuickStart".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep1".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep2".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep3".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep4".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep5".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStep6".Translate());
-            list.Gap();
+            AddSectionTitle(list, "StyleExpand_HelpQuickStart".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStep1".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStep2".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStep3".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStep4".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStep5".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStep6".Translate());
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiSection".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiEmbedding".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiOllama".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpApiOther".Translate());
-            list.Gap();
+            AddSectionTitle(list, "StyleExpand_HelpApiSection".Translate());
+            AddBodyText(list, "StyleExpand_HelpApiEmbedding".Translate());
+            AddIndentedText(list, "StyleExpand_HelpApiOllama".Translate());
+            AddIndentedText(list, "StyleExpand_HelpApiOther".Translate());
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleSection".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleOne".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleSize".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpStyleTips".Translate());
-            list.Gap();
+            AddSectionTitle(list, "StyleExpand_HelpStyleSection".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStyleOne".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStyleSize".Translate());
+            AddIndentedText(list, "StyleExpand_HelpStyleTips".Translate());
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkSection".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkStrategy".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkSemantic".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkRecursive".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpChunkParams".Translate());
-            list.Gap();
+            AddSectionTitle(list, "StyleExpand_HelpChunkSection".Translate());
+            AddBodyText(list, "StyleExpand_HelpChunkStrategy".Translate());
+            AddIndentedText(list, "StyleExpand_HelpChunkSemantic".Translate());
+            AddIndentedText(list, "StyleExpand_HelpChunkRecursive".Translate());
+            AddIndentedText(list, "StyleExpand_HelpChunkParams".Translate());
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpRetrievalSection".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpRetrievalTopK".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpRetrievalThreshold".Translate());
-            list.Gap();
+            AddSectionTitle(list, "StyleExpand_HelpRetrievalSection".Translate());
+            AddIndentedText(list, "StyleExpand_HelpRetrievalTopK".Translate());
+            AddIndentedText(list, "StyleExpand_HelpRetrievalThreshold".Translate());
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpRecommendSection".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpRecommendModels".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpRecommendParams".Translate());
-            list.Gap();
+            AddSectionTitle(list, "StyleExpand_HelpRecommendSection".Translate());
+            AddIndentedText(list, "StyleExpand_HelpRecommendModels".Translate());
+            AddIndentedText(list, "StyleExpand_HelpRecommendParams".Translate());
             
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaqSection".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq1".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq2".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq3".Translate());
-            SettingsWindow.AddLabel(list,"StyleExpand_HelpFaq4".Translate());
+            AddSectionTitle(list, "StyleExpand_HelpFaqSection".Translate());
+            AddIndentedText(list, "StyleExpand_HelpFaq1".Translate());
+            AddIndentedText(list, "StyleExpand_HelpFaq2".Translate());
+            AddIndentedText(list, "StyleExpand_HelpFaq3".Translate());
+            AddIndentedText(list, "StyleExpand_HelpFaq4".Translate());
             
             list.End();
             Widgets.EndScrollView();

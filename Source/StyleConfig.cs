@@ -88,34 +88,34 @@ namespace RimTalkStyleExpand
 
     public class RetrievalConfig : IExposable
     {
-        public string BasePromptTemplate = @"Write in the **{{style_name}}** style.
+        public string FullPromptTemplate = @"Write in the **{{style_name}}** style.
 
-Read the style guide below to understand its sentence patterns, vocabulary, and rhythm characteristics, then apply these style characteristics to all your outputs.
+Read the style guide below. You must apply these style characteristics in all your outputs.
 
-## Style Guide
+[Style Guide]
 {{style_prompt}}
 
-## Example Passages
+[Style Examples]
 {{style_chunks}}
 
-Your output must reflect this style from start to finish.";
+For reference only on language form; apply flexibly based on the current scene.";
         public string QueryTemplate = "";
         public int TopK = 3;
         public float SimilarityThreshold = 0.55f;
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref BasePromptTemplate, "basePromptTemplate", @"Write in the **{{style_name}}** style.
+            Scribe_Values.Look(ref FullPromptTemplate, "fullPromptTemplate", @"Write in the **{{style_name}}** style.
 
-Read the style guide below to understand its sentence patterns, vocabulary, and rhythm characteristics, then apply these style characteristics to all your outputs.
+Read the style guide below. You must apply these style characteristics in all your outputs.
 
-## Style Guide
+[Style Guide]
 {{style_prompt}}
 
-## Example Passages
+[Style Examples]
 {{style_chunks}}
 
-Your output must reflect this style from start to finish.");
+For reference only on language form; apply flexibly based on the current scene.");
             Scribe_Values.Look(ref QueryTemplate, "queryTemplate", "");
             Scribe_Values.Look(ref TopK, "topK", 3);
             Scribe_Values.Look(ref SimilarityThreshold, "similarityThreshold", 0.55f);
@@ -172,21 +172,26 @@ Your output must reflect this style from start to finish.");
         public string ApiKey = "";
         public string Model = "llama3";
         public int MaxTokens = 800;
-        public string StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract the distinctive stylistic patterns that define how the author writes independent of what they write about, and create a practical style guide to instruct other LLMs to replicate the ""{{style_name}}"" style.
+        public string StylePromptTemplate = @"You are a writing style guide writer. Your task is to analyze the provided text sample, extract its distinctive style patterns, and create a practical style guide to instruct other LLMs to replicate the ""{{style_name}}"" writing style for text output.
 
-【Requirements】
-- Examine the text holistically and determine which dimensions of style are most distinctive and defining for this particular writing.
-- Focus exclusively on HOW the writing works, not WHAT it contains. Extract only transferable stylistic elements that could be applied to any content.
-- Let the text itself reveal what matters—different styles emphasize different elements, so adapt your analysis accordingly rather than forcing a predetermined framework.
+【Important Note】
+This style guide will be used for RP dialogue generation in RimTalk, a RimWorld mod.
 
-【Forbidden】
-Do not analyze content-specific elements that only exist in this particular text (characters, settings, plot events, unique terminology, etc.).
-Do not include perspective or formatting rules—these are context-dependent, not style-inherent.
+【Core Requirements】
+- Examine the text holistically and determine which style dimensions are most defining and distinctive for this writing, rather than applying a predetermined analytical framework.
+- Focus only on ""how it is written,"" not ""what is written."" Extract style elements that can be transferred to any content.
+- Focus on: macro style, writing perspective, writing structure, writing philosophy/principles, word choice and sentence construction, rhetorical devices, description techniques (action, appearance, expression descriptions, etc.), and writing skills.
 
-【Output】
-- Produce a style guide within {{max_tokens}} tokens that captures the essence of this writing approach. Your guide should enable LLMs to replicate the style of the sample.
+【Prohibitions】
+- Ignore content-specific elements that only exist in this text (e.g., character settings).
+- Do not include formatting rules.
+- Avoid abstract theories unless they can be directly applied to dialogue generation.
+
+【Output Requirements】
+- Strictly limit to {{max_tokens}} tokens.
 - Write in the same language as the input text.
-- Use imperative tone.
+- Use imperative tone to guide practice, not analytical reports.
+- Output should enable other LLMs to directly execute style replication, not merely understand style characteristics.
 
 【Sample Text】
 {{sample_text}}";

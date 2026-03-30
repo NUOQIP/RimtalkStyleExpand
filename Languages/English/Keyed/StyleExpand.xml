@@ -119,10 +119,10 @@
   
   <!-- Prompt Section -->
   <StyleExpand_PromptTemplate>Prompt Template</StyleExpand_PromptTemplate>
-  <StyleExpand_PromptTemplateDesc>Customize the base style instruction injected to AI</StyleExpand_PromptTemplateDesc>
-  <StyleExpand_BasePrompt>Base Prompt Template (use {{style_name}}):</StyleExpand_BasePrompt>
+  <StyleExpand_PromptTemplateDesc>Customize the style instruction template injected to AI</StyleExpand_PromptTemplateDesc>
+  <StyleExpand_FullPrompt>Full Prompt Template (use {{style_name}} {{style_prompt}} {{style_chunks}}):</StyleExpand_FullPrompt>
   <StyleExpand_ResetToDefault>Reset to Default</StyleExpand_ResetToDefault>
-  <StyleExpand_ResetBasePrompt>Reset Template</StyleExpand_ResetBasePrompt>
+  <StyleExpand_ResetFullPrompt>Reset Template</StyleExpand_ResetFullPrompt>
   <StyleExpand_StylePromptTemplate>Style Analysis Prompt Template</StyleExpand_StylePromptTemplate>
   <StyleExpand_StylePromptTemplateDesc>LLM prompt for auto-generating style descriptions</StyleExpand_StylePromptTemplateDesc>
   <StyleExpand_ResetStylePrompt>Reset Template</StyleExpand_ResetStylePrompt>

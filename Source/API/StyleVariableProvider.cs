@@ -43,18 +43,6 @@ namespace RimTalkStyleExpand
             return style?.Name ?? "";
         }
         
-        public static string GetStyleBasePrompt(object context)
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null || !settings.IsEnabled) return "";
-            
-            var style = settings.GetSelectedStyle();
-            if (style == null) return "";
-            
-            var basePrompt = settings.Retrieval.BasePromptTemplate ?? "";
-            return basePrompt.Replace("{{style_name}}", style.Name);
-        }
-        
         public static string GetStylePrompt(object context)
         {
             var settings = StyleExpandSettings.Instance;
@@ -117,34 +105,15 @@ namespace RimTalkStyleExpand
             var style = settings.GetSelectedStyle();
             if (style == null) return "";
             
-            var sb = new StringBuilder();
+            var template = settings.Retrieval.FullPromptTemplate ?? "";
+            if (string.IsNullOrEmpty(template)) return "";
             
-            // Base prompt
-            var basePrompt = GetStyleBasePrompt(context);
-            if (!string.IsNullOrEmpty(basePrompt))
-            {
-                sb.AppendLine(basePrompt);
-            }
+            var result = template;
+            result = result.Replace("{{style_name}}", style.Name ?? "");
+            result = result.Replace("{{style_prompt}}", style.Prompt ?? "");
+            result = result.Replace("{{style_chunks}}", GetStyleChunks(context));
             
-            // Style Guide
-            var stylePrompt = GetStylePrompt(context);
-            if (!string.IsNullOrEmpty(stylePrompt))
-            {
-                sb.AppendLine();
-                sb.AppendLine("[Style Guide]");
-                sb.AppendLine(stylePrompt);
-            }
-            
-            // Style Examples
-            var chunks = GetStyleChunks(context);
-            if (!string.IsNullOrEmpty(chunks))
-            {
-                sb.AppendLine();
-                sb.AppendLine("[Style Examples]");
-                sb.Append(chunks);
-            }
-            
-            return sb.ToString();
+            return result;
         }
         
         private static string ExtractQueryFromContext(object context)

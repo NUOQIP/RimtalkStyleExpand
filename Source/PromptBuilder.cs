@@ -19,7 +19,7 @@ namespace RimTalkStyleExpand
 
             var sb = new StringBuilder();
             
-            var basePrompt = settings.Retrieval.BasePromptTemplate.Replace("{{style_name}}", selectedStyle.Name);
+            var basePrompt = settings.Retrieval.FullPromptTemplate.Replace("{{style_name}}", selectedStyle.Name);
             sb.AppendLine("[Style Instruction]");
             sb.AppendLine(basePrompt);
             sb.AppendLine();
@@ -79,7 +79,7 @@ namespace RimTalkStyleExpand
             var selectedStyle = settings.GetSelectedStyle();
             if (selectedStyle == null) return "";
 
-            return settings.Retrieval.BasePromptTemplate.Replace("{{style_name}}", selectedStyle.Name);
+            return settings.Retrieval.FullPromptTemplate.Replace("{{style_name}}", selectedStyle.Name);
         }
 
         public static string GetStylePromptSection()

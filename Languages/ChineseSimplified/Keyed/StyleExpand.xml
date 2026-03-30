@@ -119,10 +119,10 @@
   
   <!-- Prompt Section -->
   <StyleExpand_PromptTemplate>提示词模板</StyleExpand_PromptTemplate>
-  <StyleExpand_PromptTemplateDesc>自定义注入给 AI 的基础文风指令</StyleExpand_PromptTemplateDesc>
-  <StyleExpand_BasePrompt>基础提示词模板（使用 {{style_name}} 作为占位符）：</StyleExpand_BasePrompt>
+  <StyleExpand_PromptTemplateDesc>自定义注入给 AI 的文风指令模板</StyleExpand_PromptTemplateDesc>
+  <StyleExpand_FullPrompt>完整提示词模板（可用 {{style_name}} {{style_prompt}} {{style_chunks}}）：</StyleExpand_FullPrompt>
   <StyleExpand_ResetToDefault>重置默认</StyleExpand_ResetToDefault>
-  <StyleExpand_ResetBasePrompt>重置模板</StyleExpand_ResetBasePrompt>
+  <StyleExpand_ResetFullPrompt>重置模板</StyleExpand_ResetFullPrompt>
   <StyleExpand_StylePromptTemplate>文风分析提示词模板</StyleExpand_StylePromptTemplate>
   <StyleExpand_StylePromptTemplateDesc>用于自动生成文风描述的 LLM 提示词</StyleExpand_StylePromptTemplateDesc>
   <StyleExpand_ResetStylePrompt>重置模板</StyleExpand_ResetStylePrompt>

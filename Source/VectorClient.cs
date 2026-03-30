@@ -429,5 +429,136 @@ catch (WebException ex)
         }
         
         #endregion
+        
+        #region 获取模型列表
+        
+        public static List<string> GetAvailableModels(VectorApiConfig config)
+        {
+            if (config == null || string.IsNullOrEmpty(config.Url)) return new List<string>();
+            
+            try
+            {
+                var baseUrl = config.Url.TrimEnd('/');
+                string modelsUrl;
+                
+                if (baseUrl.Contains(":11434") || baseUrl.Contains("ollama"))
+                {
+                    if (baseUrl.Contains("/api/embed"))
+                        modelsUrl = baseUrl.Replace("/api/embed", "/api/tags");
+                    else if (baseUrl.Contains("/api/embeddings"))
+                        modelsUrl = baseUrl.Replace("/api/embeddings", "/api/tags");
+                    else
+                        modelsUrl = baseUrl + "/api/tags";
+                }
+                else
+                {
+                    if (baseUrl.Contains("/v1/embeddings"))
+                        modelsUrl = baseUrl.Replace("/v1/embeddings", "/v1/models");
+                    else
+                        modelsUrl = baseUrl + "/v1/models";
+                }
+                
+                var request = (HttpWebRequest)WebRequest.Create(modelsUrl);
+                request.Method = "GET";
+                request.Timeout = 10000;
+                
+                if (!string.IsNullOrEmpty(config.ApiKey))
+                {
+                    request.Headers.Add("Authorization", "Bearer " + config.ApiKey);
+                }
+                
+                using (var response = (HttpWebResponse)request.GetResponse())
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    var json = reader.ReadToEnd();
+                    return ParseModelsResponse(json, modelsUrl.Contains("/api/tags"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning($"Failed to get models: {ex.Message}");
+                return new List<string>();
+            }
+        }
+        
+        private static List<string> ParseModelsResponse(string json, bool isOllama)
+        {
+            var models = new List<string>();
+            
+            try
+            {
+                if (isOllama)
+                {
+                    // Ollama: {"models": [{"name": "model:tag"}, ...]}
+                    var modelsStart = json.IndexOf("\"models\"");
+                    if (modelsStart >= 0)
+                    {
+                        var arrayStart = json.IndexOf("[", modelsStart);
+                        var arrayEnd = json.LastIndexOf("]");
+                        if (arrayStart >= 0 && arrayEnd > arrayStart)
+                        {
+                            var arrayContent = json.Substring(arrayStart, arrayEnd - arrayStart + 1);
+                            var nameStart = 0;
+                            while ((nameStart = arrayContent.IndexOf("\"name\"", nameStart)) >= 0)
+                            {
+                                var valueStart = arrayContent.IndexOf("\"", nameStart + 6);
+                                if (valueStart >= 0)
+                                {
+                                    var valueEnd = arrayContent.IndexOf("\"", valueStart + 1);
+                                    if (valueEnd > valueStart)
+                                    {
+                                        var name = arrayContent.Substring(valueStart + 1, valueEnd - valueStart - 1);
+                                        models.Add(name);
+                                        nameStart = valueEnd;
+                                    }
+                                    else break;
+                                }
+                                else break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // OpenAI: {"data": [{"id": "model-name"}, ...]}
+                    var dataStart = json.IndexOf("\"data\"");
+                    if (dataStart >= 0)
+                    {
+                        var arrayStart = json.IndexOf("[", dataStart);
+                        var arrayEnd = json.LastIndexOf("]");
+                        if (arrayStart >= 0 && arrayEnd > arrayStart)
+                        {
+                            var arrayContent = json.Substring(arrayStart, arrayEnd - arrayStart + 1);
+                            var idStart = 0;
+                            while ((idStart = arrayContent.IndexOf("\"id\"", idStart)) >= 0)
+                            {
+                                var valueStart = arrayContent.IndexOf("\"", idStart + 4);
+                                if (valueStart >= 0)
+                                {
+                                    var valueEnd = arrayContent.IndexOf("\"", valueStart + 1);
+                                    if (valueEnd > valueStart)
+                                    {
+                                        var id = arrayContent.Substring(valueStart + 1, valueEnd - valueStart - 1);
+                                        if (!id.Contains("-embedding") && !id.Contains("-embed"))
+                                            models.Add(id);
+                                        idStart = valueEnd;
+                                    }
+                                    else break;
+                                }
+                                else break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning($"Failed to parse models: {ex.Message}");
+            }
+            
+            return models;
+        }
+        
+        #endregion
     }
 }

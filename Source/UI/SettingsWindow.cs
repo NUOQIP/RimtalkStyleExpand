@@ -21,6 +21,10 @@ namespace RimTalkStyleExpand
         private static Vector2 _stylePromptScrollPosition = Vector2.zero;
         
         private static bool _showAdvanced = false;
+        
+        private static List<string> _availableModels = new List<string>();
+        private static int _selectedModelIndex = -1;
+        private static bool _isLoadingModels = false;
 
         public static void AddLabel(Listing_Standard list, string text)
         {
@@ -210,7 +214,47 @@ namespace RimTalkStyleExpand
             settings.VectorApi.ApiKey = list.TextEntry(settings.VectorApi.ApiKey);
             
             SettingsWindow.AddLabel(list,"StyleExpand_ApiModel".Translate());
-            settings.VectorApi.Model = list.TextEntry(settings.VectorApi.Model);
+            
+            var modelRow = list.GetRect(30f);
+            var inputWidth = modelRow.width - 130f;
+            
+            settings.VectorApi.Model = Widgets.TextField(
+                new Rect(modelRow.x, modelRow.y, inputWidth, 30f), 
+                settings.VectorApi.Model);
+            
+            if (Widgets.ButtonText(new Rect(modelRow.xMax - 120f, modelRow.y, 120f, 30f), 
+                _isLoadingModels ? "StyleExpand_LoadingModels".Translate() : "StyleExpand_GetModels".Translate()))
+            {
+                FetchModelsAsync(settings);
+            }
+            
+            if (_availableModels.Count > 0)
+            {
+                var dropdownRow = list.GetRect(30f);
+                SettingsWindow.AddLabel(list, "StyleExpand_AvailableModels".Translate());
+                
+                var dropdownRect = new Rect(dropdownRow.x, dropdownRow.y, dropdownRow.width, 30f);
+                
+                var options = new List<string> { "StyleExpand_SelectModel".Translate() };
+                options.AddRange(_availableModels);
+                
+                var selectedIndex = _selectedModelIndex + 1;
+                if (Widgets.ButtonText(dropdownRect, options[selectedIndex]))
+                {
+                    var floatMenuOptions = new List<FloatMenuOption>();
+                    for (int i = 0; i < _availableModels.Count; i++)
+                    {
+                        int idx = i;
+                        floatMenuOptions.Add(new FloatMenuOption(_availableModels[i], () =>
+                        {
+                            _selectedModelIndex = idx;
+                            settings.VectorApi.Model = _availableModels[idx];
+                        }));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(floatMenuOptions));
+                }
+            }
+            
             list.Gap();
 
             if (list.ButtonText("StyleExpand_TestConnection".Translate()))
@@ -225,6 +269,39 @@ namespace RimTalkStyleExpand
                 SettingsWindow.AddLabel(list,_testResult);
                 GUI.color = color;
             }
+        }
+        
+        private static void FetchModelsAsync(StyleExpandSettings settings)
+        {
+            if (_isLoadingModels) return;
+            _isLoadingModels = true;
+            
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                try
+                {
+                    _availableModels = VectorClient.GetAvailableModels(settings.VectorApi);
+                    _selectedModelIndex = -1;
+                    
+                    if (_availableModels.Count == 0)
+                    {
+                        ShowWarning("StyleExpand_NoModelsFound".Translate());
+                    }
+                    else
+                    {
+                        ShowStatus("StyleExpand_ModelsLoaded".Translate(_availableModels.Count));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to fetch models: {ex.Message}");
+                    ShowWarning("StyleExpand_FailedToGetModels".Translate());
+                }
+                finally
+                {
+                    _isLoadingModels = false;
+                }
+            });
         }
 
         private static void DrawLlmApiSection(Listing_Standard list, StyleExpandSettings settings)

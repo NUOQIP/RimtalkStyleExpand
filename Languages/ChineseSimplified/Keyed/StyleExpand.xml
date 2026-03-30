@@ -87,6 +87,13 @@
   <StyleExpand_ApiModel>模型名称：</StyleExpand_ApiModel>
   <StyleExpand_TestConnection>测试连接</StyleExpand_TestConnection>
   <StyleExpand_ApiNotConfigured>请先配置 Embedding API 地址和模型名称</StyleExpand_ApiNotConfigured>
+  <StyleExpand_GetModels>获取模型列表</StyleExpand_GetModels>
+  <StyleExpand_LoadingModels>获取中...</StyleExpand_LoadingModels>
+  <StyleExpand_AvailableModels>可用模型：</StyleExpand_AvailableModels>
+  <StyleExpand_SelectModel>选择模型...</StyleExpand_SelectModel>
+  <StyleExpand_NoModelsFound>未找到可用模型</StyleExpand_NoModelsFound>
+  <StyleExpand_ModelsLoaded>已获取 {0} 个模型</StyleExpand_ModelsLoaded>
+  <StyleExpand_FailedToGetModels>获取模型列表失败</StyleExpand_FailedToGetModels>
   
   <!-- Advanced Settings -->
   <StyleExpand_AdvancedSettings>高级设置</StyleExpand_AdvancedSettings>

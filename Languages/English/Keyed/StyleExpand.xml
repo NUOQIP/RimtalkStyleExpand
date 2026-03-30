@@ -87,6 +87,13 @@
   <StyleExpand_ApiModel>Model Name:</StyleExpand_ApiModel>
   <StyleExpand_TestConnection>Test Connection</StyleExpand_TestConnection>
   <StyleExpand_ApiNotConfigured>Please configure Embedding API URL and model name first</StyleExpand_ApiNotConfigured>
+  <StyleExpand_GetModels>Get Models</StyleExpand_GetModels>
+  <StyleExpand_LoadingModels>Loading...</StyleExpand_LoadingModels>
+  <StyleExpand_AvailableModels>Available Models:</StyleExpand_AvailableModels>
+  <StyleExpand_SelectModel>Select model...</StyleExpand_SelectModel>
+  <StyleExpand_NoModelsFound>No models found</StyleExpand_NoModelsFound>
+  <StyleExpand_ModelsLoaded>Loaded {0} models</StyleExpand_ModelsLoaded>
+  <StyleExpand_FailedToGetModels>Failed to get models</StyleExpand_FailedToGetModels>
   
   <!-- Advanced Settings -->
   <StyleExpand_AdvancedSettings>Advanced Settings</StyleExpand_AdvancedSettings>

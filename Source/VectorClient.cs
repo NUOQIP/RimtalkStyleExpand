@@ -156,7 +156,8 @@ namespace RimTalkStyleExpand
                     }
 
                     var isOllama = config.Url.Contains(":11434") || config.Url.Contains("ollama");
-                    var inputField = isOllama ? "prompt" : "input";
+                    var isOldOllamaApi = config.Url.Contains("/api/embeddings");
+                    var inputField = isOldOllamaApi ? "prompt" : "input";
                     var requestBody = $"{{\"model\":\"{config.Model}\",\"{inputField}\":\"{EscapeJson(truncatedText)}\"}}";
                     var bytes = Encoding.UTF8.GetBytes(requestBody);
                     request.ContentLength = bytes.Length;
@@ -239,9 +240,28 @@ catch (WebException ex)
         {
             try
             {
+                // 新版 Ollama API: {"embeddings": [[...]]}
+                var embeddingsStart = json.IndexOf("\"embeddings\"");
+                if (embeddingsStart >= 0)
+                {
+                    var outerArrayStart = json.IndexOf("[", embeddingsStart);
+                    if (outerArrayStart >= 0)
+                    {
+                        var innerArrayStart = json.IndexOf("[", outerArrayStart + 1);
+                        var innerArrayEnd = json.IndexOf("]", innerArrayStart);
+                        if (innerArrayStart >= 0 && innerArrayEnd >= 0)
+                        {
+                            var embeddingsContent = json.Substring(innerArrayStart + 1, innerArrayEnd - innerArrayStart - 1);
+                            return ParseFloatArray(embeddingsContent);
+                        }
+                    }
+                }
+                
+                // OpenAI API format: {"data": [{"embedding": [...]}]}
                 var dataStart = json.IndexOf("\"data\"");
                 if (dataStart < 0)
                 {
+                    // 旧版 Ollama API: {"embedding": [...]}
                     var embeddingStart = json.IndexOf("\"embedding\"");
                     if (embeddingStart >= 0)
                     {

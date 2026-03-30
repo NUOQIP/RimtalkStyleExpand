@@ -74,13 +74,13 @@ namespace RimTalkStyleExpand
 
     public class VectorApiConfig : IExposable
     {
-        public string Url = "http://localhost:11434/api/embeddings";
+        public string Url = "http://localhost:11434/api/embed";
         public string ApiKey = "";
         public string Model = "mxbai-embed-large";
 
         public void ExposeData()
         {
-            Scribe_Values.Look(ref Url, "url", "http://localhost:11434/api/embeddings");
+            Scribe_Values.Look(ref Url, "url", "http://localhost:11434/api/embed");
             Scribe_Values.Look(ref ApiKey, "apiKey", "");
             Scribe_Values.Look(ref Model, "model", "mxbai-embed-large");
         }

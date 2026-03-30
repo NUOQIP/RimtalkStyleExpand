@@ -87,9 +87,13 @@ namespace RimTalkStyleExpand
                         Logger.Message($"Style file deleted: {styleName}");
                         settings.RemoveStyle(styleName);
                         EmbeddingCache.Clear(styleName);
-                        settings.Write();
+                        SafeWriteSettings(settings);
                         break;
                 }
+            }
+            catch (IOException ioEx) when (ioEx.HResult == -2146232800 || ioEx.Message.Contains("sharing") || ioEx.Message.Contains("Sharing"))
+            {
+                // Ignore sharing violation - game is writing to the same file
             }
             catch (Exception ex)
             {
@@ -114,7 +118,23 @@ namespace RimTalkStyleExpand
             settings.RemoveStyle(oldName);
             
             StyleRetriever.ScanStyleFiles();
-            settings.Write();
+            SafeWriteSettings(settings);
+        }
+        
+        private static void SafeWriteSettings(StyleExpandSettings settings)
+        {
+            try
+            {
+                settings.Write();
+            }
+            catch (IOException ioEx) when (ioEx.HResult == -2146232800 || ioEx.Message.Contains("sharing") || ioEx.Message.Contains("Sharing"))
+            {
+                // Ignore sharing violation - game is writing to the same file
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning($"Error writing settings: {ex.Message}");
+            }
         }
     }
 }

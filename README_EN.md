@@ -145,6 +145,12 @@ dotnet build -p:GameVersion=1.6 -c Release
 
 ## Version History
 
+### v1.0.2
+
+- Added 5 Scriban variables: `{{style_name}}`, `{{style_base_prompt}}`, `{{style_prompt}}`, `{{style_chunks}}`, `{{style_full}}`
+- Auto-detect file encoding, supports UTF-8 and GBK encoded style files
+- Improved base prompt format for better style replication
+
 ### v1.0.1
 
 - Added "Get Models" feature to fetch available models from Ollama/OpenAI

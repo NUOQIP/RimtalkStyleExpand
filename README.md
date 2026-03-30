@@ -145,6 +145,12 @@ dotnet build -p:GameVersion=1.6 -c Release
 
 ## 版本历史
 
+### v1.0.2
+
+- 新增 5 个 Scriban 变量：`{{style_name}}`、`{{style_base_prompt}}`、`{{style_prompt}}`、`{{style_chunks}}`、`{{style_full}}`
+- 文件编码自动检测，支持 UTF-8 和 GBK 编码的文风文件
+- 优化基础提示词格式，提升文风复刻效果
+
 ### v1.0.1
 
 - 新增「获取模型列表」功能，一键获取 Ollama/OpenAI 可用模型

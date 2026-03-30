@@ -273,14 +273,14 @@ namespace RimTalkStyleExpand
                 }
                 else
                 {
-                    var text = File.ReadAllText(filePath, Encoding.UTF8);
-                    chunks = PrepareChunks(text, settings);
+var text = FileEncodingHelper.ReadAllTextWithAutoDetect(filePath);
+                chunks = PrepareChunks(text, settings);
                     _pendingChunks = chunks;
                 }
             }
             else
             {
-                var text = File.ReadAllText(filePath, Encoding.UTF8);
+                var text = FileEncodingHelper.ReadAllTextWithAutoDetect(filePath);
                 if (string.IsNullOrWhiteSpace(text))
                 {
                     throw new Exception($"Style file is empty: {filePath}");
@@ -455,7 +455,7 @@ namespace RimTalkStyleExpand
             var filePath = Path.Combine(mod.Content.RootDir, "Styles", styleName + ".txt");
             if (!File.Exists(filePath)) return 0;
             
-            return File.ReadAllText(filePath, Encoding.UTF8).Length;
+            return FileEncodingHelper.ReadAllTextWithAutoDetect(filePath).Length;
         }
 
         private static void ClearStyleChunks(string styleName)

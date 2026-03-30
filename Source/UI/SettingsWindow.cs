@@ -996,7 +996,7 @@ Do not include perspective or formatting rules—these are context-dependent, no
             {
                 try
                 {
-                    var sampleText = System.IO.File.ReadAllText(filePath, System.Text.Encoding.UTF8);
+                    var sampleText = FileEncodingHelper.ReadAllTextWithAutoDetect(filePath);
                     var prompt = LLMClient.GenerateStylePrompt(styleName, sampleText, settings.LlmApi);
                     
                     var style = settings.Styles.FirstOrDefault(s => s.Name == styleName);

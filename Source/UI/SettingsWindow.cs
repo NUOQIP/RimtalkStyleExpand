@@ -271,10 +271,7 @@ namespace RimTalkStyleExpand
             
             if (_availableModels.Count > 0)
             {
-                var dropdownRow = list.GetRect(30f);
-                SettingsWindow.AddLabel(list, "StyleExpand_AvailableModels".Translate());
-                
-                var dropdownRect = new Rect(dropdownRow.x, dropdownRow.y, dropdownRow.width, 30f);
+                var dropdownRect = list.GetRect(30f);
                 
                 var options = new List<string> { "StyleExpand_SelectModel".Translate() };
                 options.AddRange(_availableModels);

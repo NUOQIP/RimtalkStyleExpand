@@ -23,7 +23,6 @@ namespace RimTalkStyleExpand
         private List<(StyleRetriever.StyleChunk chunk, float similarity)> _retrievedChunks = new List<(StyleRetriever.StyleChunk, float)>();
         
         private bool _showVariablesPanel = true;
-        private bool _isLoading = false;
         
         private static Type _scribanParserType;
         private static MethodInfo _renderMethod;
@@ -438,7 +437,6 @@ namespace RimTalkStyleExpand
             
             if (string.IsNullOrEmpty(_parsedQuery)) return;
             
-            _isLoading = true;
             _retrievedChunks.Clear();
             
             try
@@ -456,10 +454,6 @@ namespace RimTalkStyleExpand
             catch (Exception ex)
             {
                 Logger.Error($"Failed to retrieve chunks: {ex.Message}");
-            }
-finally
-            {
-                _isLoading = false;
             }
         }
 

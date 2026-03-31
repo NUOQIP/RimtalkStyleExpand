@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using RimWorld;
 using Verse;
@@ -69,104 +68,6 @@ namespace RimTalkStyleExpand
             }
 
             return sb.ToString();
-        }
-
-        public static string GetBasePrompt()
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null || !settings.IsEnabled) return "";
-
-            var selectedStyle = settings.GetSelectedStyle();
-            if (selectedStyle == null) return "";
-
-            return settings.Retrieval.FullPromptTemplate.Replace("{{style_name}}", selectedStyle.Name);
-        }
-
-        public static string GetStylePromptSection()
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null || !settings.IsEnabled) return "";
-
-            var selectedStyle = settings.GetSelectedStyle();
-            if (selectedStyle == null || string.IsNullOrEmpty(selectedStyle.Prompt)) return "";
-
-            var sb = new StringBuilder();
-            sb.AppendLine($"## {selectedStyle.Name} Style");
-            sb.AppendLine(selectedStyle.Prompt);
-            return sb.ToString().TrimEnd();
-        }
-
-        public static string GetRetrievedChunksSection(object context)
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null || !settings.IsEnabled) return "";
-
-            var selectedStyle = settings.GetSelectedStyle();
-            if (selectedStyle == null) return "";
-
-            Pawn pawn = null;
-            
-            try
-            {
-                var contextType = context?.GetType();
-                var currentPawnProp = contextType?.GetProperty("CurrentPawn");
-                if (currentPawnProp != null)
-                {
-                    pawn = currentPawnProp.GetValue(context) as Pawn;
-                }
-            }
-            catch { }
-
-            if (pawn == null) return "";
-
-            var query = StyleRetriever.RenderQueryTemplate(settings.Retrieval.QueryTemplate, pawn);
-            var chunks = StyleRetriever.Retrieve(
-                query, 
-                settings.Retrieval.TopK, 
-                settings.Retrieval.SimilarityThreshold
-            );
-
-            if (chunks.Count == 0) return "";
-
-            var sb = new StringBuilder();
-            sb.AppendLine("### Style Examples:");
-            
-            foreach (var chunk in chunks)
-            {
-                sb.AppendLine($"- {chunk.Text}");
-            }
-            
-            return sb.ToString().TrimEnd();
-        }
-
-        public static string GetFullStylePrompt(object context)
-        {
-            var settings = StyleExpandSettings.Instance;
-            if (settings == null || !settings.IsEnabled) return "";
-
-            var selectedStyle = settings.GetSelectedStyle();
-            if (selectedStyle == null) return "";
-
-            var sb = new StringBuilder();
-            
-            sb.AppendLine("[Style Instruction]");
-            sb.AppendLine(GetBasePrompt());
-            sb.AppendLine();
-            
-            var styleSection = GetStylePromptSection();
-            if (!string.IsNullOrEmpty(styleSection))
-            {
-                sb.AppendLine(styleSection);
-                sb.AppendLine();
-            }
-            
-            var chunksSection = GetRetrievedChunksSection(context);
-            if (!string.IsNullOrEmpty(chunksSection))
-            {
-                sb.AppendLine(chunksSection);
-            }
-
-            return sb.ToString().TrimEnd();
         }
 
         public static string InjectIntoSystemPrompt(string systemPrompt, string stylePrompt)

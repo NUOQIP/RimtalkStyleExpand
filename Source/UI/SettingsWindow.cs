@@ -36,7 +36,6 @@ namespace RimTalkStyleExpand
         private static float _resizeStartY = 0f;
         private static float _resizeStartHeight = 0f;
         private static string _resizingTarget = null;
-        private const float ResizeHandleSize = 24f;
 
         public static void AddLabel(Listing_Standard list, string text)
         {
@@ -65,29 +64,25 @@ namespace RimTalkStyleExpand
             content = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, viewHeight), content);
             Widgets.EndScrollView();
             
-            var handleRect = new Rect(textRect.xMax - ResizeHandleSize - 20f, textRect.yMax - ResizeHandleSize, ResizeHandleSize, ResizeHandleSize);
-            var dragBarRect = new Rect(textRect.x, textRect.yMax - 6f, textRect.width - 20f, 6f);
+            var dragBarRect = new Rect(textRect.x, textRect.yMax - 8f, textRect.width, 8f);
             
-            if (Mouse.IsOver(handleRect) || Mouse.IsOver(dragBarRect))
+            if (Mouse.IsOver(dragBarRect))
             {
                 GUI.color = GenUI.MouseoverColor;
-                if (Mouse.IsOver(dragBarRect) && !Mouse.IsOver(handleRect))
-                {
-                    Widgets.DrawHighlight(dragBarRect);
-                }
+                Widgets.DrawHighlight(dragBarRect);
             }
             else
             {
-                GUI.color = Color.white;
+                GUI.color = new Color(0.5f, 0.5f, 0.5f);
             }
-            GUI.DrawTexture(handleRect, TexUI.WinExpandWidget);
+            Widgets.DrawLineHorizontal(textRect.x + 10f, textRect.yMax - 4f, textRect.width - 20f, GUI.color);
             GUI.color = Color.white;
             
             Event currentEvent = Event.current;
             
             if (currentEvent.type == EventType.MouseDown && currentEvent.button == 0)
             {
-                if (handleRect.Contains(currentEvent.mousePosition) || dragBarRect.Contains(currentEvent.mousePosition))
+                if (dragBarRect.Contains(currentEvent.mousePosition))
                 {
                     _isResizingTextArea = true;
                     _resizeStartY = currentEvent.mousePosition.y;

@@ -65,11 +65,16 @@ namespace RimTalkStyleExpand
             content = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, viewHeight), content);
             Widgets.EndScrollView();
             
-            var handleRect = new Rect(textRect.xMax - ResizeHandleSize, textRect.yMax - ResizeHandleSize, ResizeHandleSize, ResizeHandleSize);
+            var handleRect = new Rect(textRect.xMax - ResizeHandleSize - 20f, textRect.yMax - ResizeHandleSize, ResizeHandleSize, ResizeHandleSize);
+            var dragBarRect = new Rect(textRect.x, textRect.yMax - 6f, textRect.width - 20f, 6f);
             
-            if (Mouse.IsOver(handleRect))
+            if (Mouse.IsOver(handleRect) || Mouse.IsOver(dragBarRect))
             {
                 GUI.color = GenUI.MouseoverColor;
+                if (Mouse.IsOver(dragBarRect) && !Mouse.IsOver(handleRect))
+                {
+                    Widgets.DrawHighlight(dragBarRect);
+                }
             }
             else
             {
@@ -82,7 +87,7 @@ namespace RimTalkStyleExpand
             
             if (currentEvent.type == EventType.MouseDown && currentEvent.button == 0)
             {
-                if (handleRect.Contains(currentEvent.mousePosition))
+                if (handleRect.Contains(currentEvent.mousePosition) || dragBarRect.Contains(currentEvent.mousePosition))
                 {
                     _isResizingTextArea = true;
                     _resizeStartY = currentEvent.mousePosition.y;

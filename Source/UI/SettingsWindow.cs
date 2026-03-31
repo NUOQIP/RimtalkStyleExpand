@@ -25,11 +25,52 @@ namespace RimTalkStyleExpand
         private static List<string> _availableModels = new List<string>();
         private static int _selectedModelIndex = -1;
         private static bool _isLoadingModels = false;
+        
+        private static float _stylePromptHeight = 200f;
+        private static float _fullPromptHeight = 200f;
+        private static float _stylePromptTemplateHeight = 200f;
+        private static Vector2 _fullPromptScrollPos = Vector2.zero;
+        private static Vector2 _stylePromptTemplateScrollPos = Vector2.zero;
 
         public static void AddLabel(Listing_Standard list, string text)
         {
             var rect = list.GetRect(Text.CalcHeight(text, list.ColumnWidth));
             Widgets.Label(rect, text);
+        }
+        
+        private static string DrawResizableTextArea(Listing_Standard list, string label, string content, ref float height, ref Vector2 scrollPos, float minHeight = 50f, float maxHeight = 500f)
+        {
+            var labelRect = list.GetRect(25f);
+            Widgets.Label(labelRect, label);
+            
+            var textRect = list.GetRect(height);
+            Widgets.DrawBoxSolid(textRect, new Color(0.1f, 0.1f, 0.1f, 0.9f));
+            Widgets.DrawBox(textRect);
+            
+            var innerRect = textRect.ContractedBy(5f);
+            float textHeight = Math.Max(Text.CalcHeight(content, innerRect.width - 16f), innerRect.height);
+            var viewRect = new Rect(0f, 0f, innerRect.width - 16f, textHeight);
+            
+            Widgets.BeginScrollView(innerRect, ref scrollPos, viewRect);
+            content = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, textHeight), content);
+            Widgets.EndScrollView();
+            
+            var handleRect = new Rect(textRect.x, textRect.yMax - 6f, textRect.width, 12f);
+            
+            if (Mouse.IsOver(handleRect))
+            {
+                Widgets.DrawHighlight(handleRect);
+                if (Input.GetMouseButton(0))
+                {
+                    height += Event.current.delta.y;
+                    height = Mathf.Clamp(height, minHeight, maxHeight);
+                }
+            }
+            
+            Widgets.DrawLineHorizontal(textRect.x, textRect.yMax, textRect.width, new Color(0.4f, 0.4f, 0.4f));
+            
+            list.Gap(6f);
+            return content;
         }
 
         public static void DoSettingsContents(Rect inRect, StyleExpandSettings settings)
@@ -355,13 +396,6 @@ namespace RimTalkStyleExpand
                 OpenStylesFolder();
             }
             
-            if (Widgets.ButtonText(new Rect(btnRow.x + 2f * (btnWidth + 5f), btnRow.y, btnWidth, 30f), "StyleExpand_ClearCache".Translate()))
-            {
-                EmbeddingCache.ClearAll();
-                StyleRetriever.RefreshStylesCacheStatus();
-                ShowStatus("StyleExpand_CacheCleared".Translate());
-            }
-            
             list.Gap();
 
             if (settings.Styles.Count == 0)
@@ -519,23 +553,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawStylePromptEditor(Listing_Standard list, StyleConfig selectedStyle, StyleExpandSettings settings)
         {
-            SettingsWindow.AddLabel(list,"StyleExpand_StylePrompt".Translate());
-            
-            var textRect = list.GetRect(150f);
-            Widgets.DrawBoxSolid(textRect, new Color(0.1f, 0.1f, 0.1f, 0.9f));
-            
-            var innerRect = textRect.ContractedBy(5f);
-            float textHeight = Math.Max(Text.CalcHeight(selectedStyle.Prompt, innerRect.width - 16f), innerRect.height);
-            var viewRect = new Rect(0f, 0f, innerRect.width - 16f, textHeight);
-            
-            Widgets.BeginScrollView(innerRect, ref _stylePromptScrollPosition, viewRect);
-            
-            GUI.SetNextControlName("StylePromptTextField");
-            selectedStyle.Prompt = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, textHeight), selectedStyle.Prompt);
-            
-            Widgets.EndScrollView();
-            
-            list.Gap();
+            selectedStyle.Prompt = DrawResizableTextArea(list, "StyleExpand_StylePrompt".Translate(), selectedStyle.Prompt, ref _stylePromptHeight, ref _stylePromptScrollPosition);
             
             var generateBtnRow = list.GetRect(30f);
             
@@ -745,14 +763,11 @@ For reference only on language form; apply flexibly based on the current scene."
                 ShowStatus("StyleExpand_PromptReset".Translate());
             }
             
-            var baseRect = list.GetRect(120f);
-            settings.Retrieval.FullPromptTemplate = Widgets.TextArea(baseRect, settings.Retrieval.FullPromptTemplate);
-            list.Gap();
+            settings.Retrieval.FullPromptTemplate = DrawResizableTextArea(list, "", settings.Retrieval.FullPromptTemplate, ref _fullPromptHeight, ref _fullPromptScrollPos);
             
             DrawSectionHeader(list, "StyleExpand_StylePromptTemplate".Translate(), "StyleExpand_StylePromptTemplateDesc".Translate());
             
-            var stylePromptRect = list.GetRect(200f);
-            settings.LlmApi.StylePromptTemplate = Widgets.TextArea(stylePromptRect, settings.LlmApi.StylePromptTemplate);
+            settings.LlmApi.StylePromptTemplate = DrawResizableTextArea(list, "", settings.LlmApi.StylePromptTemplate, ref _stylePromptTemplateHeight, ref _stylePromptTemplateScrollPos);
             
             var stylePromptFooter = list.GetRect(30f);
             GUI.color = new Color(0.6f, 0.6f, 0.6f);
@@ -837,7 +852,6 @@ This style guide will be used for RP dialogue generation in RimTalk, a RimWorld 
             settings.Retrieval = new RetrievalConfig();
             settings.Debug = new DebugConfig();
             settings.Styles.Clear();
-            EmbeddingCache.ClearAll();
             StyleRetriever.ScanStyleFiles();
         }
 

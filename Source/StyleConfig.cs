@@ -128,7 +128,7 @@ Read the style guide below. You must apply these style characteristics in all yo
 
 For reference only on language form; apply flexibly based on the current scene.";
         public string QueryTemplate = "";
-        public int TopK = 3;
+        public int TopK = 2;
         public float SimilarityThreshold = 0.55f;
 
         public void ExposeData()
@@ -145,7 +145,7 @@ Read the style guide below. You must apply these style characteristics in all yo
 
 For reference only on language form; apply flexibly based on the current scene.");
             Scribe_Values.Look(ref QueryTemplate, "queryTemplate", "");
-            Scribe_Values.Look(ref TopK, "topK", 3);
+            Scribe_Values.Look(ref TopK, "topK", 2);
             Scribe_Values.Look(ref SimilarityThreshold, "similarityThreshold", 0.55f);
         }
     }

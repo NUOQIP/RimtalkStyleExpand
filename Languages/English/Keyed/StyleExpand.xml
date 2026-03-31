@@ -176,28 +176,36 @@
   <StyleExpand_HelpStep6>6. Recommended: Configure LLM API and click 'Generate Description' for better results</StyleExpand_HelpStep6>
   <StyleExpand_HelpApiSection>【API Configuration】</StyleExpand_HelpApiSection>
   <StyleExpand_HelpApiEmbedding>Embedding API converts text to vectors, essential for chunking and retrieval. Must be configured to use this MOD.</StyleExpand_HelpApiEmbedding>
-  <StyleExpand_HelpApiOllama>Recommended: Use Ollama locally. 1) Download and install Ollama; 2) Run Ollama application (ensure background service is running, check taskbar); 3) Open terminal and run: ollama pull nomic-embed-text; 4) Set API URL to http://localhost:11434/api/embed, model to nomic-embed-text</StyleExpand_HelpApiOllama>
+  <StyleExpand_HelpApiOllama>Recommended: Use Ollama locally:</StyleExpand_HelpApiOllama>
+  <StyleExpand_HelpApiOllamaStep1>1. Download and install Ollama</StyleExpand_HelpApiOllamaStep1>
+  <StyleExpand_HelpApiOllamaStep2>2. Run Ollama application (ensure background service is running, check taskbar)</StyleExpand_HelpApiOllamaStep2>
+  <StyleExpand_HelpApiOllamaStep3>3. Open terminal and run: ollama pull nomic-embed-text</StyleExpand_HelpApiOllamaStep3>
+  <StyleExpand_HelpApiOllamaStep4>4. Set API URL to http://localhost:11434/api/embed, model to nomic-embed-text</StyleExpand_HelpApiOllamaStep4>
   <StyleExpand_HelpApiOther>Also supports OpenAI, DeepSeek and other compatible APIs. Ensure the model supports embedding.</StyleExpand_HelpApiOther>
   <StyleExpand_HelpStyleSection>【Style Materials】</StyleExpand_HelpStyleSection>
-  <StyleExpand_HelpStyleOne>- One .txt file = one style. Filename becomes the style name.</StyleExpand_HelpStyleOne>
-  <StyleExpand_HelpStyleSize>- Recommended: Chinese 5,000-20,000 chars, English 3,000-15,000 words</StyleExpand_HelpStyleSize>
-  <StyleExpand_HelpStyleTips>- Materials should contain lots of dialogue and descriptions, with consistent style throughout.</StyleExpand_HelpStyleTips>
+  <StyleExpand_HelpStyleOne>1. One .txt file = one style. Filename becomes the style name.</StyleExpand_HelpStyleOne>
+  <StyleExpand_HelpStyleSize>2. Recommended: Chinese 5,000-20,000 chars, English 3,000-15,000 words</StyleExpand_HelpStyleSize>
+  <StyleExpand_HelpStyleTips>3. Materials should contain lots of dialogue and descriptions, with consistent style throughout.</StyleExpand_HelpStyleTips>
   <StyleExpand_HelpChunkSection>【Chunking Parameters】</StyleExpand_HelpChunkSection>
   <StyleExpand_HelpChunkStrategy>Chunking Strategy: Semantic chunking (recommended) dynamically determines breakpoints based on sentence similarity, ensuring coherent chunks.</StyleExpand_HelpChunkStrategy>
-  <StyleExpand_HelpChunkSemantic>Breakpoint Threshold: Higher = longer chunks. 80% is balanced. For dialogue-heavy materials, try 85-90%.</StyleExpand_HelpChunkSemantic>
-  <StyleExpand_HelpChunkRecursive>Min/Target/Max Chunk Length: Controls chunk size range. Defaults are optimized for style replication, rarely need adjustment.</StyleExpand_HelpChunkRecursive>
-  <StyleExpand_HelpChunkParams>Large File Sampling: Files exceeding threshold will be sampled to representative chunks, avoiding long processing times.</StyleExpand_HelpChunkParams>
+  <StyleExpand_HelpChunkSemantic>1. Breakpoint Threshold: Higher = longer chunks. 80% is balanced. For dialogue-heavy materials, try 85-90%</StyleExpand_HelpChunkSemantic>
+  <StyleExpand_HelpChunkRecursive>2. Min/Target/Max Chunk Length: Controls chunk size range. Defaults are optimized, rarely need adjustment</StyleExpand_HelpChunkRecursive>
+  <StyleExpand_HelpChunkParams>3. Large File Sampling: Files exceeding threshold will be sampled to representative chunks</StyleExpand_HelpChunkParams>
   <StyleExpand_HelpRetrievalSection>【Retrieval Configuration】</StyleExpand_HelpRetrievalSection>
-  <StyleExpand_HelpRetrievalTopK>Top K: How many similar chunks to retrieve per conversation. Default 3 chunks × ~400 chars = ~1200 chars of style material.</StyleExpand_HelpRetrievalTopK>
-  <StyleExpand_HelpRetrievalThreshold>Similarity Threshold: Chunks below this are filtered out. Default 0.55. Lower to get more material.</StyleExpand_HelpRetrievalThreshold>
+  <StyleExpand_HelpRetrievalTopK>1. Top K: How many similar chunks to retrieve per conversation. Default 2 chunks × ~400 chars</StyleExpand_HelpRetrievalTopK>
+  <StyleExpand_HelpRetrievalThreshold>2. Similarity Threshold: Chunks below this are filtered out. Default 0.55. Lower to get more material</StyleExpand_HelpRetrievalThreshold>
   <StyleExpand_HelpRecommendSection>【Recommended Configuration】</StyleExpand_HelpRecommendSection>
   <StyleExpand_HelpRecommendModels>Recommended Embedding Models: nomic-embed-text (Ollama), mxbai-embed-large (Ollama), text-embedding-3-small (OpenAI)</StyleExpand_HelpRecommendModels>
-  <StyleExpand_HelpRecommendParams>Recommended Parameters: Semantic chunking, breakpoint 80%, Top K 3, threshold 0.55</StyleExpand_HelpRecommendParams>
+  <StyleExpand_HelpRecommendParams>Recommended Parameters: Semantic chunking, breakpoint 80%, Top K 2, threshold 0.55</StyleExpand_HelpRecommendParams>
   <StyleExpand_HelpFaqSection>【FAQ】</StyleExpand_HelpFaqSection>
-  <StyleExpand_HelpFaq1>Q: Chunking failed? A: Check API URL and model name. Use 'Test Connection' to verify.</StyleExpand_HelpFaq1>
-  <StyleExpand_HelpFaq2>Q: Style effect not obvious? A: Try increasing Top K (5-7), lowering threshold (0.4-0.5), or check if materials have consistent style.</StyleExpand_HelpFaq2>
-  <StyleExpand_HelpFaq3>Q: Chunking takes too long? A: Large files take time on first run. Progress is saved, can resume. Keep materials under 20,000 chars.</StyleExpand_HelpFaq3>
-  <StyleExpand_HelpFaq4>Q: How to disable style? A: Uncheck 'Enable Style Expand', or deselect in the style list.</StyleExpand_HelpFaq4>
+  <StyleExpand_HelpFaq1>Q: Chunking failed?</StyleExpand_HelpFaq1>
+  <StyleExpand_HelpFaq1A>A: Check API URL and model name. Use 'Test Connection' to verify.</StyleExpand_HelpFaq1A>
+  <StyleExpand_HelpFaq2>Q: Style effect not obvious?</StyleExpand_HelpFaq2>
+  <StyleExpand_HelpFaq2A>A: Try increasing Top K (5-7), lowering threshold (0.4-0.5), or check if materials have consistent style.</StyleExpand_HelpFaq2A>
+  <StyleExpand_HelpFaq3>Q: Chunking takes too long?</StyleExpand_HelpFaq3>
+  <StyleExpand_HelpFaq3A>A: Large files take time on first run. Progress is saved, can resume. Keep materials under 20,000 chars.</StyleExpand_HelpFaq3A>
+  <StyleExpand_HelpFaq4>Q: How to disable style?</StyleExpand_HelpFaq4>
+  <StyleExpand_HelpFaq4A>A: Uncheck 'Enable Style Expand', or deselect in the style list.</StyleExpand_HelpFaq4A>
   
   <!-- Dependency Check -->
   <StyleExpand_MissingDependency>StyleExpand requires: {0}</StyleExpand_MissingDependency>

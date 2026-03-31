@@ -164,7 +164,7 @@
   <StyleExpand_ResetAllSettings>重置所有设置</StyleExpand_ResetAllSettings>
   <StyleExpand_ClearAllCache>清除所有缓存</StyleExpand_ClearAllCache>
   
-  <!-- Help Window -->
+<!-- Help Window -->
   <StyleExpand_HelpTitle>RimTalk 文风扩展 - 帮助</StyleExpand_HelpTitle>
   <StyleExpand_HelpIntro>这个 MOD 让 RimTalk 生成的对话呈现你想要的写作风格。提供文风素材（小说片段等），MOD 会自动分析并在对话时注入风格特征。</StyleExpand_HelpIntro>
   <StyleExpand_HelpQuickStart>【快速开始】</StyleExpand_HelpQuickStart>
@@ -176,28 +176,36 @@
   <StyleExpand_HelpStep6>6. 推荐：配置 LLM API 后点击「生成描述」，效果更佳</StyleExpand_HelpStep6>
   <StyleExpand_HelpApiSection>【API 配置】</StyleExpand_HelpApiSection>
   <StyleExpand_HelpApiEmbedding>Embedding API 用于将文本转换为向量，是切分和检索的核心。必须配置才能使用本 MOD。</StyleExpand_HelpApiEmbedding>
-  <StyleExpand_HelpApiOllama>推荐使用 Ollama 本地运行：1) 下载安装 Ollama；2) 运行 Ollama 应用程序（确保后台服务启动，任务栏应有图标）；3) 打开终端运行 ollama pull nomic-embed-text；4) API 地址填 http://localhost:11434/api/embed，模型填 nomic-embed-text</StyleExpand_HelpApiOllama>
+  <StyleExpand_HelpApiOllama>推荐使用 Ollama 本地运行：</StyleExpand_HelpApiOllama>
+  <StyleExpand_HelpApiOllamaStep1>1. 下载安装 Ollama</StyleExpand_HelpApiOllamaStep1>
+  <StyleExpand_HelpApiOllamaStep2>2. 运行 Ollama 应用程序（确保后台服务启动，任务栏应有图标）</StyleExpand_HelpApiOllamaStep2>
+  <StyleExpand_HelpApiOllamaStep3>3. 打开终端运行：ollama pull nomic-embed-text</StyleExpand_HelpApiOllamaStep3>
+  <StyleExpand_HelpApiOllamaStep4>4. API 地址填 http://localhost:11434/api/embed，模型填 nomic-embed-text</StyleExpand_HelpApiOllamaStep4>
   <StyleExpand_HelpApiOther>也支持 OpenAI、DeepSeek 等兼容 API，需确保模型支持 embedding 功能。</StyleExpand_HelpApiOther>
   <StyleExpand_HelpStyleSection>【文风素材】</StyleExpand_HelpStyleSection>
-  <StyleExpand_HelpStyleOne>- 一个 .txt 文件 = 一种文风，文件名即文风名</StyleExpand_HelpStyleOne>
-  <StyleExpand_HelpStyleSize>- 推荐字数：中文 5,000-20,000 字，英文 3,000-15,000 词</StyleExpand_HelpStyleSize>
-  <StyleExpand_HelpStyleTips>- 素材应包含大量对话和描写，风格统一，避免混杂多种写法</StyleExpand_HelpStyleTips>
+  <StyleExpand_HelpStyleOne>1. 一个 .txt 文件 = 一种文风，文件名即文风名</StyleExpand_HelpStyleOne>
+  <StyleExpand_HelpStyleSize>2. 推荐字数：中文 5,000-20,000 字，英文 3,000-15,000 词</StyleExpand_HelpStyleSize>
+  <StyleExpand_HelpStyleTips>3. 素材应包含大量对话和描写，风格统一，避免混杂多种写法</StyleExpand_HelpStyleTips>
   <StyleExpand_HelpChunkSection>【切分参数】</StyleExpand_HelpChunkSection>
   <StyleExpand_HelpChunkStrategy>切分策略：语义切分（推荐）会根据句子语义相似度动态确定切分点，确保每个片段语义完整。</StyleExpand_HelpChunkStrategy>
-  <StyleExpand_HelpChunkSemantic>语义断点阈值：越高片段越长，80% 是平衡值。对话场景多的素材可提高到 85-90%。</StyleExpand_HelpChunkSemantic>
-  <StyleExpand_HelpChunkRecursive>最小/目标/最大片段长度：控制片段大小范围。默认值已针对文风场景优化，一般无需调整。</StyleExpand_HelpChunkRecursive>
-  <StyleExpand_HelpChunkParams>大文件采样：超过阈值的文件会自动采样代表性片段，避免处理时间过长。</StyleExpand_HelpChunkParams>
+  <StyleExpand_HelpChunkSemantic>1. 语义断点阈值：越高片段越长，80% 是平衡值。对话场景多的素材可提高到 85-90%</StyleExpand_HelpChunkSemantic>
+  <StyleExpand_HelpChunkRecursive>2. 最小/目标/最大片段长度：控制片段大小范围。默认值已针对文风场景优化，一般无需调整</StyleExpand_HelpChunkRecursive>
+  <StyleExpand_HelpChunkParams>3. 大文件采样：超过阈值的文件会自动采样代表性片段，避免处理时间过长</StyleExpand_HelpChunkParams>
   <StyleExpand_HelpRetrievalSection>【检索配置】</StyleExpand_HelpRetrievalSection>
-  <StyleExpand_HelpRetrievalTopK>检索数量：每次对话时检索多少个相似片段。默认 3 个，每个约 400 字，共 1200 字文风素材。</StyleExpand_HelpRetrievalTopK>
-  <StyleExpand_HelpRetrievalThreshold>相似度阈值：低于此值的片段会被过滤。默认 0.55，可适当降低获取更多素材。</StyleExpand_HelpRetrievalThreshold>
+  <StyleExpand_HelpRetrievalTopK>1. 检索数量：每次对话时检索多少个相似片段。默认 2 个，每个约 400 字</StyleExpand_HelpRetrievalTopK>
+  <StyleExpand_HelpRetrievalThreshold>2. 相似度阈值：低于此值的片段会被过滤。默认 0.55，可适当降低获取更多素材</StyleExpand_HelpRetrievalThreshold>
   <StyleExpand_HelpRecommendSection>【推荐配置】</StyleExpand_HelpRecommendSection>
   <StyleExpand_HelpRecommendModels>Embedding 模型推荐：nomic-embed-text（Ollama）、mxbai-embed-large（Ollama）、text-embedding-3-small（OpenAI）</StyleExpand_HelpRecommendModels>
-  <StyleExpand_HelpRecommendParams>推荐参数：语义切分、断点阈值 80%、检索数量 3、相似度阈值 0.55</StyleExpand_HelpRecommendParams>
+  <StyleExpand_HelpRecommendParams>推荐参数：语义切分、断点阈值 80%、检索数量 2、相似度阈值 0.55</StyleExpand_HelpRecommendParams>
   <StyleExpand_HelpFaqSection>【常见问题】</StyleExpand_HelpFaqSection>
-  <StyleExpand_HelpFaq1>Q: 切分失败？A: 检查 API 地址和模型名称是否正确，使用「测试连接」验证。</StyleExpand_HelpFaq1>
-  <StyleExpand_HelpFaq2>Q: 文风效果不明显？A: 尝试增加检索数量（5-7），降低相似度阈值（0.4-0.5），或检查素材是否风格统一。</StyleExpand_HelpFaq2>
-  <StyleExpand_HelpFaq3>Q: 切分时间很长？A: 大文件首次切分需要时间，进度会保存，可中断后继续。建议素材控制在 20000 字以内。</StyleExpand_HelpFaq3>
-  <StyleExpand_HelpFaq4>Q: 如何关闭文风？A: 取消勾选「启用文风扩展」，或在文风列表中取消选择。</StyleExpand_HelpFaq4>
+  <StyleExpand_HelpFaq1>Q: 切分失败？</StyleExpand_HelpFaq1>
+  <StyleExpand_HelpFaq1A>A: 检查 API 地址和模型名称是否正确，使用「测试连接」验证。</StyleExpand_HelpFaq1A>
+  <StyleExpand_HelpFaq2>Q: 文风效果不明显？</StyleExpand_HelpFaq2>
+  <StyleExpand_HelpFaq2A>A: 尝试增加检索数量（5-7），降低相似度阈值（0.4-0.5），或检查素材是否风格统一。</StyleExpand_HelpFaq2A>
+  <StyleExpand_HelpFaq3>Q: 切分时间很长？</StyleExpand_HelpFaq3>
+  <StyleExpand_HelpFaq3A>A: 大文件首次切分需要时间，进度会保存，可中断后继续。建议素材控制在 20000 字以内。</StyleExpand_HelpFaq3A>
+  <StyleExpand_HelpFaq4>Q: 如何关闭文风？</StyleExpand_HelpFaq4>
+  <StyleExpand_HelpFaq4A>A: 取消勾选「启用文风扩展」，或在文风列表中取消选择。</StyleExpand_HelpFaq4A>
   
   <!-- Dependency Check -->
   <StyleExpand_MissingDependency>StyleExpand 缺少依赖：{0}</StyleExpand_MissingDependency>

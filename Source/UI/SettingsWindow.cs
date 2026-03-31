@@ -1108,6 +1108,25 @@ This style guide will be used for RP dialogue generation in RimTalk, a RimWorld 
             GUI.color = new Color(0.85f, 0.85f, 0.85f);
             Widgets.Label(rect, text);
             GUI.color = Color.white;
+            list.Gap(2f);
+        }
+        
+        private void AddFaqItem(Listing_Standard list, string question, string answer, float indent = 20f)
+        {
+            var qRect = list.GetRect(Text.CalcHeight(question, list.ColumnWidth - indent));
+            qRect.x += indent;
+            qRect.width -= indent;
+            GUI.color = new Color(0.9f, 0.85f, 0.7f);
+            Widgets.Label(qRect, question);
+            GUI.color = Color.white;
+            
+            var aRect = list.GetRect(Text.CalcHeight(answer, list.ColumnWidth - indent));
+            aRect.x += indent;
+            aRect.width -= indent;
+            GUI.color = new Color(0.85f, 0.85f, 0.85f);
+            Widgets.Label(aRect, answer);
+            GUI.color = Color.white;
+            list.Gap(6f);
         }
 
         public override void DoWindowContents(Rect inRect)
@@ -1141,6 +1160,10 @@ This style guide will be used for RP dialogue generation in RimTalk, a RimWorld 
             AddSectionTitle(list, "StyleExpand_HelpApiSection".Translate());
             AddBodyText(list, "StyleExpand_HelpApiEmbedding".Translate());
             AddIndentedText(list, "StyleExpand_HelpApiOllama".Translate());
+            AddIndentedText(list, "StyleExpand_HelpApiOllamaStep1".Translate());
+            AddIndentedText(list, "StyleExpand_HelpApiOllamaStep2".Translate());
+            AddIndentedText(list, "StyleExpand_HelpApiOllamaStep3".Translate());
+            AddIndentedText(list, "StyleExpand_HelpApiOllamaStep4".Translate());
             AddIndentedText(list, "StyleExpand_HelpApiOther".Translate());
             
             AddSectionTitle(list, "StyleExpand_HelpStyleSection".Translate());
@@ -1163,10 +1186,10 @@ This style guide will be used for RP dialogue generation in RimTalk, a RimWorld 
             AddIndentedText(list, "StyleExpand_HelpRecommendParams".Translate());
             
             AddSectionTitle(list, "StyleExpand_HelpFaqSection".Translate());
-            AddIndentedText(list, "StyleExpand_HelpFaq1".Translate());
-            AddIndentedText(list, "StyleExpand_HelpFaq2".Translate());
-            AddIndentedText(list, "StyleExpand_HelpFaq3".Translate());
-            AddIndentedText(list, "StyleExpand_HelpFaq4".Translate());
+            AddFaqItem(list, "StyleExpand_HelpFaq1".Translate(), "StyleExpand_HelpFaq1A".Translate());
+            AddFaqItem(list, "StyleExpand_HelpFaq2".Translate(), "StyleExpand_HelpFaq2A".Translate());
+            AddFaqItem(list, "StyleExpand_HelpFaq3".Translate(), "StyleExpand_HelpFaq3A".Translate());
+            AddFaqItem(list, "StyleExpand_HelpFaq4".Translate(), "StyleExpand_HelpFaq4A".Translate());
             
             list.End();
             Widgets.EndScrollView();

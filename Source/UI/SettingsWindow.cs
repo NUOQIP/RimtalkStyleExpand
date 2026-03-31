@@ -40,34 +40,61 @@ namespace RimTalkStyleExpand
         
         private static string DrawResizableTextArea(Listing_Standard list, string label, string content, ref float height, ref Vector2 scrollPos, float minHeight = 50f, float maxHeight = 500f)
         {
-            var labelRect = list.GetRect(25f);
-            Widgets.Label(labelRect, label);
+            if (!string.IsNullOrEmpty(label))
+            {
+                var labelRect = list.GetRect(25f);
+                Widgets.Label(labelRect, label);
+            }
             
             var textRect = list.GetRect(height);
             Widgets.DrawBoxSolid(textRect, new Color(0.1f, 0.1f, 0.1f, 0.9f));
             Widgets.DrawBox(textRect);
             
             var innerRect = textRect.ContractedBy(5f);
-            float textHeight = Math.Max(Text.CalcHeight(content, innerRect.width - 16f), innerRect.height);
-            var viewRect = new Rect(0f, 0f, innerRect.width - 16f, textHeight);
+            float contentHeight = Text.CalcHeight(content, innerRect.width - 16f);
+            float viewHeight = Math.Max(contentHeight, innerRect.height);
+            var viewRect = new Rect(0f, 0f, innerRect.width - 16f, viewHeight);
             
             Widgets.BeginScrollView(innerRect, ref scrollPos, viewRect);
-            content = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, textHeight), content);
+            content = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, viewHeight), content);
             Widgets.EndScrollView();
             
-            var handleRect = new Rect(textRect.x, textRect.yMax - 6f, textRect.width, 12f);
+            float handleSize = 12f;
+            var handleRect = new Rect(textRect.xMax - handleSize - 2f, textRect.yMax - handleSize - 2f, handleSize, handleSize);
             
             if (Mouse.IsOver(handleRect))
             {
-                Widgets.DrawHighlight(handleRect);
-                if (Input.GetMouseButton(0))
+                GUI.color = new Color(0.8f, 0.8f, 0.8f);
+            }
+            else
+            {
+                GUI.color = new Color(0.5f, 0.5f, 0.5f);
+            }
+            
+            float lineSpacing = 3f;
+            float lineLength = 8f;
+            for (int i = 0; i < 3; i++)
+            {
+                float yOffset = handleRect.y + 2f + i * lineSpacing;
+                Widgets.DrawLine(new Vector2(handleRect.x + 2f, yOffset + lineLength), 
+                                 new Vector2(handleRect.x + 2f + lineLength, yOffset), 
+                                 GUI.color, 1.5f);
+            }
+            GUI.color = Color.white;
+            
+            if (Event.current.type == EventType.MouseDown && handleRect.Contains(Event.current.mousePosition))
+            {
+                Event.current.Use();
+            }
+            else if (Event.current.type == EventType.MouseDrag && Input.GetMouseButton(0))
+            {
+                if (handleRect.Contains(Event.current.mousePosition) || 
+                    (Event.current.mousePosition.y > textRect.yMax - 20f && Event.current.mousePosition.y < textRect.yMax + 20f))
                 {
                     height += Event.current.delta.y;
                     height = Mathf.Clamp(height, minHeight, maxHeight);
                 }
             }
-            
-            Widgets.DrawLineHorizontal(textRect.x, textRect.yMax, textRect.width, new Color(0.4f, 0.4f, 0.4f));
             
             list.Gap(6f);
             return content;
@@ -106,7 +133,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawSettings(Rect inRect, StyleExpandSettings settings)
         {
-            float contentHeight = 3000f;
+            float contentHeight = 4500f;
             Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
             
             Widgets.BeginScrollView(inRect, ref _scrollPosition, viewRect);

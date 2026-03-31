@@ -31,6 +31,12 @@ namespace RimTalkStyleExpand
         private static float _stylePromptTemplateHeight = 200f;
         private static Vector2 _fullPromptScrollPos = Vector2.zero;
         private static Vector2 _stylePromptTemplateScrollPos = Vector2.zero;
+        
+        private static bool _isResizingTextArea = false;
+        private static float _resizeStartY = 0f;
+        private static float _resizeStartHeight = 0f;
+        private static string _resizingTarget = null;
+        private const float ResizeHandleSize = 24f;
 
         public static void AddLabel(Listing_Standard list, string text)
         {
@@ -38,7 +44,7 @@ namespace RimTalkStyleExpand
             Widgets.Label(rect, text);
         }
         
-        private static string DrawResizableTextArea(Listing_Standard list, string label, string content, ref float height, ref Vector2 scrollPos, float minHeight = 50f, float maxHeight = 500f)
+        private static string DrawResizableTextArea(Listing_Standard list, string label, string content, ref float height, ref Vector2 scrollPos, float minHeight = 50f, float maxHeight = 500f, string targetId = null)
         {
             if (!string.IsNullOrEmpty(label))
             {
@@ -52,47 +58,51 @@ namespace RimTalkStyleExpand
             
             var innerRect = textRect.ContractedBy(5f);
             float contentHeight = Text.CalcHeight(content, innerRect.width - 16f);
-            float viewHeight = Math.Max(contentHeight, innerRect.height);
+            float viewHeight = Math.Max(contentHeight, innerRect.height + 1f);
             var viewRect = new Rect(0f, 0f, innerRect.width - 16f, viewHeight);
             
             Widgets.BeginScrollView(innerRect, ref scrollPos, viewRect);
             content = Widgets.TextArea(new Rect(0f, 0f, viewRect.width, viewHeight), content);
             Widgets.EndScrollView();
             
-            float handleSize = 12f;
-            var handleRect = new Rect(textRect.xMax - handleSize - 2f, textRect.yMax - handleSize - 2f, handleSize, handleSize);
+            var handleRect = new Rect(textRect.xMax - ResizeHandleSize, textRect.yMax - ResizeHandleSize, ResizeHandleSize, ResizeHandleSize);
             
             if (Mouse.IsOver(handleRect))
             {
-                GUI.color = new Color(0.8f, 0.8f, 0.8f);
+                GUI.color = GenUI.MouseoverColor;
             }
             else
             {
-                GUI.color = new Color(0.5f, 0.5f, 0.5f);
+                GUI.color = Color.white;
             }
-            
-            float lineSpacing = 3f;
-            float lineLength = 8f;
-            for (int i = 0; i < 3; i++)
-            {
-                float yOffset = handleRect.y + 2f + i * lineSpacing;
-                Widgets.DrawLine(new Vector2(handleRect.x + 2f, yOffset + lineLength), 
-                                 new Vector2(handleRect.x + 2f + lineLength, yOffset), 
-                                 GUI.color, 1.5f);
-            }
+            GUI.DrawTexture(handleRect, TexUI.WinExpandWidget);
             GUI.color = Color.white;
             
-            if (Event.current.type == EventType.MouseDown && handleRect.Contains(Event.current.mousePosition))
+            Event currentEvent = Event.current;
+            
+            if (currentEvent.type == EventType.MouseDown && currentEvent.button == 0)
             {
-                Event.current.Use();
-            }
-            else if (Event.current.type == EventType.MouseDrag && Input.GetMouseButton(0))
-            {
-                if (handleRect.Contains(Event.current.mousePosition) || 
-                    (Event.current.mousePosition.y > textRect.yMax - 20f && Event.current.mousePosition.y < textRect.yMax + 20f))
+                if (handleRect.Contains(currentEvent.mousePosition))
                 {
-                    height += Event.current.delta.y;
-                    height = Mathf.Clamp(height, minHeight, maxHeight);
+                    _isResizingTextArea = true;
+                    _resizeStartY = currentEvent.mousePosition.y;
+                    _resizeStartHeight = height;
+                    _resizingTarget = targetId;
+                    currentEvent.Use();
+                }
+            }
+            else if (currentEvent.type == EventType.MouseDrag && _isResizingTextArea && _resizingTarget == targetId)
+            {
+                height = _resizeStartHeight + (currentEvent.mousePosition.y - _resizeStartY);
+                height = Mathf.Clamp(height, minHeight, maxHeight);
+                currentEvent.Use();
+            }
+            else if (currentEvent.type == EventType.MouseUp && currentEvent.button == 0)
+            {
+                if (_resizingTarget == targetId)
+                {
+                    _isResizingTextArea = false;
+                    _resizingTarget = null;
                 }
             }
             
@@ -577,7 +587,7 @@ namespace RimTalkStyleExpand
 
         private static void DrawStylePromptEditor(Listing_Standard list, StyleConfig selectedStyle, StyleExpandSettings settings)
         {
-            selectedStyle.Prompt = DrawResizableTextArea(list, "StyleExpand_StylePrompt".Translate(), selectedStyle.Prompt, ref _stylePromptHeight, ref _stylePromptScrollPosition);
+            selectedStyle.Prompt = DrawResizableTextArea(list, "StyleExpand_StylePrompt".Translate(), selectedStyle.Prompt, ref _stylePromptHeight, ref _stylePromptScrollPosition, 50f, 500f, "stylePrompt");
             
             var generateBtnRow = list.GetRect(30f);
             
@@ -787,11 +797,11 @@ For reference only on language form; apply flexibly based on the current scene."
                 ShowStatus("StyleExpand_PromptReset".Translate());
             }
             
-            settings.Retrieval.FullPromptTemplate = DrawResizableTextArea(list, "", settings.Retrieval.FullPromptTemplate, ref _fullPromptHeight, ref _fullPromptScrollPos);
+            settings.Retrieval.FullPromptTemplate = DrawResizableTextArea(list, "", settings.Retrieval.FullPromptTemplate, ref _fullPromptHeight, ref _fullPromptScrollPos, 50f, 500f, "fullPrompt");
             
             DrawSectionHeader(list, "StyleExpand_StylePromptTemplate".Translate(), "StyleExpand_StylePromptTemplateDesc".Translate());
             
-            settings.LlmApi.StylePromptTemplate = DrawResizableTextArea(list, "", settings.LlmApi.StylePromptTemplate, ref _stylePromptTemplateHeight, ref _stylePromptTemplateScrollPos);
+            settings.LlmApi.StylePromptTemplate = DrawResizableTextArea(list, "", settings.LlmApi.StylePromptTemplate, ref _stylePromptTemplateHeight, ref _stylePromptTemplateScrollPos, 50f, 500f, "stylePromptTemplate");
             
             var stylePromptFooter = list.GetRect(30f);
             GUI.color = new Color(0.6f, 0.6f, 0.6f);

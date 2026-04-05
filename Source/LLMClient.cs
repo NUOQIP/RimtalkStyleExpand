@@ -148,7 +148,7 @@ Do not quote passages, discuss characters, describe scenes, summarize plot point
 
                     if (!string.IsNullOrEmpty(apiKey))
                     {
-                        request.Headers.Add($"Authorization: Bearer {apiKey}");
+                        request.Headers.Add("Authorization", "Bearer " + apiKey);
                     }
 
                     var isOllama = url.Contains("ollama") || url.Contains(":11434");

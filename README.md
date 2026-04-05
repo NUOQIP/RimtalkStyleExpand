@@ -145,6 +145,12 @@ dotnet build -p:GameVersion=1.6 -c Release
 
 ## 版本历史
 
+### v1.0.3
+
+- 修复 LLM API 认证问题（Google/云服务商 API 现已正常工作）
+- 优化可拉伸文本编辑框交互
+- 改进帮助窗口排版
+
 ### v1.0.2
 
 - 修复中文编码问题

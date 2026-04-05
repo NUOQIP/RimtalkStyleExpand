@@ -145,6 +145,12 @@ dotnet build -p:GameVersion=1.6 -c Release
 
 ## Version History
 
+### v1.0.3
+
+- Fixed LLM API authentication issue (Google/cloud providers now work correctly)
+- Improved resizable text area interaction
+- Improved help window formatting
+
 ### v1.0.2
 
 - Fixed Chinese encoding issues
